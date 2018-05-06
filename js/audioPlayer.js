@@ -2,8 +2,8 @@ $(function() {
 
 	// create/get dom elements
 	var audio = document.createElement('audio');
-	var slider = $('#slider');
-	var sliderHandle = $('#sliderHandle');
+	var seekSlider = $('#seekSlider');
+	var seekSliderHandle = $('#seekSliderHandle');
 	var playToggleButton = $('#playToggleButton');
 	var isPaused = true;
 	var isHandlePressed = false;
@@ -14,14 +14,14 @@ $(function() {
 	audio.load();
 
 	// jQueryUI slider
-	slider.slider({
+	seekSlider.slider({
 
 		create: function() {
-			sliderHandle.text('0:00 / 0:00');
+			seekSliderHandle.text('0:00 / 0:00');
 		},
 
 		slide: function(event, ui) {
-			setHandleTime(ui.value, audio.duration, sliderHandle);
+			setHandleTime(ui.value, audio.duration, seekSliderHandle);
 			//console.log('slide');
 		},
 
@@ -42,14 +42,14 @@ $(function() {
 	});
 
 	// disable the slider by default
-	slider.slider('disable');
+	seekSlider.slider('disable');
 
 	// function called as audio is played through time to update slider
 	audio.ontimeupdate = function() {
 
 		if (!isHandlePressed) {
-			slider.slider('option', 'value', audio.currentTime);
-			setHandleTime(audio.currentTime, audio.duration, sliderHandle);
+			seekSlider.slider('option', 'value', audio.currentTime);
+			setHandleTime(audio.currentTime, audio.duration, seekSliderHandle);
 		}
 
 	};
@@ -76,8 +76,8 @@ $(function() {
 
 		if (audio.paused) {
 
-			slider.slider('enable');
-			slider.slider('option', 'max', audio.duration);
+			seekSlider.slider('enable');
+			seekSlider.slider('option', 'max', audio.duration);
 
 			playToggleButton.button('option', 'label', 'pause');
 			playToggleButton.button('option', 'icon', 'ui-icon-pause');
@@ -113,8 +113,8 @@ $(function() {
 
 		var time = {};
 
-		time.sec = parseInt(sec);
-		time.min = parseInt(sec / 60);
+		time.sec = Math.floor(sec);
+		time.min = Math.floor(sec / 60);
 		time.sec %= 60;
 
 		if (time.sec < 10) {
