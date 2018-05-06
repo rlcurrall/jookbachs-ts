@@ -1,0 +1,61 @@
+<!doctype html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Javascript Audio test</title>
+	<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+	<style>
+
+		body {
+			font-family: 'Helvetica', 'Arial', sans-serif;
+		}
+
+		.clear {
+			clear: both;
+		}
+
+		#slider {
+			margin: 1em 4em 0 0;
+			width: calc(100% - 15em);
+			float: right;
+		}
+
+		#sliderHandle {
+			width: 8em;
+			height: 2.2em;
+			top: 50%;
+			margin-left: -4em;
+			margin-top: -1.1em;
+			text-align: center;
+			line-height: 2.2em;
+		}
+
+		#playToggleButton {
+			width: 6.5em;
+			height: 2.2em;
+			margin: 0.4em 0 0;
+			float: left;
+		}
+
+	</style>
+	<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	<script src="js/audioPlayer.js"></script>
+</head>
+
+<body>
+
+	<div class="widget">
+
+		<div id="slider">
+			<div id="sliderHandle" class="ui-slider-handle"></div>
+		</div>
+
+		<button id="playToggleButton">play</button>
+
+		<div class="clear"></div>
+
+	</div>
+
+</body>
