@@ -1,11 +1,16 @@
 $(function() {
 
+	/*
+		setup
+	*/
+
 	// create/get dom elements
 	var audio = document.createElement('audio');
 	var seekSlider = $('#seekSlider');
 	var seekSliderHandle = $('#seekSliderHandle');
 	var playToggleButton = $('#playToggleButton');
-	var isPaused = true;
+
+	// to allow user to drag slider while playing
 	var isHandlePressed = false;
 
 	// set audio parameters
@@ -13,22 +18,26 @@ $(function() {
 	audio.preload = 'metadata';
 	audio.load();
 
-	// jQueryUI slider
+	// setup jQueryUI slider
 	seekSlider.slider({
 
+		// when slider is created
 		create: function() {
 			seekSliderHandle.text('0:00 / 0:00');
 		},
 
+		// when slider is sliding
 		slide: function(event, ui) {
 			setHandleTime(ui.value, audio.duration, seekSliderHandle);
 			//console.log('slide');
 		},
 
+		// when the slider starts sliding
 		start: function(event, ui) {
 			isHandlePressed = true;
 		},
 
+		// when the slider stops sliding
 		stop: function(event, ui) {
 			isHandlePressed = false;
 			audio.currentTime = ui.value;
@@ -36,22 +45,25 @@ $(function() {
 
 	});
 
-	// jQueryUI play button
+	// setup jQueryUI play button
 	playToggleButton.button({
-		icon: 'ui-icon-play'
+		icon: 'ui-icon-play',
+		label: 'play'
 	});
 
 	// disable the slider by default
 	seekSlider.slider('disable');
 
+	/*
+		event-handlers
+	*/
+
 	// function called as audio is played through time to update slider
 	audio.ontimeupdate = function() {
-
 		if (!isHandlePressed) {
 			seekSlider.slider('option', 'value', audio.currentTime);
 			setHandleTime(audio.currentTime, audio.duration, seekSliderHandle);
 		}
-
 	};
 
 	playToggleButton.click(function() {
@@ -96,6 +108,10 @@ $(function() {
 		}
 
 	}
+
+	/*
+		helper functions
+	*/
 
 	// formats and sets the timestamps on the specified slider handle
 	function setHandleTime(currentSeconds, totalSeconds, handle) {

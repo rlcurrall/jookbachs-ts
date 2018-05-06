@@ -1,0 +1,30 @@
+body {
+	font-family: 'Helvetica', 'Arial', sans-serif;
+}
+
+.clear {
+	clear: both;
+}
+
+#seekSlider {
+	margin: 1em 4em 0 0;
+	width: calc(100% - 15em);
+	float: right;
+}
+
+#seekSliderHandle {
+	width: 8em;
+	height: 2.2em;
+	top: 50%;
+	margin-left: -4em;
+	margin-top: -1.1em;
+	text-align: center;
+	line-height: 2.2em;
+}
+
+#playToggleButton {
+	width: 6.5em;
+	height: 2.2em;
+	margin: 0.4em 0 0;
+	float: left;
+}
