@@ -4,6 +4,8 @@ $(function() {
 		setup
 	*/
 
+	console.log('bullshit');
+
 	// create/get dom elements
 	var audio = document.createElement('audio');
 	var seekSlider = $('#seekSlider');
@@ -14,7 +16,8 @@ $(function() {
 	var isHandlePressed = false;
 
 	// set audio parameters
-	audio.src = 'music/03-In My Time of Dying.flac';
+	//audio.src = '/ui/music/03-In My Time of Dying.flac';
+	audio.src = 'http://localhost:4200/music';
 	audio.preload = 'metadata';
 	audio.load();
 
@@ -23,7 +26,8 @@ $(function() {
 
 		// when slider is created
 		create: function() {
-			seekSliderHandle.text('0:00 / 0:00');
+			//seekSliderHandle.text('0:00 / 0:00');
+			setHandleTime(0, 0, seekSliderHandle);
 		},
 
 		// when slider is sliding
@@ -40,6 +44,7 @@ $(function() {
 		// when the slider stops sliding
 		stop: function(event, ui) {
 			isHandlePressed = false;
+			//console.log("fuck: " + ui.value);
 			audio.currentTime = ui.value;
 		}
 
