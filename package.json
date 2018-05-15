@@ -6,7 +6,10 @@
 	"license": "ISC",
 	"main": "server/main.js",
 	"dependencies": {
+		"ffmpeg": "^0.0.4",
+		"jsmediatags": "^3.8.1",
 		"express": "^4.15.3",
-		"socket.io": "^2.0.3"
+		"socket.io": "^2.0.3",
+		"walk": "^2.3.13"
 	}
 }

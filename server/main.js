@@ -5,6 +5,13 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const socketIO = require('socket.io');
+const ffmpeg = require("ffmpeg");
+const jsmediatags = require("jsmediatags");
+const walk = require('walk');
+
+// import user defined modules
+const track = require('./utils/track');
+const library = require('./utils/library');
 
 // define port numbers
 const webuiPort = 8080;
@@ -14,6 +21,25 @@ const streamPort = 8083;
 
 // get full path of public directory
 const publicPath = path.join(__dirname, '..', '/public');
+const musicPath = "./music";
+
+var tracksList = [];
+var files = [];
+
+// Walker options
+var walker  = walk.walk(musicPath, { followLinks: false });
+
+walker.on('file', function(root, stat, next) {
+    // Add this file to the list of files
+    //files.push(root + '/' + stat.name);
+	tracksList.push(new track(root + '/' + stat.name));
+    next();
+});
+
+walker.on('end', function() {
+    //console.log(files);
+	console.log(tracksList);
+});
 
 // configure middleware
 var app = express();
@@ -50,6 +76,20 @@ http.createServer(function (req, res) {
 	filename = 'music/Ramble On.flac';
 	//filename = 'music/08 The Ocean.mp3';
 	let stat = fs.statSync(filename);
+	
+	new jsmediatags.Reader(filename)
+		.setTagsToRead(["title", "artist"])
+		.read({
+			
+			onSuccess: function(tag) {
+				console.log(tag);
+			},
+			
+			onError: function(error) {
+				console.log(':(', error.type, error.info);
+			}
+			
+		});
 
 	//console.log(stat);
 
@@ -126,7 +166,7 @@ if (typeof nw !== 'undefined') {
 	var openPlayerMenuItem = new gui.MenuItem({ label: 'Open player window' });
 	var quitMenuItem = new gui.MenuItem({ label: 'Quit' });
 	
-	trayMenu.append(openPlayerMenuItem)
+	trayMenu.append(openPlayerMenuItem);
 	trayMenu.append(quitMenuItem);
 
 	// initialize tray icon
@@ -139,9 +179,8 @@ if (typeof nw !== 'undefined') {
 	var playerWindow = gui.Window.open('http://localhost:' + webuiPort, {
 		position: 'center',
 		width: 1200,
-		height: 700
+		height: 800
 	}, function(win) {
-	//nw.Window.open('public/player.html', {}, function(win) {
 
 		// Get the close event
 		win.on('close', function() {
