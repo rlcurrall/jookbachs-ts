@@ -3,9 +3,7 @@ $(function() {
 	/*
 		setup
 	*/
-
-	console.log('bullshit');
-
+   
 	// create/get dom elements
 	var audio = document.createElement('audio');
 	var seekSlider = $('#seekSlider');
@@ -16,8 +14,7 @@ $(function() {
 	var isHandlePressed = false;
 
 	// set audio parameters
-	//audio.src = '/ui/music/03-In My Time of Dying.flac';
-	audio.src = 'http://localhost:4200/music';
+	audio.src = 'http://localhost:8083';
 	audio.preload = 'metadata';
 	audio.load();
 

@@ -2,6 +2,11 @@
 	"name": "jsAudioPlayer",
 	"version": "0.0.1",
 	"author": "sweylo",
+	"description": "decentralized personal music streaming service",
+	"license": "ISC",
 	"main": "server/main.js",
-	"dependencies": {}
+	"dependencies": {
+		"express": "^4.15.3",
+		"socket.io": "^2.0.3"
+	}
 }

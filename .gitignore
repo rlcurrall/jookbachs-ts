@@ -1,5 +1,7 @@
 music/
-ui/music
+public/music/
+ui/music/
 /nbproject/private/
 nwjs/
 windows_standalone.bat
+node_modules/
