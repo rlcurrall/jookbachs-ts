@@ -83,17 +83,17 @@ var server = app.listen(webPort);
 // initialize socket.io
 var io = require('socket.io').listen(server);
 
-io.on('connection', function(socket){
+io.on('connection', function(socket) {
 	
 	console.log('a user connected');
 	
-	socket.on('message', function(msg){
+	socket.on('message', function(msg) {
 		console.log('message: ' + msg);
 	});
 	
 });
 
-io.on('disconnect', function(socket){
+io.on('disconnect', function(socket) {
 	console.log('a user connected');
 });
 
@@ -106,7 +106,8 @@ http.createServer(function (req, res) {
 	var q = url.parse(req.url, true);
 	var filename = '.' + q.pathname;
 
-	filename = 'music/Ramble On.flac';
+	filename = 'music/03-In My Time of Dying.flac';
+	//filename = 'music/Ramble On.flac';
 	//filename = 'music/08 The Ocean.mp3';
 	let stat = fs.statSync(filename);
 
