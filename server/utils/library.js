@@ -32,6 +32,10 @@ class library {
 		
 	}
 	
+	getAllTracks() {
+		return this.tracksList;
+	}
+	
 	getCurrentTrack() {
 		
 	}

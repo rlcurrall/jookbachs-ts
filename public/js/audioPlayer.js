@@ -4,6 +4,8 @@ $(function() {
 		setup
 	*/
    
+	var socket = io();
+   
 	// create/get dom elements
 	var audio = document.createElement('audio');
 	var seekSlider = $('#seekSlider');
@@ -87,6 +89,8 @@ $(function() {
 	});
 
 	function playToggle(audio) {
+
+		socket.emit('message', 'playStatus: ' + audio.paused);
 
 		if (audio.paused) {
 

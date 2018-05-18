@@ -13,47 +13,34 @@ const express = require('express');
 const track = require('./utils/track');
 const library = require('./utils/library');
 
+// initialize library object
+const musicPath = "./music";
+var musicLibrary = new library(musicPath);
+
 // define port numbers
-const webuiPort = 8080;
+const webPort = 8080;
 const streamPort = 8081;
-const appPort = 8082;
 
 // initialize express
 const app = express();
-const publicPath = path.join(__dirname, '..', '/public');
+const socketApp = express();
+const publicPath = path.join(__dirname, '..', '/public/');
 
-//var webuiRouter = express.Router();
-//var streamRouter = express.Router();
-var apiRouter = express.Router();
+// initialize express routers
+const webuiRouter = express.Router();
+const apiRouter = express.Router();
 
-//app.use('/webui', webuiRouter);
+// connect the routers to their routes
+app.use('/', webuiRouter);
 app.use('/api', apiRouter);
 
 /*webuiRouter.use(function(req, res, next) {
 	console.log('[webui] %s %s', req.method, req.url);
 	next();
-	res.send('this is fucking bullshit');
-});
-
-webuiRouter.get('/', function(req, res, next) {
-	
-	var q = url.parse(req.url, true);
-	var filePath = 'public/' + (q.pathname === '/' ? 'player.html' : q.pathname);
-	console.log(filePath);
-	
-	fs.readFile(filePath, 'utf8', function (err, data) {
-		console.log(data);
-		res.end('hello world');
-	});
-	
-	next();
-	
 });*/
 
-apiRouter.use(function(req, res, next) {
-	console.log('[ api ] %s %s', req.method, req.url);
-	next();
-});
+// set static root directory for webui router
+webuiRouter.use(express.static(publicPath));
 
 apiRouter.get('/list_playlists', function(req, res, next) {
 	
@@ -69,13 +56,45 @@ apiRouter.get('/list_playlists', function(req, res, next) {
 	
 });
 
-var server = app.listen(appPort, function () {
+// handle api request
+apiRouter.get('/list_all_library_track_paths', function(req, res, next) {
+	
+	var tracks = musicLibrary.getAllTracks();
+	var trackPaths = [];
+	
+	for (var i = 0; i < tracks.length; i++) {
+		trackPaths[i] = {'path': tracks[i].path};
+	}
+	
+	res.json(trackPaths);
+	
+	next();
+	
+});
 
-	var host = server.address().address;
-	var port = server.address().port;
+// log api requests to console
+apiRouter.use(function(req, res, next) {
+	console.log('[ api ] %s %s', req.method, req.url);
+});
 
-	console.log("server listening at http://%s:%s", host, port);
-   
+// initialize server to listen on specified port
+var server = app.listen(webPort);
+
+// initialize socket.io
+var io = require('socket.io').listen(server);
+
+io.on('connection', function(socket){
+	
+	console.log('a user connected');
+	
+	socket.on('message', function(msg){
+		console.log('message: ' + msg);
+	});
+	
+});
+
+io.on('disconnect', function(socket){
+	console.log('a user connected');
 });
 
 // create http server for streaming
@@ -116,41 +135,6 @@ http.createServer(function (req, res) {
 	});
 
 }).listen(streamPort);
-
-// create http server for webui
-http.createServer(function (req, res) {
-
-	//console.log(req);
-
-	// get requested file name from url
-	var q = url.parse(req.url, true);
-	var filename = '.' + q.pathname;
-
-	if (filename === './') {
-		filename = 'public/player.html';
-	}
-
-	fs.readFile(filename, function (err, data) {
-
-		// if error reading file, return 404
-		if (err) {
-			res.writeHead(404, {'Content-Type': 'text/html'});
-			//console.log(err);
-			return res.end('404 Not Found: ' + filename);
-		}
-
-		// write response content type
-		res.writeHead(200, {});
-
-		// write response data
-		res.write(data);
-
-		// end response
-		return res.end();
-
-	});
-
-}).listen(webuiPort);
 
 /*const numCpus = require('os').cpus().length;
 const threadLimit = 4;
