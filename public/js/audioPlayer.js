@@ -14,7 +14,7 @@ $(function() {
 	var isHandlePressed = false;
 
 	// set audio parameters
-	audio.src = 'http://localhost:8083';
+	audio.src = 'http://localhost:8081';
 	audio.preload = 'metadata';
 	audio.load();
 

@@ -3,11 +3,11 @@ const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
+
+// import npm modules
 const express = require('express');
-const socketIO = require('socket.io');
-const ffmpeg = require("ffmpeg");
-const jsmediatags = require("jsmediatags");
-const walk = require('walk');
+//const socketIO = require('socket.io');
+//const cluster = require('cluster');
 
 // import user defined modules
 const track = require('./utils/track');
@@ -15,53 +15,67 @@ const library = require('./utils/library');
 
 // define port numbers
 const webuiPort = 8080;
-const socketPort = 8081;
-const apiPort = 8082;
-const streamPort = 8083;
+const streamPort = 8081;
+const appPort = 8082;
 
-// get full path of public directory
+// initialize express
+const app = express();
 const publicPath = path.join(__dirname, '..', '/public');
-const musicPath = "./music";
 
-var tracksList = [];
-var files = [];
+//var webuiRouter = express.Router();
+//var streamRouter = express.Router();
+var apiRouter = express.Router();
 
-// Walker options
-var walker  = walk.walk(musicPath, { followLinks: false });
+//app.use('/webui', webuiRouter);
+app.use('/api', apiRouter);
 
-walker.on('file', function(root, stat, next) {
-    // Add this file to the list of files
-    //files.push(root + '/' + stat.name);
-	tracksList.push(new track(root + '/' + stat.name));
-    next();
+/*webuiRouter.use(function(req, res, next) {
+	console.log('[webui] %s %s', req.method, req.url);
+	next();
+	res.send('this is fucking bullshit');
 });
 
-walker.on('end', function() {
-    //console.log(files);
-	console.log(tracksList);
+webuiRouter.get('/', function(req, res, next) {
+	
+	var q = url.parse(req.url, true);
+	var filePath = 'public/' + (q.pathname === '/' ? 'player.html' : q.pathname);
+	console.log(filePath);
+	
+	fs.readFile(filePath, 'utf8', function (err, data) {
+		console.log(data);
+		res.end('hello world');
+	});
+	
+	next();
+	
+});*/
+
+apiRouter.use(function(req, res, next) {
+	console.log('[ api ] %s %s', req.method, req.url);
+	next();
 });
 
-// configure middleware
-var app = express();
-app.use(express.static(publicPath));
-
-// initialize socket server
-var io = socketIO(http.createServer(app).listen(socketPort));
-
-io.on('connection', (socket) => {
+apiRouter.get('/list_playlists', function(req, res, next) {
 	
-	console.log('new socket connection');
-	
-	socket.on('join', (params, callback) => {
-		console.log(params);
-		callback();
+	res.json({
+		'playlists': [
+			{
+				'name': 'casual'
+			}
+		]
 	});
 	
-	socket.on('disconnect', (params, callback) => {
-		console.log(params);
-		callback();
-	});
+	next();
 	
+});
+
+var server = app.listen(appPort, function () {
+
+	var host = server.address().address;
+	var port = server.address().port;
+
+	console.log("server listening at http://%s:%s", host, port);
+   
 });
 
 // create http server for streaming
@@ -76,24 +90,12 @@ http.createServer(function (req, res) {
 	filename = 'music/Ramble On.flac';
 	//filename = 'music/08 The Ocean.mp3';
 	let stat = fs.statSync(filename);
-	
-	new jsmediatags.Reader(filename)
-		.setTagsToRead(["title", "artist"])
-		.read({
-			
-			onSuccess: function(tag) {
-				console.log(tag);
-			},
-			
-			onError: function(error) {
-				console.log(':(', error.type, error.info);
-			}
-			
-		});
 
 	//console.log(stat);
 
 	fs.readFile(filename, function (err, data) {
+
+		//console.log(data);
 
 		// if error reading file, return 404
 		if (err) {
@@ -113,7 +115,6 @@ http.createServer(function (req, res) {
 
 	});
 
-// have http server listen on port 4200
 }).listen(streamPort);
 
 // create http server for webui
@@ -129,9 +130,6 @@ http.createServer(function (req, res) {
 		filename = 'public/player.html';
 	}
 
-	//var stat = fs.statSync(filename);
-	//console.log(stat);
-
 	fs.readFile(filename, function (err, data) {
 
 		// if error reading file, return 404
@@ -142,17 +140,171 @@ http.createServer(function (req, res) {
 		}
 
 		// write response content type
-		res.writeHead(200, {  });
+		res.writeHead(200, {});
 
 		// write response data
 		res.write(data);
 
 		// end response
 		return res.end();
+
 	});
 
-// have http server listen on port 8080
 }).listen(webuiPort);
+
+/*const numCpus = require('os').cpus().length;
+const threadLimit = 4;
+
+// get full path of public directory
+const publicPath = path.join(__dirname, '..', '/public');
+
+// declare library object
+const musicPath = "./music";
+var musicLibrary;
+
+if (cluster.isMaster) {
+	
+	// initialize music library
+	musicLibrary = new library(musicPath);
+	
+	// limit number of threads to 4
+	var numWorkers = numCpus < threadLimit ? numCpus : threadLimit;
+
+    console.log('Master cluster setting up ' + numWorkers + ' workers...');
+
+    for(var i = 0; i < numWorkers; i++) {
+        cluster.fork();
+    }
+
+    cluster.on('online', function(worker) {
+        console.log('Worker ' + worker.process.pid + ' is online');
+    });
+
+    cluster.on('exit', function(worker, code, signal) {
+        console.log('Worker ' + worker.process.pid + ' died with code: ' + code + 
+			', and signal: ' + signal);
+        console.log('Starting a new worker');
+        cluster.fork();
+    });
+	
+} else {
+	
+	// configure middleware
+	var app = express();
+	app.use(express.static(publicPath));
+
+	// initialize socket server
+	var io = socketIO(http.createServer(app).listen(socketPort));
+
+	io.on('connection', (socket) => {
+
+		console.log('new socket connection');
+
+		socket.on('join', (params, callback) => {
+			console.log(params);
+			callback();
+		});
+
+		socket.on('disconnect', (params, callback) => {
+			console.log(params);
+			callback();
+		});
+
+	});
+
+	// create http server for streaming
+	http.createServer(function (req, res) {
+
+		//console.log(req);
+
+		// get requested file name from url
+		var q = url.parse(req.url, true);
+		var filename = '.' + q.pathname;
+
+		filename = 'music/Ramble On.flac';
+		//filename = 'music/08 The Ocean.mp3';
+		let stat = fs.statSync(filename);
+
+		//console.log(stat);
+
+		fs.readFile(filename, function (err, data) {
+
+			//console.log(data);
+
+			// if error reading file, return 404
+			if (err) {
+				res.writeHead(404, {'Content-Type': 'text/html'});
+				//console.log(err);
+				return res.end('404 Not Found: ' + filename);
+			}
+
+			// write response content type
+			res.writeHead(200, {
+				'Content-Length': stat.size,
+				'Transfer-Encoding': 'chunked'
+			});
+
+			// create stream of file and send it to the response object
+			fs.createReadStream(filename).pipe(res);
+
+		});
+
+	}).listen(streamPort);
+
+	// create http server for webui
+	http.createServer(function (req, res) {
+
+		//console.log(req);
+
+		// get requested file name from url
+		var q = url.parse(req.url, true);
+		var filename = '.' + q.pathname;
+
+		if (filename === './') {
+			filename = 'public/player.html';
+		}
+
+		fs.readFile(filename, function (err, data) {
+
+			// if error reading file, return 404
+			if (err) {
+				res.writeHead(404, {'Content-Type': 'text/html'});
+				//console.log(err);
+				return res.end('404 Not Found: ' + filename);
+			}
+
+			// write response content type
+			res.writeHead(200, {});
+
+			// write response data
+			res.write(data);
+
+			// end response
+			return res.end();
+
+		});
+
+	}).listen(webuiPort);
+
+	// create http server for api
+	http.createServer(function (req, res) {
+
+		console.log(req);
+		
+		// write response content type
+		res.writeHead(200, {'Content-Type': 'text/json'});
+
+		// write response data
+		res.write(JSON.stringify({'test-response': 'ok'}));
+
+		// end response
+		return res.end();
+
+	}).listen(apiPort);
+	
+}
+
+// nw.js doesn't launch when user-defined modules are used, disabled for now
 
 // launch desktop app if run from NW.js
 if (typeof nw !== 'undefined') {
@@ -171,7 +323,7 @@ if (typeof nw !== 'undefined') {
 
 	// initialize tray icon
 	var tray = new gui.Tray({ 
-		icon: 'public/img/8th_note_white_100.png',
+		icon: 'public/img/logo_dark_256.png',
 		title: 'jsAudioPlayer'
 	});
 	tray.menu = trayMenu;
@@ -206,4 +358,4 @@ if (typeof nw !== 'undefined') {
 		process.exit();
 	};
 	
-}
+}*/
