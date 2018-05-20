@@ -4,6 +4,7 @@ $(function() {
 		setup
 	*/
    
+	// get reference for socket.io connection to server
 	var socket = io();
    
 	// create/get dom elements
@@ -16,9 +17,13 @@ $(function() {
 	var isHandlePressed = false;
 
 	// set audio parameters
-	audio.src = 'http://localhost:8081';
+	audio.src = 'http://localhost:8081/?libraryIndex=0';
 	audio.preload = 'metadata';
 	audio.load();
+	
+	$.get('./api/list_all_library_tracks', function (res) {
+		console.log(res);
+	});
 
 	// setup jQueryUI slider
 	seekSlider.slider({
@@ -43,7 +48,7 @@ $(function() {
 		// when the slider stops sliding
 		stop: function(event, ui) {
 			isHandlePressed = false;
-			//console.log("fuck: " + ui.value);
+			//console.log(ui.value);
 			audio.currentTime = ui.value;
 		}
 

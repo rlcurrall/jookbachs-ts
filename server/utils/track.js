@@ -7,20 +7,24 @@ class track {
 		
 		this.path = filepath;
 		
-		new jsmediatags.Reader(this.path)
-			.setTagsToRead(["title", "artist"])
-			.read({
+	}
+	
+	getTitle() {
+		
+		// read file metadata
+		jsmediatags.read(this.path, {
 
-				onSuccess: function(tag) {
-					//console.log(tag);
-					this.tag = tag;
-				},
+			onSuccess: function(tag) {
+				//console.log(tag.tags.title);
+				// outputs to console, but returns null every time
+				return tag.tags.title;
+			},
 
-				onError: function(error) {
-					console.log(':(', error.type, error.info);
-				}
+			onError: function(error) {
+				console.log(':(', error.type, error.info);
+			}
 
-			});
+		});
 		
 	}
 	
