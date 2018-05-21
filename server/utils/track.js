@@ -6,6 +6,7 @@ class track {
 	constructor(filepath) {
 		
 		this.path = filepath;
+		//this.title = this.getTitle();
 		
 	}
 	

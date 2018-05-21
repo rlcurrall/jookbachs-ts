@@ -6,23 +6,29 @@ const path = require('path');
 
 // import npm modules
 const express = require('express');
-//const socketIO = require('socket.io');
+const socketIO = require('socket.io');
 //const cluster = require('cluster');
 
 // import user defined modules
 const track = require('./utils/track');
 const library = require('./utils/library');
 
+// electron
+const electron = require('electron');
+const proc = require('child_process');
+
+let mainWindow;
+
 // initialize library object
-var musicLibrary = new library('./music');
+//var musicLibrary = new library('./music');
+var musicLibrary = new library('E:\music library');
 
 // define port numbers
 const webPort = 8080;
 const streamPort = 8081;
 
 // initialize express
-const app = express();
-const socketApp = express();
+const expressApp = express();
 const publicPath = path.join(__dirname, '..', '/public/');
 
 // initialize express routers
@@ -30,8 +36,8 @@ const webuiRouter = express.Router();
 const apiRouter = express.Router();
 
 // connect the routers to their routes
-app.use('/', webuiRouter);
-app.use('/api', apiRouter);
+expressApp.use('/', webuiRouter);
+expressApp.use('/api', apiRouter);
 
 /*webuiRouter.use(function(req, res, next) {
 	console.log('[webui] %s %s', req.method, req.url);
@@ -68,10 +74,10 @@ apiRouter.use(function(req, res, next) {
 });
 
 // initialize server to listen on specified port
-var server = app.listen(webPort);
+var server = expressApp.listen(webPort);
 
 // initialize socket.io
-var io = require('socket.io').listen(server);
+var io = socketIO.listen(server);
 
 io.on('connection', function(socket) {
 	
@@ -95,7 +101,7 @@ http.createServer(function (req, res) {
 	var input = q.query;
 	var filename;
 	
-	console.log(input);
+	//console.log(input);
 	
 	try {
 		filename = musicLibrary.tracksList[input.libraryIndex].path;
@@ -107,7 +113,7 @@ http.createServer(function (req, res) {
 		return res.end(error);
 	}
 	
-	console.log(filename);
+	//console.log(filename);
 	
 	let stat = fs.statSync(filename);
 
@@ -132,3 +138,10 @@ http.createServer(function (req, res) {
 	});
 
 }).listen(streamPort);
+
+if (process.argv[2] === '-gui') {
+	
+	// spawn Electron
+	const child = proc.spawn(electron);
+	
+}

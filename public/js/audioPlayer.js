@@ -15,14 +15,21 @@ $(function() {
 
 	// to allow user to drag slider while playing
 	var isHandlePressed = false;
+	
+	var tracks;
 
 	// set audio parameters
-	audio.src = 'http://localhost:8081/?libraryIndex=0';
+	audio.src = 'http://localhost:8081/?libraryIndex=1904';
 	audio.preload = 'metadata';
 	audio.load();
 	
+	// get list of tracks through the API
 	$.get('./api/list_all_library_tracks', function (res) {
-		console.log(res);
+		tracks = res;
+		//console.log(tracks);
+		for (var i = 0; i < tracks.length; i++) {
+			$('#trackList').append('<li>[' + i + '] ' + tracks[i].path + '</li>');
+		}
 	});
 
 	// setup jQueryUI slider
