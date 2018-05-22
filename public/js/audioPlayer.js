@@ -16,21 +16,38 @@ $(function() {
 	// to allow user to drag slider while playing
 	var isHandlePressed = false;
 	
+	// array to hold track information
 	var tracks;
+	
+	// server to stream from
+	var streamServerUrl = 'http://localhost:8081';
+	var apiServerUrl = 'http://localhost:8080';
 
 	// set audio parameters
-	audio.src = 'http://localhost:8081/?libraryIndex=1904';
+	audio.src = streamServerUrl + '/?libraryIndex=0';
 	audio.preload = 'metadata';
 	audio.load();
 	
 	// get list of tracks through the API
-	$.get('./api/list_all_library_tracks', function (res) {
+	$.get(apiServerUrl + '/api/list_all_library_tracks', function (res) {
 		tracks = res;
 		//console.log(tracks);
 		for (var i = 0; i < tracks.length; i++) {
-			$('#trackList').append('<li>[' + i + '] ' + tracks[i].path + '</li>');
+			$('#trackList').append('<li class="ui-widget-content">' + 
+				tracks[i].path + '</li>');
 		}
 	});
+	
+	// setup selectable track list to select which song to play
+	$('#trackList').selectable({
+		stop: function() {
+			$('.ui-selected', this).each(function() {
+				var index = $('#trackList li').index(this);
+				//$('#trackList li').eq(index).html();
+				audio.src = streamServerUrl + '/?libraryIndex=' + index;
+			});
+		 }
+    });
 
 	// setup jQueryUI slider
 	seekSlider.slider({

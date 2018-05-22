@@ -19,7 +19,7 @@ const proc = require('child_process');
 
 let mainWindow;
 
-// initialize library object
+// initialize library objec
 //var musicLibrary = new library('./music');
 var musicLibrary = new library('E:\music library');
 

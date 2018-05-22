@@ -1,13 +1,14 @@
+// import node.js modules
+const path = require('path');
+
 // import npm modules
 const jsmediatags = require("@mattbasta/jsmediatags");
 
 class track {
 	
 	constructor(filepath) {
-		
-		this.path = filepath;
+		this.path = path.normalize(filepath);
 		//this.title = this.getTitle();
-		
 	}
 	
 	getTitle() {
