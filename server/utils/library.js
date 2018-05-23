@@ -7,8 +7,8 @@ const walk = require('walk');
 // import user defined modules
 const track = require('./track');
 
-var fileTypeExclusions = ['.jpg', '.png', '.db', '.log', '.ini', '.m3u', '.m3u8', '.DS_Store', 
-	'._.DS_Store', '.accurip', '.cue'];
+var fileTypeExclusions = ['.jpg', '.png', '.bmp', '.db', '.log', '.ini', '.m3u', '.m3u8', 
+	'.DS_Store', '._.DS_Store', '.accurip', '.cue'];
 
 class library {
 	
@@ -24,12 +24,12 @@ class library {
 			
 			// instantiate new track object
 			let newTrack = new track(root + path.sep + stat.name);
-			let exclude = fileTypeExclusions.find(function(element) {
+			let excluded = fileTypeExclusions.find(function(element) {
 				return element === path.extname(newTrack.path);
 			});
-			let hidden = path.basename(newTrack.path).substr(0, 1) != '.';
+			let hidden = path.basename(newTrack.path).substr(0, 1) === '.';
 			
-			if (!exclude && !hidden) {
+			if (!excluded && !hidden) {
 				// Add this file to the list of files
 				tracksList.push(newTrack);
 			}
@@ -39,7 +39,8 @@ class library {
 		});
 
 		walker.on('end', function() {
-			console.log(tracksList);
+			//console.log(tracksList);
+			//tracksList.reverse();
 		});
 		
 		this.tracksList = tracksList;

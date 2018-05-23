@@ -20,8 +20,8 @@ const proc = require('child_process');
 let mainWindow;
 
 // initialize library objec
-//var musicLibrary = new library('./music');
-var musicLibrary = new library('E:\music library');
+//var musicLibrary = new library('C:\\Users\\sweylo\\Desktop\\jsAudioPlayer\\music');
+var musicLibrary = new library('E:\\music library');
 
 // define port numbers
 const webPort = 8080;
@@ -90,7 +90,7 @@ io.on('connection', function(socket) {
 });
 
 io.on('disconnect', function(socket) {
-	console.log('a user connected');
+	console.log('a user disconnected');
 });
 
 // create http server for streaming
