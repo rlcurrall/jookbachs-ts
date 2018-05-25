@@ -28,7 +28,7 @@ $(function() {
 	audio.preload = 'metadata';
 	audio.load();
 	
-	// get list of tracks through the API
+	// get list of tracks through the API via Ajax
 	$.get(apiServerUrl + '/api/list_all_library_tracks', function (res) {
 		tracks = res;
 		//console.log(tracks);

@@ -12,5 +12,8 @@
 		"socket.io": "^2.0.3",
 		"walk": "^2.3.13",
 		"electron": "^2.0.1"
+	},
+	"scripts": {
+		"start": "electron . -gui"
 	}
 }
