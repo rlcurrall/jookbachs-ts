@@ -12,13 +12,10 @@ const library = require('./utils/library');
 // read in config/server.json
 const config = JSON.parse(fs.readFileSync('server/config/server.json', 'utf8'));
 
-// read in config/libraryList.json
-const libraryConfig = JSON.parse(fs.readFileSync('server/config/libraryConfig.json', 'utf8'));
-
 // create new library objects for all elements in config
 var libraryList = [];
-libraryConfig.forEach(function (libraryA) {
-	libraryList.push(new library(libraryA.path));
+config.libraryList.forEach(function (libraryElement) {
+	libraryList.push(new library(libraryElement.path));
 });
 
 // initialize express
