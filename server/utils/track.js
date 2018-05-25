@@ -1,18 +1,16 @@
-// import node.js modules
+// import modules
 const path = require('path');
-
-// import npm modules
 const jsmediatags = require("@mattbasta/jsmediatags");
 
 class track {
-	
+
 	constructor(filepath) {
 		this.path = path.normalize(filepath);
 		//this.title = this.getTitle();
 	}
-	
+
 	getTitle() {
-		
+
 		// read file metadata
 		jsmediatags.read(this.path, {
 
@@ -27,9 +25,9 @@ class track {
 			}
 
 		});
-		
+
 	}
-	
+
 }
 
 module.exports = track;
