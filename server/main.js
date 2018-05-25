@@ -13,13 +13,17 @@ const socketIO = require('socket.io');
 const track = require('./utils/track');
 const library = require('./utils/library');
 
-// initialize library object
-//var musicLibrary = new library('C:\\Users\\sweylo\\Desktop\\jsaudiotest\\music');
-var musicLibrary = new library('E:\\music library');
+// read in config/server.json
+const config = JSON.parse(fs.readFileSync('server/config/server.json', 'utf8'));
 
-// define port numbers
-const webPort = 8080;
-const streamPort = 8081;
+// read in config/libraryList.json
+const libraryConfig = JSON.parse(fs.readFileSync('server/config/libraryConfig.json', 'utf8'));
+
+// create new library objects for all elements in config
+var libraryList = [];
+libraryConfig.forEach(function (libraryA) {
+	libraryList.push(new library(libraryA.path));
+});
 
 // initialize express
 const expressApp = express();
@@ -58,7 +62,7 @@ apiRouter.get('/list_playlists', function(req, res, next) {
 
 // list all tracks in the library
 apiRouter.get('/list_all_library_tracks', function(req, res, next) {
-	res.json(musicLibrary.getAllTracks());
+	res.json(libraryList[0].getAllTracks());
 	next();
 });
 
@@ -68,7 +72,7 @@ apiRouter.use(function(req, res, next) {
 });
 
 // initialize server to listen on specified port
-var server = expressApp.listen(webPort);
+var server = expressApp.listen(config.webPort);
 
 // initialize socket.io
 var io = socketIO.listen(server);
@@ -98,7 +102,7 @@ http.createServer(function (req, res) {
 	//console.log(input);
 
 	try {
-		filename = musicLibrary.tracksList[input.libraryIndex].path;
+		filename = libraryList[0].tracksList[input.libraryIndex].path;
 	} catch (e) {
 		res.writeHead(404, {'Content-Type': 'text/html'});
 		//console.log(e);
@@ -131,12 +135,12 @@ http.createServer(function (req, res) {
 
 	});
 
-}).listen(streamPort);
+}).listen(config.streamPort);
 
 if (process.argv[2] === '-gui') {
 
 	/*
-		code from main.js of electron-quick-start 
+		code from main.js of electron-quick-start
 	*/
 
 	const electron = require('electron')

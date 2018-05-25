@@ -5,3 +5,4 @@ ui/music/
 nwjs/
 windows_standalone.bat
 node_modules/
+server/config
