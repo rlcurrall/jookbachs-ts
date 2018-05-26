@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const socketIO = require('socket.io');
+const mongo = require('mongodb');
 //const cluster = require('cluster');
 const track = require('./utils/track');
 const library = require('./utils/library');
@@ -13,10 +14,14 @@ const library = require('./utils/library');
 const config = JSON.parse(fs.readFileSync('server/config/server.json', 'utf8'));
 
 // create new library objects for all elements in config
-var libraryList = [];
-config.libraryList.forEach(function (libraryElement) {
-	libraryList.push(new library(libraryElement.path));
+var libraryPaths = [];
+config.libraryPaths.forEach(function (libraryPath) {
+	libraryPaths.push(new library(libraryPath));
 });
+
+/**************************************************************************************************
+	Express
+**************************************************************************************************/
 
 // initialize express
 const expressApp = express();
@@ -29,11 +34,6 @@ const apiRouter = express.Router();
 // connect the routers to their routes
 expressApp.use('/', webuiRouter);
 expressApp.use('/api', apiRouter);
-
-/*webuiRouter.use(function(req, res, next) {
-	console.log('[webui] %s %s', req.method, req.url);
-	next();
-});*/
 
 // set static root directory for webui router
 webuiRouter.use(express.static(publicPath));
@@ -55,24 +55,29 @@ apiRouter.get('/list_playlists', function(req, res, next) {
 
 // list all tracks in the library
 apiRouter.get('/list_all_library_tracks', function(req, res, next) {
-	res.json(libraryList[0].getAllTracks());
+	res.json(libraryPaths[0].getAllTracks());
 	next();
 });
 
 // log api requests to console
 apiRouter.use(function(req, res, next) {
-	console.log('[ api ] %s %s', req.method, req.url);
+	let time = new Date(Date.now());
+	console.log('[ api ](%s) %s %s', time.toJSON(), req.method, req.url);
 });
 
 // initialize server to listen on specified port
 var server = expressApp.listen(config.webPort);
+
+/**************************************************************************************************
+	Socket.IO
+**************************************************************************************************/
 
 // initialize socket.io
 var io = socketIO.listen(server);
 
 io.on('connection', function(socket) {
 
-	console.log('a user connected');
+	//console.log('a user connected');
 
 	socket.on('message', function(msg) {
 		console.log('message: ' + msg);
@@ -83,6 +88,10 @@ io.on('connection', function(socket) {
 io.on('disconnect', function(socket) {
 	console.log('a user disconnected');
 });
+
+/**************************************************************************************************
+	Streaming server
+**************************************************************************************************/
 
 // create http server for streaming
 http.createServer(function (req, res) {
@@ -95,7 +104,7 @@ http.createServer(function (req, res) {
 	//console.log(input);
 
 	try {
-		filename = libraryList[0].tracksList[input.libraryIndex].path;
+		filename = libraryPaths[0].tracksList[input.libraryIndex].path;
 	} catch (e) {
 		res.writeHead(404, {'Content-Type': 'text/html'});
 		//console.log(e);

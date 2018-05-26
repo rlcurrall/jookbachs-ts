@@ -3,10 +3,10 @@ $(function() {
 	/*
 		setup
 	*/
-   
+
 	// get reference for socket.io connection to server
 	var socket = io();
-   
+
 	// create/get dom elements
 	var audio = document.createElement('audio');
 	var seekSlider = $('#seekSlider');
@@ -15,29 +15,27 @@ $(function() {
 
 	// to allow user to drag slider while playing
 	var isHandlePressed = false;
-	
+
 	// array to hold track information
 	var tracks;
-	
+
 	// server to stream from
 	var streamServerUrl = 'http://localhost:8081';
 	var apiServerUrl = 'http://localhost:8080';
 
 	// set audio parameters
 	audio.src = streamServerUrl + '/?libraryIndex=0';
-	audio.preload = 'metadata';
-	audio.load();
-	
+
 	// get list of tracks through the API via Ajax
 	$.get(apiServerUrl + '/api/list_all_library_tracks', function (res) {
 		tracks = res;
 		//console.log(tracks);
 		for (var i = 0; i < tracks.length; i++) {
-			$('#trackList').append('<li class="ui-widget-content">' + 
-				tracks[i].path + '</li>');
+			//$('#trackList').append('<li class="ui-widget-content">' +
+			//	tracks[i].path + '</li>');
 		}
 	});
-	
+
 	// setup selectable track list to select which song to play
 	$('#trackList').selectable({
 		stop: function() {
