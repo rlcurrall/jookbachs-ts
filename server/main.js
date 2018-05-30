@@ -1,5 +1,6 @@
 // import modules
 const http = require('http');
+//const https = require('https');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
@@ -13,6 +14,15 @@ const library = require('./utils/library');
 // read in config/server.json
 const config = JSON.parse(fs.readFileSync('server/config/server.json', 'utf8'));
 
+// define path to location of public (webui) files
+const publicPath = path.join(__dirname, '..', '/public/');
+
+// SSL options
+/*const sslOptions = {
+	key: fs.readFileSync('jookbachs.key'),
+	cert: fs.readFileSync('jookbachs.crt')
+}*/
+
 // create new library objects for all elements in config
 var libraryPaths = [];
 config.libraryPaths.forEach(function (libraryPath) {
@@ -25,7 +35,6 @@ config.libraryPaths.forEach(function (libraryPath) {
 
 // initialize express
 const expressApp = express();
-const publicPath = path.join(__dirname, '..', '/public/');
 
 // initialize express routers
 const webuiRouter = express.Router();
@@ -104,7 +113,10 @@ http.createServer(function (req, res) {
 	//console.log(input);
 
 	try {
+
 		filename = libraryPaths[0].tracksList[input.libraryIndex].path;
+		console.log(libraryPaths[0].tracksList[input.libraryIndex]);
+
 	} catch (e) {
 		res.writeHead(404, {'Content-Type': 'text/html'});
 		//console.log(e);
