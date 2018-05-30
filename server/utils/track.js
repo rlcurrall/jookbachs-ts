@@ -1,4 +1,4 @@
-// import           modules
+// import modules
 const path = require('path');
 const jsmediatags = require("@mattbasta/jsmediatags");
 
@@ -20,7 +20,7 @@ class track {
 			},
 
 			onError: function(error) {
-				console.log(':(', error.type, error.info);
+				//console.log(':(', error.type, error.info);
 			}
 
 		});
