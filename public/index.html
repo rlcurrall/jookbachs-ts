@@ -4,48 +4,78 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>jsAudioPlayer</title>
-	<link rel="stylesheet" href="/js/jquery-ui-1.12.1/jquery-ui.dark.min.css">
+	<!--<link rel="stylesheet" href="/js/jquery-ui-1.12.1/jquery-ui.dark.min.css">-->
 	<link rel="stylesheet" href="/css/main.css">
-	<script src="/js/jquery-ui-1.12.1/external/jquery/jquery.js"></script>
-	<script src="/js/jquery-ui-1.12.1/jquery-ui.js"></script>
+	<!--<script src="/js/jquery-ui-1.12.1/external/jquery/jquery.js"></script>
+	<script src="/js/jquery-ui-1.12.1/jquery-ui.js"></script>-->
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 </head>
 
 <body>
 
-	<div ng-app=''>
-		<p>{{ 2 + 1 }}</p>
-	</div>
+	<header>
+		<h1>jsAudioPlayer</h1>
+	</header>
 
-	<div class="widget">
+	<div id='audioPlayer' ng-app='audioPlayerApp'>
 
-		<ul id="trackList"></ul>
+		<ul id="trackList"  ng-controller='trackListController'>
+			<li ng-click='selectTrack($event)' ng-repeat="track in trackList">{{track.path}}</li>
+		</ul>
 
-		<p id="selectedTrack"></p>
+		<div id="playbackControl" class="widget">
 
-	</div>
+			<button id="prevTrackButton"></button>
+			<button id="playToggleButton"></button>
+			<button id="nextTrackButton"></button>
 
-	<div id="playbackControl" class="widget">
+			<div id="currentTrackInfo">
+				<p id="currentTrackName"></p>
+				<p id="currentTrackAlbum"></p>
+				<p id="currentTrackArtist"></p>
+			</div>
 
-		<button id="prevTrackButton"></button>
-		<button id="playToggleButton"></button>
-		<button id="nextTrackButton"></button>
+			<div id="seekSlider">
+				<div id="seekSliderHandle" class="ui-slider-handle"></div>
+			</div>
 
-		<div id="currentTrackInfo">
-			<p id="currentTrackName"></p>
-			<p id="currentTrackAlbum"></p>
-			<p id="currentTrackArtist"></p>
+			<div class="clear"></div>
+
 		</div>
-
-		<div id="seekSlider">
-			<div id="seekSliderHandle" class="ui-slider-handle"></div>
-		</div>
-
-		<div class="clear"></div>
 
 	</div>
 
 	<script src="/socket.io/socket.io.js"></script>
-	<script src="/js/jquery.audioPlayer.js"></script>
+	<!-- <script src="/js/jquery.audioPlayer.js"></script> -->
+	<script>
+
+		// get reference to angular app
+		var app = angular.module('audioPlayerApp', []);
+
+		// get reference for socket.io connection to server
+		var socket = io();
+
+		// create/get dom elements
+		var audio = document.createElement('audio');
+
+		// define urls
+		var apiUrl = 'http://localhost:8080/api';
+		var streamUrl = 'http://localhost:8081';
+
+		// controller for populating the track list
+		app.controller('trackListController', function($scope, $http) {
+
+			// get list of all tracks from the server
+			$http.get(apiUrl + '/list_all_library_tracks').then(function(res) {
+				$scope.trackList = res.data;
+			});
+
+			$scope.selectTrack = function(event) {
+				console.log(event);
+			};
+
+		});
+
+	</script>
 
 </body>

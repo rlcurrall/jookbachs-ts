@@ -1,11 +1,24 @@
 body {
 	font-family: 'Helvetica', 'Arial', sans-serif;
 	background: #333;
-	margin: 0 0 3.75em;
+	margin: 6em 0 3.75em;
 }
 
 .clear {
 	clear: both;
+}
+
+header {
+	background: #222;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+}
+
+header h1 {
+	color: #666;
+
 }
 
 #playbackControl {
@@ -42,4 +55,11 @@ body {
 #trackList .ui-selecting { background: #FECA40; }
 #trackList .ui-selected { background: #F39814; color: white; }
 #trackList { list-style-type: none; margin: 0; padding: 0; }
-#trackList li { margin: 0.25em; padding: 0.5em; font-size: 0.75em; }
+#trackList li {
+	background: #444;
+	margin: 0.75em;
+	padding: 0.5em;
+	font-size: 0.75em;
+	color: #999;
+	border: solid 0.1em #222;
+}
