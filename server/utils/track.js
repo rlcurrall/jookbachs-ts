@@ -4,8 +4,9 @@ const jsmediatags = require("@mattbasta/jsmediatags");
 
 class track {
 
-	constructor(filepath) {
+	constructor(id, filepath) {
 
+		this.id = id;
 		this.path = path.normalize(filepath);
 		this.title = null;
 

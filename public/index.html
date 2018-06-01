@@ -20,7 +20,10 @@
 	<div id='audioPlayer' ng-app='audioPlayerApp'>
 
 		<ul id="trackList"  ng-controller='trackListController'>
-			<li ng-click='selectTrack($event)' ng-repeat="track in trackList">{{track.path}}</li>
+			<li ng-click='selectTrack($event)' ng-repeat="track in trackList">
+				<span class="trackPath">{{track.path}}</span>
+				<span class="trackId">{{track.id}}</span>
+			</li>
 		</ul>
 
 		<div id="playbackControl" class="widget">
@@ -59,8 +62,8 @@
 		var audio = document.createElement('audio');
 
 		// define urls
-		var apiUrl = 'http://localhost:8080/api';
-		var streamUrl = 'http://localhost:8081';
+		var apiUrl = 'https://localhost:8443/api';
+		var streamUrl = 'https://localhost:8443/stream';
 
 		// controller for populating the track list
 		app.controller('trackListController', function($scope, $http) {
@@ -71,7 +74,9 @@
 			});
 
 			$scope.selectTrack = function(event) {
-				console.log(event);
+				console.log(event.target.children[1].innerText);
+				audio.src = streamUrl + '?libraryIndex=' + event.target.children[1].innerText;
+				audio.play();
 			};
 
 		});

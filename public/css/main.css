@@ -52,14 +52,17 @@ header h1 {
 	float: left;
 }
 
-#trackList .ui-selecting { background: #FECA40; }
-#trackList .ui-selected { background: #F39814; color: white; }
 #trackList { list-style-type: none; margin: 0; padding: 0; }
 #trackList li {
 	background: #444;
 	margin: 0.75em;
 	padding: 0.5em;
 	font-size: 0.75em;
+	border: solid 0.075em #222;
+}
+#trackList li .trackPath {
 	color: #999;
-	border: solid 0.1em #222;
+}
+#trackList li .trackId {
+	display: none;
 }
