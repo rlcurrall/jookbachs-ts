@@ -1,7 +1,7 @@
 body {
 	font-family: 'Helvetica', 'Arial', sans-serif;
 	background: #333;
-	margin: 4.5em 0;
+	margin: 4em 0;
 }
 
 .clear {
@@ -63,14 +63,19 @@ footer {
 	padding: 0;
 }
 #trackList li {
-	background: #444;
-	margin: 0.75em;
+	background: #333;
+	margin: 0em;
 	padding: 0.5em;
 	font-size: 0.75em;
-	border: solid 0.075em #222;
-}
-#trackList li .trackPath {
 	color: #999;
+	cursor: pointer;
+}
+#trackList li:nth-child(2n) {
+	background: #393939;
+}
+#trackList li:hover {
+	background: #444;
+	color: #ccc;
 }
 #trackList li .trackId {
 	display: none;

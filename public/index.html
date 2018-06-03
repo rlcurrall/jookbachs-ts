@@ -21,7 +21,7 @@
 
 		<ul id="trackList">
 			<li ng-click='selectTrack($event)' ng-repeat="track in trackList">
-				<span class="trackPath">{{track.path}}</span>
+				{{track.path}}
 				<span class="trackId">{{track.id}}</span>
 			</li>
 		</ul>
@@ -78,8 +78,8 @@
 			});
 
 			$scope.selectTrack = function(event) {
-				console.log(event.target.children[1].innerText);
-				audio.src = streamUrl + '?libraryIndex=' + event.target.children[1].innerText;
+				console.log(event.target.children[0].innerText);
+				audio.src = streamUrl + '?libraryIndex=' + event.target.children[0].innerText;
 				$scope.playButtonText = 'pause';
 				audio.play();
 			};
