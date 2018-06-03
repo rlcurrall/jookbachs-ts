@@ -13,23 +13,23 @@
 
 <body>
 
-	<header>
-		<h1>jsAudioPlayer</h1>
-	</header>
+	<div id='audioPlayer' ng-app='audioPlayerApp' ng-controller='playerController'>
 
-	<div id='audioPlayer' ng-app='audioPlayerApp'>
+		<header>
+			<h1>jsAudioPlayer</h1>
+		</header>
 
-		<ul id="trackList"  ng-controller='trackListController'>
+		<ul id="trackList">
 			<li ng-click='selectTrack($event)' ng-repeat="track in trackList">
 				<span class="trackPath">{{track.path}}</span>
 				<span class="trackId">{{track.id}}</span>
 			</li>
 		</ul>
 
-		<div id="playbackControl" class="widget">
+		<footer>
 
 			<button id="prevTrackButton"></button>
-			<button id="playToggleButton"></button>
+			<button ng-click='playToggle($event)' id="playButton">{{playButtonText}}</button>
 			<button id="nextTrackButton"></button>
 
 			<div id="currentTrackInfo">
@@ -44,7 +44,7 @@
 
 			<div class="clear"></div>
 
-		</div>
+		</footer>
 
 	</div>
 
@@ -65,8 +65,12 @@
 		var apiUrl = 'https://localhost:8443/api';
 		var streamUrl = 'https://localhost:8443/stream';
 
+		audio.src = streamUrl + '?libraryIndex=0';
+
 		// controller for populating the track list
-		app.controller('trackListController', function($scope, $http) {
+		app.controller('playerController', function($scope, $http) {
+
+			$scope.playButtonText = 'play';
 
 			// get list of all tracks from the server
 			$http.get(apiUrl + '/list_all_library_tracks').then(function(res) {
@@ -76,7 +80,18 @@
 			$scope.selectTrack = function(event) {
 				console.log(event.target.children[1].innerText);
 				audio.src = streamUrl + '?libraryIndex=' + event.target.children[1].innerText;
+				$scope.playButtonText = 'pause';
 				audio.play();
+			};
+
+			$scope.playToggle = function(event) {
+				if (audio.paused) {
+					$scope.playButtonText = 'pause';
+					audio.play();
+				} else {
+					$scope.playButtonText = 'play';
+					audio.pause();
+				}
 			};
 
 		});
