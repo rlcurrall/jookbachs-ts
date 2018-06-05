@@ -1,9 +1,10 @@
 {
-	"name": "jsAudioPlayer",
+	"name": "jsJookBachs",
 	"version": "0.0.1",
 	"author": "sweylo",
 	"description": "decentralized personal music management and streaming service",
 	"license": "MIT",
+	"repository": "https://gitlab.com/sweylo/jsJookBachs.git",
 	"main": "server/main.js",
 	"dependencies": {
 		"@mattbasta/jsmediatags": "^3.8.2",
