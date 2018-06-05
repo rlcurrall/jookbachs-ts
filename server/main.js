@@ -151,59 +151,6 @@ io.on('disconnect', function(socket) {
 	console.log('a user disconnected');
 });
 
-/**************************************************************************************************
-	Streaming server
-**************************************************************************************************/
-
-/*// create http server for streaming
-http.createServer(function (req, res) {
-
-	// get requested file name from url
-	var q = url.parse(req.url, true);
-	var input = q.query;
-	var filename;
-
-	//console.log(input);
-
-	try {
-
-		filename = libraryPaths[0].tracksList[input.libraryIndex].path;
-		console.log(libraryPaths[0].tracksList[input.libraryIndex]);
-
-	} catch (e) {
-		res.writeHead(404, {'Content-Type': 'text/html'});
-		//console.log(e);
-		var error = 'cannot access library index: ' + input.libraryIndex;
-		console.log(error);
-		return res.end(error);
-	}
-
-	//console.log(filename);
-
-	let stat = fs.statSync(filename);
-
-	fs.readFile(filename, function (err, data) {
-
-		// if error reading file, return 404
-		if (err) {
-			res.writeHead(404, {'Content-Type': 'text/html'});
-			//console.log(err);
-			return res.end('404 Not Found: ' + filename);
-		}
-
-		// write response content type
-		res.writeHead(200, {
-			'Content-Length': stat.size,
-			'Transfer-Encoding': 'chunked'
-		});
-
-		// create stream of file and send it to the response object
-		fs.createReadStream(filename).pipe(res);
-
-	});
-
-}).listen(config.streamPort);*/
-
 /*
 	code from main.js of electron-quick-start
 */
