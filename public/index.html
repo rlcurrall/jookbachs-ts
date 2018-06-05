@@ -3,12 +3,10 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>jsAudioPlayer</title>
-	<!--<link rel="stylesheet" href="/js/jquery-ui-1.12.1/jquery-ui.dark.min.css">-->
+	<title>jsJookBachs</title>
+	<link rel="stylesheet" href="fonts/Museo Sans 500-Webfont/Webfonts/museosans_500_macroman/stylesheet.css">
+	<link rel="stylesheet" href="/js/lib/jquery-ui-1.12.1/jquery-ui.dark.min.css">
 	<link rel="stylesheet" href="/css/main.css">
-	<!--<script src="/js/jquery-ui-1.12.1/external/jquery/jquery.js"></script>
-	<script src="/js/jquery-ui-1.12.1/jquery-ui.js"></script>-->
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.9/angular.min.js"></script>
 </head>
 
 <body>
@@ -16,21 +14,28 @@
 	<div id='audioPlayer' ng-app='audioPlayerApp' ng-controller='playerController'>
 
 		<header>
-			<h1>jsAudioPlayer</h1>
+			<h1>jsJookBachs</h1>
 		</header>
 
-		<ul id="trackList">
-			<li ng-click='selectTrack($event)' ng-repeat="track in trackList">
-				{{track.path}}
+		<aside id='queue'>
+			<p>Queue</p>
+		</aside>
+
+		<ul id="trackList" class="noselect">
+			<li ng-click='selectTrack($event)' ng-dblclick='playTrack($event)'
+				ng-repeat="track in trackList">
+				<span class="trackPath">{{track.path}}</span>
 				<span class="trackId">{{track.id}}</span>
 			</li>
 		</ul>
 
-		<footer>
+		<footer class="widget">
 
-			<button id="prevTrackButton"></button>
+			<button ng-click='hideToggle($event)' id="hideButton">^</button>
+
+			<button ng-click='playPreviousTrack($event)' id="prevTrackButton">|&lt;</button>
 			<button ng-click='playToggle($event)' id="playButton">{{playButtonText}}</button>
-			<button id="nextTrackButton"></button>
+			<button ng-click='playNextTrack($event)' id="nextTrackButton">&gt;|</button>
 
 			<div id="currentTrackInfo">
 				<p id="currentTrackName"></p>
@@ -48,54 +53,11 @@
 
 	</div>
 
+	<script src="/js/lib/jquery-ui-1.12.1/external/jquery/jquery.js"></script>
+	<script src="/js/lib/jquery-ui-1.12.1/jquery-ui.min.js"></script>
+	<script src="/js/lib/angular.1.6.9.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<!-- <script src="/js/jquery.audioPlayer.js"></script> -->
-	<script>
-
-		// get reference to angular app
-		var app = angular.module('audioPlayerApp', []);
-
-		// get reference for socket.io connection to server
-		var socket = io();
-
-		// create/get dom elements
-		var audio = document.createElement('audio');
-
-		// define urls
-		var apiUrl = 'https://localhost:8443/api';
-		var streamUrl = 'https://localhost:8443/stream';
-
-		audio.src = streamUrl + '?libraryIndex=0';
-
-		// controller for populating the track list
-		app.controller('playerController', function($scope, $http) {
-
-			$scope.playButtonText = 'play';
-
-			// get list of all tracks from the server
-			$http.get(apiUrl + '/list_all_library_tracks').then(function(res) {
-				$scope.trackList = res.data;
-			});
-
-			$scope.selectTrack = function(event) {
-				console.log(event.target.children[0].innerText);
-				audio.src = streamUrl + '?libraryIndex=' + event.target.children[0].innerText;
-				$scope.playButtonText = 'pause';
-				audio.play();
-			};
-
-			$scope.playToggle = function(event) {
-				if (audio.paused) {
-					$scope.playButtonText = 'pause';
-					audio.play();
-				} else {
-					$scope.playButtonText = 'play';
-					audio.pause();
-				}
-			};
-
-		});
-
-	</script>
+	<script src="/js/AudioPlayer.js"></script>
 
 </body>

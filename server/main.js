@@ -4,10 +4,13 @@ const https = require('https');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
+//const os = require('os');
 const express = require('express');
 const socketIO = require('socket.io');
+//const redir = require('redirect-https');
 //const mongo = require('mongodb');
 //const cluster = require('cluster');
+//const Greenlock = require('greenlock');
 const track = require('./utils/track');
 const library = require('./utils/library');
 
@@ -17,15 +20,26 @@ const config = JSON.parse(fs.readFileSync('server/config/server.json', 'utf8'));
 // define path to location of public (webui) files
 const publicPath = path.join(__dirname, '..', '/public/');
 
-// SSL options
-const sslOptions = {
-	key: fs.readFileSync(config.ssl.keyPath),
-	cert: fs.readFileSync(config.ssl.crtPath)
-}
+// TLS options
+const tlsOptions = {
+	key: fs.readFileSync(config.tlsOptions.keyPath),
+	cert: fs.readFileSync(config.tlsOptions.crtPath)
+};
+
+/*var greenlock = Greenlock.create({
+  agreeTos: true                      // Accept Let's Encrypt v2 Agreement
+, email: 'nichols.logan@gmail.com'           // IMPORTANT: Change email and domains
+, approveDomains: [ 'sweylo.net' ]
+, communityMember: false              // Optionally get important updates (security, api changes, etc)
+                                      // and submit stats to help make Greenlock better
+, version: 'draft-11'
+, server: 'https://acme-v02.api.letsencrypt.org/directory'
+, configDir: path.join(os.homedir(), 'acme/etc')
+});*/
 
 // create new library objects for all elements in config
 var libraryPaths = [];
-config.libraryPaths.forEach(function (libraryPath) {
+config.libraryPaths.forEach(function(libraryPath) {
 	libraryPaths.push(new library(libraryPath));
 });
 
@@ -48,21 +62,6 @@ expressApp.use('/stream', streamRouter);
 
 // set static root directory for webui router
 webuiRouter.use(express.static(publicPath));
-
-// get listing of all playlists
-apiRouter.get('/list_playlists', function(req, res, next) {
-
-	res.json({
-		'playlists': [
-			{
-				'name': 'casual'
-			}
-		]
-	});
-
-	next();
-
-});
 
 // list all tracks in the library
 apiRouter.get('/list_all_library_tracks', function(req, res, next) {
@@ -87,13 +86,13 @@ streamRouter.use(function(req, res, next) {
 
 	try {
 
-		filename = libraryPaths[0].tracksList[input.libraryIndex].path;
-		console.log(libraryPaths[0].tracksList[input.libraryIndex]);
+		filename = libraryPaths[0].tracksList[input.trackId].path;
+		console.log(libraryPaths[0].tracksList[input.trackId]);
 
 	} catch (e) {
 		res.writeHead(404, {'Content-Type': 'text/html'});
 		//console.log(e);
-		var error = 'cannot access library index: ' + input.libraryIndex;
+		var error = 'cannot access library index: ' + input.trackId;
 		console.log(error);
 		return res.end(error);
 	}
@@ -125,15 +124,18 @@ streamRouter.use(function(req, res, next) {
 });
 
 // initialize server to listen on specified port
-var server = expressApp.listen(config.webPort);
-var sslServer = https.createServer(sslOptions, expressApp).listen(config.sslPort);
+//var server = expressApp.listen(config.webPort);
+//var tlsServer = https.createServer(tlsOptions, expressApp).listen(config.tlsPort);
+
+//http.createServer(greenlock.middleware(redir)).listen(config.webPort);
+var tlsServer = https.createServer(tlsOptions, expressApp).listen(config.tlsPort);
 
 /**************************************************************************************************
 	Socket.IO
 **************************************************************************************************/
 
 // initialize socket.io
-var io = socketIO.listen(sslServer);
+var io = socketIO.listen(tlsServer);
 
 io.on('connection', function(socket) {
 
