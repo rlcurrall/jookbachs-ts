@@ -1,6 +1,6 @@
 body {
 	font-family: 'Helvetica', 'Arial', sans-serif;
-	background: #333;
+	background: #030303;
 	margin: 4em 0;
 }
 
@@ -9,11 +9,12 @@ body {
 }
 
 header, footer {
-	background: #181818;
+	background: #191919;
 	position: fixed;
 	width: 100%;
 	border-width: 1px;
 	border-color: #080808;
+	z-index: 2;
 }
 
 header {
@@ -23,15 +24,27 @@ header {
 }
 
 header h1 {
-	color: #666;
+	color: #999;
 	font-size: 2em;
-	margin-top: 0.5em;
+	margin-top: 0;
+	padding: 0.5em;
 }
 
 footer {
-	bottom: 0em; left: 0;
-	height: 4em;
+	bottom: 0; left: 0;
+	height: 3.35em;
 	border-top-style: solid;
+	padding: 0.5em;
+}
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
 }
 
 #seekSlider {
@@ -50,33 +63,76 @@ footer {
 	line-height: 2.2em;
 }
 
+footer button {
+	height: 4em;
+	background: #111;
+	border: solid 1px #000;
+	color: #999;
+	outline: 0;
+}
+
 #playButton {
-	width: 6.5em;
-	height: 2.2em;
-	margin: 0.4em 0 0;
-	float: left;
+	width: 5em;
+}
+#nextTrackButton, #prevTrackButton {
+	width: 3em;
 }
 
 #trackList {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
+	z-index: 0;
+	float: right;
+	clear: right;
+	width: 100%;
 }
 #trackList li {
-	background: #333;
+	background: #0c0c0c;
 	margin: 0em;
 	padding: 0.5em;
 	font-size: 0.75em;
 	color: #999;
 	cursor: pointer;
+	border-bottom: solid 1px #000;
 }
 #trackList li:nth-child(2n) {
-	background: #393939;
+	background: #030303;
 }
 #trackList li:hover {
-	background: #444;
+	background: #1c1c1c;
 	color: #ccc;
 }
 #trackList li .trackId {
 	display: none;
+}
+#trackList li.playing {
+	background: #354;
+	color: #ccc;
+}
+#trackList li.playing:hover {
+	background: #465;
+}
+#trackList li.selected {
+	background: #543;
+	color: #ccc;
+}
+#trackList li.selected:hover {
+	background: #654;
+}
+#trackList li.selected.playing {
+	background: #545;
+}
+#trackList li.selected.playing:hover {
+	background: #656;
+}
+
+#queue {
+	width: 15em;
+	height: calc(100% - 4em);
+	position: fixed;
+	bottom: 0; left: 0;
+	background: #fff;
+	display: none;
+	z-index: 1;
 }
