@@ -7,13 +7,21 @@ var socket = io();
 // create audio dom element
 var audio = document.createElement('audio');
 
+// slider jquery slections
+var seekSlider = $('#seekSlider');
+var seekSliderHandle = $('#seekSliderHandle');
+
+// to allow user to drag slider while playing
+var isHandlePressed = false;
+
 // define urls
-var streamUrl = 'https://sweylo.net:8444/stream';
-var apiUrl = 'https://sweylo.net:8444/api';
+var streamUrl = 'https://localhost:8443/stream';
+var apiUrl = 'https://localhost:8443/api';
 
 // trackId of the current track
 var currentTrackId = 0;
 
+// boolean flag for if the sidebar is open or not
 var isAsideOpen = false;
 
 // controller for populating the track list
@@ -26,9 +34,17 @@ app.controller('playerController', function($scope, $http) {
 		$scope.trackList = res.data;
 	});
 
-	play = function() {
+	play = function(trackId) {
+
+		$('#trackList li').removeClass('playing').eq(trackId).addClass('playing');
+
+		seekSlider.slider('option', 'max', audio.duration);
+
 		audio.play();
 		$scope.playButtonText = 'pause';
+
+		// seekSlider.slider('option', 'max', audio.duration);
+
 	}
 
 	pause = function() {
@@ -40,13 +56,78 @@ app.controller('playerController', function($scope, $http) {
 	setTrack = function(trackId) {
 		currentTrackId = trackId;
 		audio.src = streamUrl + '?trackId=' + trackId;
+		seekSlider.slider('option', 'max', audio.duration);
 	}
 
 	playTrack = function(trackId) {
 		currentTrackId = trackId;
 		audio.src = streamUrl + '?trackId=' + trackId;
-		$('#trackList li').removeClass('playing').eq(trackId).addClass('playing');
-		play();
+		play(trackId);
+	}
+
+	// setup jQueryUI slider
+	seekSlider.slider({
+
+		// when slider is created
+		create: function() {
+			//seekSliderHandle.text('0:00 / 0:00');
+			setHandleTime(0, 0, seekSliderHandle);
+		},
+
+		// when slider is sliding
+		slide: function(event, ui) {
+			setHandleTime(ui.value, audio.duration, seekSliderHandle);
+			//console.log('slide');
+		},
+
+		// when the slider starts sliding
+		start: function(event, ui) {
+			isHandlePressed = true;
+		},
+
+		// when the slider stops sliding
+		stop: function(event, ui) {
+			isHandlePressed = false;
+			//console.log(ui.value);
+			audio.currentTime = ui.value;
+		}
+
+	});
+
+	// function called as audio is played through time to update slider
+	audio.ontimeupdate = function() {
+		if (!isHandlePressed) {
+			seekSlider.slider('option', 'value', audio.currentTime);
+			setHandleTime(audio.currentTime, audio.duration, seekSliderHandle);
+		}
+	};
+
+	// formats and sets the timestamps on the specified slider handle
+	function setHandleTime(currentSeconds, totalSeconds, handle) {
+
+		var currentTime = secToTime(currentSeconds);
+		var totalTime = secToTime(totalSeconds);
+
+		handle.text(currentTime.min + ':' + currentTime.sec + ' / ' +
+			totalTime.min + ':' + totalTime.sec);
+
+	}
+
+	// formats seconds to "(m)m:ss"
+	function secToTime(sec) {
+
+		var time = {};
+
+		time.sec = Math.floor(sec);
+		time.min = Math.floor(sec / 60);
+		time.sec %= 60;
+
+		if (time.sec < 10) {
+			time.sec = "0" + time.sec;
+		}
+
+		return time;
+
 	}
 
 	// handle when a song ends
@@ -73,6 +154,7 @@ app.controller('playerController', function($scope, $http) {
 	}
 
 	$scope.playToggle = function(event) {
+		socket.emit('message', 'playStatus: ' + audio.paused);
 		if (audio.paused) {
 			play();
 		} else {
@@ -90,15 +172,15 @@ app.controller('playerController', function($scope, $http) {
 
 	$scope.hideToggle = function(event) {
 
+		$("#queue").animate({width:'toggle'},500);
+
 		if (isAsideOpen) {
 			//$('#queue').slideUp(500);
-			$("#queue").animate({width:'toggle'},500);
 			$('#trackList').animate({
 				width: '+=15em'
 			}, 500);
 		} else {
 			//$('#queue').slideDown(500);
-			$("#queue").animate({width:'toggle'},500);
 			$('#trackList').animate({
 				width: '-=15em'
 			}, 500);
