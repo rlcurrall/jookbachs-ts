@@ -3,8 +3,7 @@ const path = require('path');
 const walk = require('walk');
 const track = require('./track');
 
-var fileTypeExclusions = ['.jpg', '.png', '.bmp', '.db', '.log', '.ini', '.m3u', '.m3u8', '.cue',
-	'.DS_Store', '._.DS_Store', '.accurip'];
+var fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
 
 class library {
 
@@ -22,12 +21,12 @@ class library {
 
 			// instantiate new track object
 			let newTrack = new track(count, root + path.sep + stat.name);
-			let excluded = fileTypeExclusions.find(function(element) {
+			let included = fileTypeInclusions.find(function(element) {
 				return element === path.extname(newTrack.path);
 			});
 			let hidden = path.basename(newTrack.path).substr(0, 1) === '.';
 
-			if (!excluded && !hidden) {
+			if (included && !hidden) {
 				// Add this file to the list of files
 				tracksList.push(newTrack);
 				count++;
