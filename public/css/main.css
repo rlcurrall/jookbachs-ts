@@ -3,40 +3,9 @@ body {
 	background: #030303;
 	margin: 4em 0;
 }
-
 .clear {
 	clear: both;
 }
-
-header, footer {
-	background: #191919;
-	position: fixed;
-	width: 100%;
-	border-width: 1px;
-	border-color: #080808;
-	z-index: 2;
-}
-
-header {
-	top: 0; left: 0;
-	height: 4em;
-	border-bottom-style: solid;
-}
-
-header h1 {
-	color: #999;
-	font-size: 2em;
-	margin-top: 0;
-	padding: 0.5em;
-}
-
-footer {
-	bottom: 0; left: 0;
-	height: 3.35em;
-	border-top-style: solid;
-	padding: 0.5em;
-}
-
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Safari */
@@ -47,15 +16,53 @@ footer {
                                   supported by Chrome and Opera */
 }
 
+header, footer {
+	background: #191919;
+	position: fixed;
+	width: 100%;
+	border-width: 1px;
+	border-color: #080808;
+	z-index: 2;
+}
+header {
+	top: 0; left: 0;
+	height: 4em;
+	border-bottom-style: solid;
+}
+header h1 {
+	color: #999;
+	font-size: 2em;
+	margin-top: 0;
+	padding: 0.5em;
+	display: inline-block;
+}
+header #logout {
+	float: right;
+	clear: right;
+}
+footer {
+	bottom: 0; left: 0;
+	height: 3.35em;
+	border-top-style: solid;
+	padding: 0.5em;
+}
+
+#audioPlayer {
+	/*display: none;*/
+}
 #seekSlider {
-	margin: -2.95em 4em 0 0;
+	position: relative;
 	width: calc(100% - 20em);
 	float: right;
 	top: 0;
 	right: 0;
+	padding: 0;
+	margin: 0;
+	display: inline-block;
+	background: #000;
 }
-
 #seekSliderHandle {
+	position: absolute;
 	width: 8em;
 	height: 2.2em;
 	top: 50%;
@@ -63,6 +70,8 @@ footer {
 	margin-top: -1.1em;
 	text-align: center;
 	line-height: 2.2em;
+	color: #999;
+	background: #111;
 }
 
 footer button {
@@ -90,19 +99,19 @@ footer button {
 	width: 100%;
 }
 #trackList li {
-	background: #0c0c0c;
+	background: #030303;
 	margin: 0em;
-	padding: 0.5em;
-	font-size: 0.75em;
+	padding: 0.75em;
+	font-size: 1em;
 	color: #999;
 	cursor: pointer;
 	border-bottom: solid 1px #000;
 }
 #trackList li:nth-child(2n) {
-	background: #030303;
+	background: #090909;
 }
 #trackList li:hover {
-	background: #1c1c1c;
+	background: #0c0c0c;
 	color: #ccc;
 }
 #trackList li .trackId {
@@ -137,4 +146,5 @@ footer button {
 	background: #333;
 	display: none;
 	z-index: 1;
+	padding: 0.5em;
 }

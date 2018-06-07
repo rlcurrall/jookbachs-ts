@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 //const os = require('os');
 const express = require('express');
+const bodyParser = require('body-parser');
 const socketIO = require('socket.io');
 //const redir = require('redirect-https');
 //const mongo = require('mongodb');
@@ -51,31 +52,45 @@ config.libraryPaths.forEach(function(libraryPath) {
 const expressApp = express();
 
 // initialize express routers
-const webuiRouter = express.Router();
-const apiRouter = express.Router();
-const streamRouter = express.Router();
+const webui = express.Router();
+const api = express.Router();
+const stream = express.Router();
 
 // connect the routers to their routes
-expressApp.use('/', webuiRouter);
-expressApp.use('/api', apiRouter);
-expressApp.use('/stream', streamRouter);
+expressApp.use('/', webui);
+expressApp.use('/api', api);
+expressApp.use('/stream', stream);
 
 // set static root directory for webui router
-webuiRouter.use(express.static(publicPath));
+webui.use(express.static(publicPath));
+
+api.use(bodyParser.urlencoded({
+    extended: true
+}));
+
+api.use(bodyParser.json());
 
 // list all tracks in the library
-apiRouter.get('/list_all_library_tracks', function(req, res, next) {
-	res.json(libraryPaths[0].getAllTracks());
+api.get('/listAllLibraryTracks', function(req, res, next) {
+	res.status(200).json(libraryPaths[0].getAllTracks());
 	next();
 });
 
+api.post('/authTest', function(req, res, next) {
+
+	console.log(req.body.sharedKey);
+
+	next();
+
+});
+
 // log api requests to console
-apiRouter.use(function(req, res, next) {
+api.use(function(req, res, next) {
 	let time = new Date(Date.now());
 	console.log('[ api ](%s) %s %s', time.toJSON(), req.method, req.url);
 });
 
-streamRouter.use(function(req, res, next) {
+stream.use(function(req, res, next) {
 
 	// get requested file name from url
 	var q = url.parse(req.url, true);
@@ -101,7 +116,17 @@ streamRouter.use(function(req, res, next) {
 
 	let stat = fs.statSync(filename);
 
-	fs.readFile(filename, function (err, data) {
+	// write response content type
+	res.writeHead(200, {
+		'Content-Length': stat.size,
+		'Transfer-Encoding': 'chunked',
+		'Content-Type': 'audio/flac'
+	});
+
+	// create stream of file and send it to the response object
+	fs.createReadStream(filename).pipe(res);
+
+	/*fs.readFile(filename, function (err, data) {
 
 		// if error reading file, return 404
 		if (err) {
@@ -110,16 +135,12 @@ streamRouter.use(function(req, res, next) {
 			return res.end('404 Not Found: ' + filename);
 		}
 
-		// write response content type
-		res.writeHead(200, {
-			'Content-Length': stat.size,
-			'Transfer-Encoding': 'chunked'
-		});
 
-		// create stream of file and send it to the response object
-		fs.createReadStream(filename).pipe(res);
 
-	});
+
+
+
+	});*/
 
 });
 

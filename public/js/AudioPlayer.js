@@ -24,44 +24,74 @@ var currentTrackId = 0;
 // boolean flag for if the sidebar is open or not
 var isAsideOpen = false;
 
+app.controller('loginController', function($scope, $http) {
+
+	$scope.login = function(event) {
+
+		// get list of all tracks from the server
+		$http.post(apiUrl + '/authTest', {'sharedKey': $scope.sharedKey});
+
+		$('#login').fadeOut(500);
+		$('#audioPlayer').fadeIn(500);
+
+	}
+
+});
+
 // controller for populating the track list
 app.controller('playerController', function($scope, $http) {
 
 	$scope.playButtonText = 'play';
 
 	// get list of all tracks from the server
-	$http.get(apiUrl + '/list_all_library_tracks').then(function(res) {
+	$http.get(apiUrl + '/listAllLibraryTracks').then(function(res) {
 		$scope.trackList = res.data;
 	});
 
 	play = function(trackId) {
 
-		$('#trackList li').removeClass('playing').eq(trackId).addClass('playing');
+		if (typeof trackId !== null) {
+			$('#trackList li').removeClass('playing');
+			$('#trackList li').eq(trackId).addClass('playing');
+		}
 
-		seekSlider.slider('option', 'max', audio.duration);
+		try {
+			audio.play();
+		} catch (e) {
+			console.log('caught' + e);
+		}
 
-		audio.play();
 		$scope.playButtonText = 'pause';
 
-		// seekSlider.slider('option', 'max', audio.duration);
+		seekSlider.slider('option', 'max', audio.duration);
 
 	}
 
 	pause = function() {
-		audio.pause();
+
+		try {
+			audio.pause();
+		} catch (e) {
+			console.log('caught' + e);
+		}
+
 		$scope.playButtonText = 'play';
+
 	}
 
 	// set the current track to a given trackId
 	setTrack = function(trackId) {
 		currentTrackId = trackId;
-		audio.src = streamUrl + '?trackId=' + trackId;
+		try {
+			audio.src = streamUrl + '?trackId=' + trackId;
+		} catch (e) {
+			console.log('caught' + e);
+		}
 		seekSlider.slider('option', 'max', audio.duration);
 	}
 
 	playTrack = function(trackId) {
-		currentTrackId = trackId;
-		audio.src = streamUrl + '?trackId=' + trackId;
+		setTrack(trackId);
 		play(trackId);
 	}
 
@@ -156,7 +186,7 @@ app.controller('playerController', function($scope, $http) {
 	$scope.playToggle = function(event) {
 		socket.emit('message', 'playStatus: ' + audio.paused);
 		if (audio.paused) {
-			play();
+			play(currentTrackId);
 		} else {
 			pause();
 		}
@@ -188,6 +218,11 @@ app.controller('playerController', function($scope, $http) {
 
 		isAsideOpen = !isAsideOpen;
 
+	};
+
+	$scope.logout = function(event) {
+		$('#login').fadeIn(500);
+		$('#audioPlayer').fadeOut(500);
 	};
 
 	setTrack(0);
