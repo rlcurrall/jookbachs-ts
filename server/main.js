@@ -123,24 +123,9 @@ stream.use(function(req, res, next) {
 		'Content-Type': 'audio/flac'
 	});
 
+	// need to check if file can be read or not
 	// create stream of file and send it to the response object
 	fs.createReadStream(filename).pipe(res);
-
-	/*fs.readFile(filename, function (err, data) {
-
-		// if error reading file, return 404
-		if (err) {
-			res.writeHead(404, {'Content-Type': 'text/html'});
-			//console.log(err);
-			return res.end('404 Not Found: ' + filename);
-		}
-
-
-
-
-
-
-	});*/
 
 });
 
@@ -158,16 +143,16 @@ var io = socketIO.listen(tlsServer);
 
 io.on('connection', function(socket) {
 
-	//console.log('a user connected');
+	console.log('connected');
 
 	socket.on('message', function(msg) {
 		console.log('message: ' + msg);
 	});
 
-});
+	socket.on('disconnect', function() {
+		console.log('disconnected');
+	});
 
-io.on('disconnect', function(socket) {
-	console.log('a user disconnected');
 });
 
 /*const {app, BrowserWindow} = require('electron')

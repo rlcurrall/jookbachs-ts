@@ -34,9 +34,8 @@
 
 		<ul id="trackList" class="noselect">
 			<li ng-click='selectTrack($event)' ng-dblclick='playTrack($event)'
-				ng-repeat="track in trackList">
-				{{track.path}}
-				<span class="trackId">{{track.id}}</span>
+				ng-repeat="track in trackList" ng-bind="track.path">
+				<span class="trackId" ng-bind="track.id"></span>
 			</li>
 		</ul>
 
