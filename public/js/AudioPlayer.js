@@ -29,7 +29,11 @@ app.controller('loginController', function($scope, $http) {
 	$scope.login = function(event) {
 
 		// get list of all tracks from the server
-		$http.post(apiUrl + '/authTest', {'sharedKey': $scope.sharedKey});
+		var res = $http.post(apiUrl + '/authTest', {'sharedKey': $scope.sharedKey});
+
+		res.success(function(data, status, headers, config) {
+			console.log(data);
+		});
 
 		$('#login').fadeOut(500);
 		$('#audioPlayer').fadeIn(500);

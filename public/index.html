@@ -44,7 +44,7 @@
 			<button ng-click='hideToggle($event)' id="hideButton">^</button>
 
 			<button ng-click='playPreviousTrack($event)' id="prevTrackButton">&lt;</button>
-			<button ng-click='playToggle($event)' id="playButton">{{playButtonText}}</button>
+			<button ng-click='playToggle($event)' ng-bind="playButtonText" id="playButton"></button>
 			<button ng-click='playNextTrack($event)' id="nextTrackButton">&gt;</button>
 
 			<div id="currentTrackInfo">

@@ -15,11 +15,11 @@ const socketIO = require('socket.io');
 const track = require('./utils/track');
 const library = require('./utils/library');
 
-// read in config/server.json
-const config = JSON.parse(fs.readFileSync('server/config/server.json', 'utf8'));
-
 // define path to location of public (webui) files
 const publicPath = path.join(__dirname, '..', '/public/');
+
+// read in config/server.json
+const config = JSON.parse(fs.readFileSync('server/config/server.json', 'utf8'));
 
 // TLS options
 const tlsOptions = {
@@ -78,7 +78,13 @@ api.get('/listAllLibraryTracks', function(req, res, next) {
 
 api.post('/authTest', function(req, res, next) {
 
-	console.log(req.body.sharedKey);
+	//console.log(req.body.sharedKey);
+
+	if (req.body.sharedKey === config.sharedKey) {
+		res.status(202).end();
+	} else {
+		res.status(401).end();
+	}
 
 	next();
 
@@ -141,7 +147,7 @@ var tlsServer = https.createServer(tlsOptions, expressApp).listen(config.tlsPort
 // initialize socket.io
 var io = socketIO.listen(tlsServer);
 
-io.on('connection', function(socket) {
+io.on('connect', function(socket) {
 
 	console.log('connected');
 
