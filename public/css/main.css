@@ -10,13 +10,13 @@ body {
 	clear: both;
 }
 .noselect {
-  -webkit-touch-callout: none; /* iOS Safari */
-    -webkit-user-select: none; /* Safari */
-     -khtml-user-select: none; /* Konqueror HTML */
-       -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-            user-select: none; /* Non-prefixed version, currently
-                                  supported by Chrome and Opera */
+	-webkit-touch-callout: none; 	/* iOS Safari */
+ 	-webkit-user-select: none; 		/* Safari */
+  	-khtml-user-select: none; 		/* Konqueror HTML */
+   	-moz-user-select: none; 		/* Firefox */
+	-ms-user-select: none; 			/* Internet Explorer/Edge */
+    user-select: none; 				/* Non-prefixed version, currently
+                      				   supported by Chrome and Opera */
 }
 
 header, footer {
@@ -95,22 +95,18 @@ footer button, #seekSliderHandle {
 
 #trackList {
 	list-style-type: none;
-	margin: 0;
-	padding: 0;
 	z-index: 0;
 	float: right;
 	clear: right;
-	width: 100%;
+	width: calc(100% - 16em);
 	overflow-y: scroll;
 	height: calc(100% - 8em);
 	display: block;
 	position: absolute;
-	top: 4em; left: 0;
+	top: 4em; right: 0;
 }
 #trackList li {
 	background: #030303;
-	margin: 0em;
-	padding: 0.75em;
 	font-size: 0.85em;
 	color: #999;
 	cursor: pointer;
@@ -123,7 +119,7 @@ footer button, #seekSliderHandle {
 	background: #131313;
 	color: #ccc;
 }
-#trackList li .trackId {
+#trackList li span.trackId {
 	display: none;
 }
 #trackList li.playing {
@@ -146,14 +142,16 @@ footer button, #seekSliderHandle {
 #trackList li.selected.playing:hover {
 	background: #656;
 }
+#trackList li div.trackPath {
+	padding: 0.75em;
+}
 
 #queue {
 	width: 15em;
-	height: calc(100% - 4em);
+	height: calc(100% - 9em);
 	position: fixed;
-	bottom: 0; left: 0;
+	bottom: 4em; left: 0;
 	background: #333;
-	display: none;
 	z-index: 1;
 	padding: 0.5em;
 }

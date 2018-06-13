@@ -5,9 +5,9 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>jsJookBachs</title>
 	<link href="https://fonts.googleapis.com/css?family=Roboto|Roboto+Slab" rel="stylesheet">
-	<link rel="stylesheet" href="/css/reset.css">
-	<link rel="stylesheet" href="/css/main.css">
-	<link rel="stylesheet" href="/css/login.css">
+	<link rel="stylesheet" href="./css/reset.css">
+	<link rel="stylesheet" href="./css/main.css">
+	<link rel="stylesheet" href="./css/login.css">
 </head>
 
 <body ng-app='audioPlayerApp'>
@@ -33,8 +33,9 @@
 		</aside>
 
 		<ul id="trackList" class="noselect">
-			<li ng-click='selectTrack($event)' ng-dblclick='playTrack($event)'
-				ng-repeat="track in trackList" ng-bind="track.path">
+			<li id="{{track.id}}" ng-click='selectTrack($event)' ng-dblclick='playTrack($event)'
+				ng-repeat="track in trackList">
+				<div class="trackPath" ng-bind="track.path"></div>
 				<span class="trackId" ng-bind="track.id"></span>
 			</li>
 		</ul>
@@ -63,11 +64,11 @@
 
 	</div>
 
-	<script src="/js/lib/jquery-ui-1.12.1/external/jquery/jquery.js"></script>
-	<script src="/js/lib/jquery-ui-1.12.1/jquery-ui.min.js"></script>
-	<script src="/js/lib/angular.1.6.9.min.js"></script>
-	<script src="/socket.io/socket.io.js"></script>
+	<!-- <script src="./js/lib/jquery-ui-1.12.1/external/jquery/jquery.js"></script>
+	<script src="./js/lib/jquery-ui-1.12.1/jquery-ui.min.js"></script> -->
+	<script src="./js/lib/angular.1.6.9.min.js"></script>
+	<script src="./socket.io/socket.io.js"></script>
 	<!-- <script src="/js/jquery.audioPlayer.js"></script> -->
-	<script src="/js/AudioPlayer.js"></script>
+	<script src="./js/AudioPlayer.js"></script>
 
 </body>

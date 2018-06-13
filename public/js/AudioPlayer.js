@@ -1,28 +1,50 @@
 // get reference to angular app
 var app = angular.module('audioPlayerApp', []);
 
-// get reference for socket.io connection to server
-var socket = io();
+// get reference for jqLite
+var $ = angular.element;
 
 // create audio dom element
 var audio = document.createElement('audio');
 
 // slider jquery slections
-var seekSlider = $('#seekSlider');
-var seekSliderHandle = $('#seekSliderHandle');
+//var seekSlider = $('#seekSlider');
+//var seekSliderHandle = $('#seekSliderHandle');
 
 // to allow user to drag slider while playing
-var isHandlePressed = false;
+//var isHandlePressed = false;
 
 // define urls
 var streamUrl = 'https://localhost:8443/stream';
 var apiUrl = 'https://localhost:8443/api';
+var socketUrl = 'https://localhost:8443';
+
+// get reference for socket.io connection to server
+var socket = io(socketUrl);
 
 // trackId of the current track
 var currentTrackId = 0;
 
 // boolean flag for if the sidebar is open or not
 var isAsideOpen = false;
+
+socket.on('connect', function() {
+
+	console.log('connected');
+
+	var params = { 'playerName': 'default' };
+
+	socket.emit('join', params, function(err) {
+
+		if (err) {
+			console.err(err);
+		}
+
+
+
+	});
+
+})
 
 app.controller('loginController', function($scope, $http) {
 
@@ -35,8 +57,8 @@ app.controller('loginController', function($scope, $http) {
 			console.log(data);
 		});
 
-		$('#login').fadeOut(500);
-		$('#audioPlayer').fadeIn(500);
+		//$('#login').fadeOut(500);
+		//$('#audioPlayer').fadeIn(500);
 
 	}
 
@@ -55,8 +77,8 @@ app.controller('playerController', function($scope, $http) {
 	play = function(trackId) {
 
 		if (typeof trackId !== null) {
-			$('#trackList li').removeClass('playing');
-			$('#trackList li').eq(trackId).addClass('playing');
+			//$('#trackList li').removeClass('playing');
+			//$('#trackList').find('li#' + trackId).addClass('playing');
 		}
 
 		try {
@@ -67,7 +89,7 @@ app.controller('playerController', function($scope, $http) {
 
 		$scope.playButtonText = 'pause';
 
-		seekSlider.slider('option', 'max', audio.duration);
+		//seekSlider.slider('option', 'max', audio.duration);
 
 	}
 
@@ -91,7 +113,7 @@ app.controller('playerController', function($scope, $http) {
 		} catch (e) {
 			console.log('caught' + e);
 		}
-		seekSlider.slider('option', 'max', audio.duration);
+		//seekSlider.slider('option', 'max', audio.duration);
 	}
 
 	playTrack = function(trackId) {
@@ -99,45 +121,16 @@ app.controller('playerController', function($scope, $http) {
 		play(trackId);
 	}
 
-	// setup jQueryUI slider
-	seekSlider.slider({
-
-		// when slider is created
-		create: function() {
-			//seekSliderHandle.text('0:00 / 0:00');
-			setHandleTime(0, 0, seekSliderHandle);
-		},
-
-		// when slider is sliding
-		slide: function(event, ui) {
-			setHandleTime(ui.value, audio.duration, seekSliderHandle);
-			//console.log('slide');
-		},
-
-		// when the slider starts sliding
-		start: function(event, ui) {
-			isHandlePressed = true;
-		},
-
-		// when the slider stops sliding
-		stop: function(event, ui) {
-			isHandlePressed = false;
-			//console.log(ui.value);
-			audio.currentTime = ui.value;
-		}
-
-	});
-
 	// function called as audio is played through time to update slider
 	audio.ontimeupdate = function() {
-		if (!isHandlePressed) {
+		/*if (!isHandlePressed) {
 			seekSlider.slider('option', 'value', audio.currentTime);
 			setHandleTime(audio.currentTime, audio.duration, seekSliderHandle);
-		}
+		}*/
 	};
 
 	// formats and sets the timestamps on the specified slider handle
-	function setHandleTime(currentSeconds, totalSeconds, handle) {
+	/*function setHandleTime(currentSeconds, totalSeconds, handle) {
 
 		var currentTime = secToTime(currentSeconds);
 		var totalTime = secToTime(totalSeconds);
@@ -145,7 +138,7 @@ app.controller('playerController', function($scope, $http) {
 		handle.text(currentTime.min + ':' + currentTime.sec + ' / ' +
 			totalTime.min + ':' + totalTime.sec);
 
-	}
+	}*/
 
 	// formats seconds to "(m)m:ss"
 	function secToTime(sec) {
@@ -170,19 +163,21 @@ app.controller('playerController', function($scope, $http) {
 	}
 
 	$scope.playTrack = function(event) {
-		var thisTrackId = $(event.target).index();
-		playTrack(thisTrackId);
+		//var thisTrackId = $(event.target).index();
+		//console.log(angular.element(event.target).parent().attr('id'));
+		//angular.element(event.target).parent().children()[1].val();
+		playTrack($(event.target).parent().attr('id'));
 	};
 
 	$scope.selectTrack = function(event) {
 
-		var thisTrackId = $(event.target).index();
+		var thisTrackId = $(event.target).parent().attr('id');
 		currentTrackId = thisTrackId;
 
-		if ($('#trackList li').eq(thisTrackId).hasClass('selected')) {
-			$('#trackList li').eq(thisTrackId).removeClass('selected');
+		if ($(event.target).parent().hasClass('selected')) {
+			$(event.target).parent().removeClass('selected');
 		} else {
-			$('#trackList li').eq(thisTrackId).addClass('selected');
+			$(event.target).parent().addClass('selected');
 		}
 
 	}
@@ -206,18 +201,18 @@ app.controller('playerController', function($scope, $http) {
 
 	$scope.hideToggle = function(event) {
 
-		$("#queue").animate({width:'toggle'},500);
+		//$("#queue").animate({width:'toggle'},500);
 
 		if (isAsideOpen) {
 			//$('#queue').slideUp(500);
-			$('#trackList').animate({
+			/*$('#trackList').animate({
 				width: '+=15em'
-			}, 500);
+			}, 500);*/
 		} else {
 			//$('#queue').slideDown(500);
-			$('#trackList').animate({
+			/*$('#trackList').animate({
 				width: '-=15em'
-			}, 500);
+			}, 500);*/
 		}
 
 		isAsideOpen = !isAsideOpen;
@@ -225,8 +220,9 @@ app.controller('playerController', function($scope, $http) {
 	};
 
 	$scope.logout = function(event) {
-		$('#login').fadeIn(500);
-		$('#audioPlayer').fadeOut(500);
+		//$('#login').fadeIn(500);
+		//$('#audioPlayer').fadeOut(500);
+		console.log('logout');
 	};
 
 	setTrack(0);
