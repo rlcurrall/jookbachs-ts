@@ -1,6 +1,7 @@
 // import modules
 const path = require('path');
 const walk = require('walk');
+const mongo = require('mongodb');
 const track = require('./track');
 
 var fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
