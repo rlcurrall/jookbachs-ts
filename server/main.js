@@ -9,14 +9,16 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const socketIO = require('socket.io');
 //const redir = require('redirect-https');
-//const mongo = require('mongodb');
+const mongo = require('mongodb');
 //const cluster = require('cluster');
 //const Greenlock = require('greenlock');
-const track = require('./utils/track');
-const library = require('./utils/library');
 
 // define path to location of public (webui) files
 const publicPath = path.join(__dirname, '..', '/public/');
+const rootPath = path.join(__dirname, '..', '/');
+
+const track = require(rootPath + '/server/model/track');
+const library = require(rootPath + '/server/model/library');
 
 // read in config/server.json
 const config = JSON.parse(fs.readFileSync('server/config/server.json', 'utf8'));
@@ -27,21 +29,34 @@ const tlsOptions = {
 	cert: fs.readFileSync(config.tlsOptions.crtPath)
 };
 
-/*var greenlock = Greenlock.create({
-  agreeTos: true                      // Accept Let's Encrypt v2 Agreement
-, email: 'nichols.logan@gmail.com'           // IMPORTANT: Change email and domains
-, approveDomains: [ 'sweylo.net' ]
-, communityMember: false              // Optionally get important updates (security, api changes, etc)
-                                      // and submit stats to help make Greenlock better
-, version: 'draft-11'
-, server: 'https://acme-v02.api.letsencrypt.org/directory'
-, configDir: path.join(os.homedir(), 'acme/etc')
-});*/
-
 // create new library objects for all elements in config
 var libraryPaths = [];
 config.libraryPaths.forEach(function(libraryPath) {
 	libraryPaths.push(new library(libraryPath));
+});
+
+var dbURL = "mongodb://" + config.db.host + ":" + config.db.port + "/";
+var dbInitURL = dbURL + config.db.name;
+
+mongo.MongoClient.connect(dbInitURL, function(err, db) {
+
+	if (err) {
+		console.log('unable to connect to database: ' + dbURL);
+		console.log(err);
+	}
+
+	console.log("Database connected/created!");
+
+	//console.log(db);
+	/*var dbo = db.db(config.db.name);
+	dbo.createCollection("tracks", function(err, res) {
+		if (err) throw err;
+		console.log("Collection created!");
+		db.close();
+	});*/
+
+	db.close();
+
 });
 
 /**************************************************************************************************
@@ -64,10 +79,10 @@ expressApp.use('/stream', stream);
 // set static root directory for webui router
 webui.use(express.static(publicPath));
 
+// have api read in
 api.use(bodyParser.urlencoded({
     extended: true
 }));
-
 api.use(bodyParser.json());
 
 // list all tracks in the library
@@ -93,7 +108,7 @@ api.post('/authTest', function(req, res, next) {
 // log api requests to console
 api.use(function(req, res, next) {
 	let time = new Date(Date.now());
-	console.log('[ api ](%s) %s %s', time.toJSON(), req.method, req.url);
+	console.log('[ api    ](%s) %s %s', time.toJSON(), req.method, req.url);
 });
 
 stream.use(function(req, res, next) {
@@ -107,8 +122,10 @@ stream.use(function(req, res, next) {
 
 	try {
 
+		let time = new Date(Date.now());
 		filename = libraryPaths[0].tracksList[input.trackId].path;
-		console.log(libraryPaths[0].tracksList[input.trackId]);
+		console.log('[ stream ](%s) id=%s', time.toJSON(),
+			libraryPaths[0].tracksList[input.trackId].id);
 
 	} catch (e) {
 		res.writeHead(404, {'Content-Type': 'text/html'});
@@ -138,7 +155,7 @@ stream.use(function(req, res, next) {
 // initialize server to listen on specified port
 //var server = expressApp.listen(config.webPort);
 //http.createServer(greenlock.middleware(redir)).listen(config.webPort);
-var tlsServer = https.createServer(tlsOptions, expressApp).listen(config.tlsPort);
+var tlsServer = https.createServer(tlsOptions, expressApp).listen(config.httpsPort);
 
 /**************************************************************************************************
 	Socket.IO
@@ -151,6 +168,12 @@ io.on('connect', function(socket) {
 
 	console.log('connected');
 
+	socket.on('join', function(params, callback) {
+
+		socket.join(params.playerName);
+
+	});
+
 	socket.on('message', function(msg) {
 		console.log('message: ' + msg);
 	});
@@ -161,19 +184,74 @@ io.on('connect', function(socket) {
 
 });
 
-/*const {app, BrowserWindow} = require('electron')
+/**************************************************************************************************
+	NW.js
+**************************************************************************************************
 
-function createWindow () {
+// Load library
+var gui = require('nw.gui');
 
-	// Create the browser window.
-	win = new BrowserWindow({width: 1200, height: 800})
+//var playerWindow = new gui.Window();
 
-	// and load the index.html of the app.
-	//win.loadFile('public/index.html')
-	win.loadURL('https://localhost:8443')
+var trayMenu = new gui.Menu();
+var openPlayerMenuItem = new gui.MenuItem({ label: 'Open player window' });
+var quitMenuItem = new gui.MenuItem({ label: 'Quit' });
 
-	win.webContents.openDevTools()
+trayMenu.append(openPlayerMenuItem)
+trayMenu.append(quitMenuItem);
 
-}
+// initialize tray icon
+var tray = new gui.Tray({
+	icon: 'public/img/logo_dark_256.png',
+	title: 'jsAudioPlayer'
+});
+tray.menu = trayMenu;
 
-app.on('ready', createWindow)*/
+var playerWindow = gui.Window.open('https://localhost:8443', {
+	position: 'center',
+	width: 1200,
+	height: 700
+}, function(win) {
+//nw.Window.open('public/player.html', {}, function(win) {
+
+	// Get the close event
+	win.on('close', function() {
+
+		// Hide window
+		this.hide();
+
+		// Show window on left click
+		tray.on('click', function() {
+			win.show();
+		});
+
+		// show window by clicking the "open player window" menu item
+		openPlayerMenuItem.click = function() {
+			win.show();
+		};
+
+	});
+
+});
+
+quitMenuItem.click = function() {
+	process.exit();
+};
+
+// const {app, BrowserWindow} = require('electron')
+//
+// function createWindow () {
+//
+// 	// Create the browser window.
+// 	win = new BrowserWindow({width: 1200, height: 800})
+//
+// 	// and load the index.html of the app.
+// 	// win.loadFile('public/index.html')
+// 	win.loadURL('https://localhost:8443')
+//
+// 	win.webContents.openDevTools()
+//
+// }
+//
+// app.on('ready', createWindow)
+*/
