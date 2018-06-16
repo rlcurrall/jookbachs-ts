@@ -34,8 +34,8 @@ Personal music streaming / synchronization service
 	}
     ```
 
-* Either run the start script with 'npm start' ...
-* Or build a Docker image using:
+* **Either:** run ```npm install``` then start script with ```npm start```
+* **Or:** build a Docker image using:
 	```
 	docker build -t "sweylo/jsjookbachs" <directory of cloned repo>
 	```
