@@ -8,6 +8,7 @@ const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const socketIO = require('socket.io');
+const ss = require('socket.io-stream');
 //const redir = require('redirect-https');
 const mongo = require('mongodb');
 //const cluster = require('cluster');
@@ -30,9 +31,9 @@ const tlsOptions = {
 };
 
 // create new library objects for all elements in config
-var libraryPaths = [];
+var libraries = [];
 config.libraryPaths.forEach(function(libraryPath) {
-	libraryPaths.push(new library(libraryPath));
+	libraries.push(new library(libraryPath));
 });
 
 var dbURL = "mongodb://" + config.db.host + ":" + config.db.port + "/";
@@ -85,9 +86,18 @@ api.use(bodyParser.urlencoded({
 }));
 api.use(bodyParser.json());
 
+// get list of libraries
+api.get('/listLibraries', function(req, res, next) {
+
+
+
+	next();
+
+});
+
 // list all tracks in the library
 api.get('/listAllLibraryTracks', function(req, res, next) {
-	res.status(200).json(libraryPaths[0].getAllTracks());
+	res.status(200).json(libraries[0].getAllTracks());
 	next();
 });
 
@@ -118,33 +128,28 @@ stream.use(function(req, res, next) {
 	var input = q.query;
 	var filename;
 
-	//console.log(input);
-
+	//
 	try {
 
+		// get current time
 		let time = new Date(Date.now());
-		filename = libraryPaths[0].tracksList[input.trackId].path;
+
+		// get path from
+		filename = libraries[0].tracksList[input.trackId].path;
 		console.log('[ stream ](%s) id=%s', time.toJSON(),
-			libraryPaths[0].tracksList[input.trackId].id);
+			libraries[0].tracksList[input.trackId].id);
 
 	} catch (e) {
+
+		// send 404 code to indicate track not found
 		res.writeHead(404, {'Content-Type': 'text/html'});
-		//console.log(e);
+
+		// display error
 		var error = 'cannot access library index: ' + input.trackId;
 		console.log(error);
 		return res.end(error);
+
 	}
-
-	//console.log(filename);
-
-	let stat = fs.statSync(filename);
-
-	// write response content type
-	res.writeHead(200, {
-		'Content-Length': stat.size,
-		'Transfer-Encoding': 'chunked',
-		'Content-Type': 'audio/flac'
-	});
 
 	// need to check if file can be read or not
 	// create stream of file and send it to the response object
