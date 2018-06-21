@@ -44,7 +44,13 @@ socket.on('connect', function() {
 
 	});
 
-})
+});
+
+socket.on('disconnect', function() {
+
+	console.log('disconnected');
+
+});
 
 app.controller('loginController', function($scope, $http) {
 
