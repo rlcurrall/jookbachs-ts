@@ -1,75 +1,20 @@
-// get reference to angular app
-var app = angular.module('audioPlayerApp', []);
+angular.module('audioPlayerApp').controller('playerController', [
+	'$scope',
+	'$http',
+	'$location',
+	function($scope, $http, $location) {
 
-// get reference for jqLite
-var $ = angular.element;
-
-// create audio dom element
-var audio = document.createElement('audio');
-
-// slider jquery slections
-//var seekSlider = $('#seekSlider');
-//var seekSliderHandle = $('#seekSliderHandle');
-
-// to allow user to drag slider while playing
-//var isHandlePressed = false;
-
-// define urls
-var streamUrl = 'https://localhost:8443/stream';
-var apiUrl = 'https://localhost:8443/api';
-var socketUrl = 'https://localhost:8443';
-
-// get reference for socket.io connection to server
-var socket = io(socketUrl);
-
-// trackId of the current track
-var currentTrackId = 0;
-
-// boolean flag for if the sidebar is open or not
-var isAsideOpen = false;
-
-socket.on('connect', function() {
-
-	console.log('connected');
-
-	var params = { 'playerName': 'default' };
-
-	socket.emit('join', params, function(err) {
-
-		if (err) {
-			console.err(err);
-		}
-
-
-
-	});
-
-})
-
-app.controller('loginController', function($scope, $http) {
-
-	$scope.login = function(event) {
-
-		// get list of all tracks from the server
-		var res = $http.post(apiUrl + '/authTest', {'sharedKey': $scope.sharedKey});
-
-		res.success(function(data, status, headers, config) {
-			console.log(data);
-		});
-
-		//$('#login').fadeOut(500);
-		//$('#audioPlayer').fadeIn(500);
-
-	}
-
-});
-
-// controller for populating the track list
-app.controller('playerController', function($scope, $http) {
+    //-------------------------------
+    // Initialize
+    //-------------------------------
 
 	$scope.playButtonText = 'play';
 
-	// get list of all tracks from the server
+    //-------------------------------
+    // Methods
+	//-------------------------------
+	
+	// get list of all tracks from the server -- TODO: move to service later
 	$http.get(apiUrl + '/listAllLibraryTracks').then(function(res) {
 		$scope.trackList = res.data;
 	});
@@ -223,8 +168,9 @@ app.controller('playerController', function($scope, $http) {
 		//$('#login').fadeIn(500);
 		//$('#audioPlayer').fadeOut(500);
 		console.log('logout');
+		$location.path('/login');
 	};
 
 	setTrack(0);
 
-});
+}]);

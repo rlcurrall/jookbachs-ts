@@ -1,0 +1,42 @@
+<div id='audioPlayer' ng-controller='playerController'>
+    
+    <header>
+        <h1>jsJookBachs</h1>
+        <button ng-click='logout($event)' id="logout">Logout</button>
+    </header>
+
+    <aside id='queue'>
+        <h2>Queue</h2>
+    </aside>
+
+    <ul id="trackList" class="noselect">
+        <li id="{{track.id}}" ng-click='selectTrack($event)' ng-dblclick='playTrack($event)'
+            ng-repeat="track in trackList">
+            <div class="trackPath" ng-bind="track.path"></div>
+            <span class="trackId" ng-bind="track.id"></span>
+        </li>
+    </ul>
+
+    <footer>
+
+        <button ng-click='hideToggle($event)' id="hideButton">   ^   </button>
+
+        <button ng-click='playPreviousTrack($event)' id="prevTrackButton">&lt;</button>
+        <button ng-click='playToggle($event)' ng-bind="playButtonText" id="playButton"></button>
+        <button ng-click='playNextTrack($event)' id="nextTrackButton">&gt;</button>
+
+        <div id="currentTrackInfo">
+            <p id="currentTrackName"></p>
+            <p id="currentTrackAlbum"></p>
+            <p id="currentTrackArtist"></p>
+        </div>
+
+        <div id="seekSlider">
+            <div id="seekSliderHandle" class="ui-slider-handle"></div>
+        </div>
+
+        <div class="clear"></div>
+
+    </footer>
+
+</div>

@@ -1,0 +1,23 @@
+<div id='login' ng-controller='loginController'>
+    <div class='form-container' md-theme='panel' layout='column'>
+        <form name='loginForm' ng-submit='login()' layout='column'>
+            <md-toolbar>
+            <div class='md-toolbar-tools'>
+                <h2>Login</h2>
+            </div>
+            </md-toolbar>
+            <md-content class="md-padding" layout="column">
+            <md-input-container class="md-block">
+                <label>Shared Key</label>
+                <input type='password' name='key' ng-model='sharedKey.key' required='required'/>
+                <div ng-messages="loginForm.key.$error" role="alert">
+                  <div ng-message="required">This is required.</div>
+                </div>
+            </md-input-container>
+            <div layout='row' layout-align='center center'>
+                <md-button class='md-primary md-raised required' type='submit' ng-disabled='loginForm.$invalid'>Login</md-button>
+            </div>
+            </md-content>
+        </form>
+    </div>
+</div>

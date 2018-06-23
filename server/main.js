@@ -16,6 +16,7 @@ const mongo = require('mongodb');
 // define path to location of public (webui) files
 const publicPath = path.join(__dirname, '..', '/public/');
 const rootPath = path.join(__dirname, '..', '/');
+const scriptPath = path.join(__dirname, '..', '/node_modules');
 
 const track = require(rootPath + '/server/model/track');
 const library = require(rootPath + '/server/model/library');
@@ -70,14 +71,20 @@ const expressApp = express();
 const webui = express.Router();
 const api = express.Router();
 const stream = express.Router();
+const scripts = express.Router();
+const styles = express.Router();
 
 // connect the routers to their routes
 expressApp.use('/', webui);
 expressApp.use('/api', api);
 expressApp.use('/stream', stream);
+expressApp.use('/scripts', scripts);
 
 // set static root directory for webui router
 webui.use(express.static(publicPath));
+
+// Set static directories for JS scripts
+scripts.use(express.static(scriptPath));
 
 // have api read in
 api.use(bodyParser.urlencoded({

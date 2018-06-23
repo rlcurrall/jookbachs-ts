@@ -8,6 +8,13 @@
 	"main": "server/main.js",
 	"dependencies": {
 		"@mattbasta/jsmediatags": "^3.8.2",
+		"angular": "^1.6.10",
+		"angular-animate": "^1.6.10",
+		"angular-aria": "^1.6.10",
+		"angular-material": "^1.1.9",
+		"angular-messages": "^1.6.10",
+		"angular-resource": "^1.6.10",
+		"angular-route": "^1.6.10",
 		"body-parser": "^1.18.3",
 		"cluster": "^0.7.7",
 		"express": "^4.15.3",
