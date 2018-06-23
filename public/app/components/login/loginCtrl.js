@@ -1,22 +1,20 @@
 app.controller('loginController', [ 
 	'$scope', 
+	'$log',
 	'$http', 
 	'$location', 
-	function LoginController( $scope, $http, $location) {
+	function LoginController( $scope, $log, $http, $location) {
 
-		$scope.sharedKey = {
-			key: ''
-		};
+		$scope.sharedKey = '';
     
 		//-----------------------------
 		// Methods
 		//-----------------------------
 		
 		$scope.login = function() {
-
 			$location.path('/player');
 
-			// get list of all tracks from the server
+			// get list of all tracks from the server 
 			/*
 			var res = $http.post(apiUrl + '/authTest', {'sharedKey': $scope.sharedKey});
 

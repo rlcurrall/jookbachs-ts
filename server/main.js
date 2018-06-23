@@ -72,7 +72,6 @@ const webui = express.Router();
 const api = express.Router();
 const stream = express.Router();
 const scripts = express.Router();
-const styles = express.Router();
 
 // connect the routers to their routes
 expressApp.use('/', webui);
@@ -92,7 +91,19 @@ api.use(bodyParser.urlencoded({
 }));
 api.use(bodyParser.json());
 
+//===========================
+// NOTE: I changed naming to 
+//		 closer match RESTful
+//		 conventions
+//===========================
+api.get('/getlibrary', function(req, res, next) {
+	res.status(200).json(libraryPaths[0].getAllTracks());
+	next();
+});
+
 // list all tracks in the library
+//===============================
+// This Route is no longer used on the front end
 api.get('/listAllLibraryTracks', function(req, res, next) {
 	res.status(200).json(libraryPaths[0].getAllTracks());
 	next();

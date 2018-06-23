@@ -1,5 +1,6 @@
 // get reference to angular app
 var app = angular.module('audioPlayerApp', [
+	'ngCookies',
 	'ngRoute',
 	'ngResource',
 	'ngMessages',
@@ -27,10 +28,10 @@ var app = angular.module('audioPlayerApp', [
 			}
 		);
 
-		//-------------------------------------------------------------------
-		// Themes (replace CSS)
+		//--------------------------------------------------------------------
+		// Themes (used to provide more consistent coloring across entire app)
 		// ref: https://material.angularjs.org/latest/Theming/01_introduction
-		//-------------------------------------------------------------------
+		//--------------------------------------------------------------------
 
 		// Default Theme
 		$mdThemingProvider
@@ -53,16 +54,13 @@ var app = angular.module('audioPlayerApp', [
 				'default': '400'
 			});
 	}
+])
+
+.run([
+	'$rootScope',
+	'$location',
+	function ($rootScope, $location) {
+		// stuff
+	}
 ]);
-
-
-
-
-
-// slider jquery slections
-//var seekSlider = $('#seekSlider');
-//var seekSliderHandle = $('#seekSliderHandle');
-
-// to allow user to drag slider while playing
-//var isHandlePressed = false;
 

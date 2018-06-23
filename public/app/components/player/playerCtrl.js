@@ -1,73 +1,168 @@
 angular.module('audioPlayerApp').controller('playerController', [
 	'$scope',
-	'$http',
+	'$log',
 	'$location',
-	function($scope, $http, $location) {
+	'socket',
+	'$',
+	'AUDIO',
+	'URL',
+	'playerService',
+	function(
+		$scope, 
+		$log, 
+		$location, 
+		socket, 
+		$, 
+		AUDIO, 
+		URL, 
+		playerService) {
 
-    //-------------------------------
-    // Initialize
-    //-------------------------------
+	//-------------------------------
+    // Socket.IO
+	//-------------------------------
+	
+	socket.on('connect', function() {
 
-	$scope.playButtonText = 'play';
+		$log.log('connected');
+
+		var params = { 'playerName': 'default' };
+
+		socket.emit('join', params, function(err) {
+
+			if (err) {
+				$log.err(err);
+			}
+		});
+	})
 
     //-------------------------------
     // Methods
 	//-------------------------------
-	
-	// get list of all tracks from the server -- TODO: move to service later
-	$http.get(apiUrl + '/listAllLibraryTracks').then(function(res) {
-		$scope.trackList = res.data;
-	});
 
-	play = function(trackId) {
+	$scope.loadLibrary = function () {
+		playerService.getAllLibraryTracks()
+			.then(
+				function success(allTracks) {
+					$scope.trackList = allTracks;
+				},
+				function error(error) {
+					// may include better error handling later
+					$log.log(error);
+				}
+			);
+	}
 
+	$scope.play = function(trackId) {
 		if (typeof trackId !== null) {
 			//$('#trackList li').removeClass('playing');
 			//$('#trackList').find('li#' + trackId).addClass('playing');
 		}
 
 		try {
-			audio.play();
+			AUDIO.play();
 		} catch (e) {
-			console.log('caught' + e);
+			$log.log('caught' + e);
 		}
 
 		$scope.playButtonText = 'pause';
 
 		//seekSlider.slider('option', 'max', audio.duration);
-
 	}
 
-	pause = function() {
-
+	$scope.pause = function() {
 		try {
-			audio.pause();
+			AUDIO.pause();
 		} catch (e) {
-			console.log('caught' + e);
+			$log.log('caught' + e);
 		}
-
 		$scope.playButtonText = 'play';
-
 	}
 
-	// set the current track to a given trackId
-	setTrack = function(trackId) {
-		currentTrackId = trackId;
+	$scope.setTrack = function(trackId) {
+		$scope.currentTrackId = trackId;
 		try {
-			audio.src = streamUrl + '?trackId=' + trackId;
+			AUDIO.src = URL.streamUrl + '?trackId=' + trackId;
 		} catch (e) {
-			console.log('caught' + e);
+			$log.log('caught' + e);
 		}
 		//seekSlider.slider('option', 'max', audio.duration);
 	}
 
-	playTrack = function(trackId) {
-		setTrack(trackId);
-		play(trackId);
+	$scope.startStream = function(trackId) {
+		$scope.setTrack(trackId);
+		$scope.play(trackId);
 	}
 
+	AUDIO.onended = function() {
+		$scope.startStream(++$scope.currentTrackId);
+	}
+
+	//-------------------------------
+    // Methods called by DOM
+	//-------------------------------
+	$scope.logout = function(event) {
+		//$('#login').fadeIn(500);
+		//$('#audioPlayer').fadeOut(500);
+		$log.log('logout');
+		$location.path('/login');
+	};
+
+	$scope.hideToggle = function(event) {
+		//$("#queue").animate({width:'toggle'},500);
+
+		if (isAsideOpen) {
+			//$('#queue').slideUp(500);
+			/*$('#trackList').animate({
+				width: '+=15em'
+			}, 500);*/
+		} else {
+			//$('#queue').slideDown(500);
+			/*$('#trackList').animate({
+				width: '-=15em'
+			}, 500);*/
+		}
+
+		isAsideOpen = !isAsideOpen;
+	};
+
+	$scope.selectTrack = function(event) {
+		var thisTrackId = $(event.target).parent().attr('id');
+		$scope.currentTrackId = thisTrackId;
+
+		if ($(event.target).parent().hasClass('selected')) {
+			$(event.target).parent().removeClass('selected');
+		} else {
+			$(event.target).parent().addClass('selected');
+		}
+	};
+
+	$scope.playTrack = function(event) {
+		$scope.startStream($(event.target).parent().attr('id'));
+	};
+
+	$scope.playNextTrack = function(event) {
+		$scope.startStream(++$scope.currentTrackId);
+	};
+
+	$scope.playPreviousTrack = function(event) {
+		$scope.startStream(--$scope.currentTrackId);
+	};
+
+	$scope.playToggle = function(event) {
+		socket.emit('message', 'playStatus: ' + AUDIO.paused);
+		if (AUDIO.paused) {
+			$scope.play($scope.currentTrackId);
+		} else {
+			$scope.pause();
+		}
+	};
+
+	//-------------------------------
+    // Methods to clean up
+	//-------------------------------
+
 	// function called as audio is played through time to update slider
-	audio.ontimeupdate = function() {
+	AUDIO.ontimeupdate = function() {
 		/*if (!isHandlePressed) {
 			seekSlider.slider('option', 'value', audio.currentTime);
 			setHandleTime(audio.currentTime, audio.duration, seekSliderHandle);
@@ -86,8 +181,7 @@ angular.module('audioPlayerApp').controller('playerController', [
 	}*/
 
 	// formats seconds to "(m)m:ss"
-	function secToTime(sec) {
-
+	$scope.secToTime = function (sec) {
 		var time = {};
 
 		time.sec = Math.floor(sec);
@@ -99,78 +193,16 @@ angular.module('audioPlayerApp').controller('playerController', [
 		}
 
 		return time;
-
 	}
 
-	// handle when a song ends
-	audio.onended = function() {
-		playTrack(++currentTrackId);
-	}
+    //-------------------------------
+    // Initialize
+    //-------------------------------
 
-	$scope.playTrack = function(event) {
-		//var thisTrackId = $(event.target).index();
-		//console.log(angular.element(event.target).parent().attr('id'));
-		//angular.element(event.target).parent().children()[1].val();
-		playTrack($(event.target).parent().attr('id'));
-	};
-
-	$scope.selectTrack = function(event) {
-
-		var thisTrackId = $(event.target).parent().attr('id');
-		currentTrackId = thisTrackId;
-
-		if ($(event.target).parent().hasClass('selected')) {
-			$(event.target).parent().removeClass('selected');
-		} else {
-			$(event.target).parent().addClass('selected');
-		}
-
-	}
-
-	$scope.playToggle = function(event) {
-		socket.emit('message', 'playStatus: ' + audio.paused);
-		if (audio.paused) {
-			play(currentTrackId);
-		} else {
-			pause();
-		}
-	};
-
-	$scope.playNextTrack = function(event) {
-		playTrack(++currentTrackId);
-	};
-
-	$scope.playPreviousTrack = function(event) {
-		playTrack(--currentTrackId);
-	};
-
-	$scope.hideToggle = function(event) {
-
-		//$("#queue").animate({width:'toggle'},500);
-
-		if (isAsideOpen) {
-			//$('#queue').slideUp(500);
-			/*$('#trackList').animate({
-				width: '+=15em'
-			}, 500);*/
-		} else {
-			//$('#queue').slideDown(500);
-			/*$('#trackList').animate({
-				width: '-=15em'
-			}, 500);*/
-		}
-
-		isAsideOpen = !isAsideOpen;
-
-	};
-
-	$scope.logout = function(event) {
-		//$('#login').fadeIn(500);
-		//$('#audioPlayer').fadeOut(500);
-		console.log('logout');
-		$location.path('/login');
-	};
-
-	setTrack(0);
+	$scope.playButtonText = 'play';
+	$scope.isAsideOpen = false;
+	$scope.currentTrackId = 0;
+	$scope.setTrack(0);
+	$scope.loadLibrary();
 
 }]);
