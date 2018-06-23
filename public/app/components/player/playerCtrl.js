@@ -3,6 +3,8 @@ angular.module('audioPlayerApp').controller('playerController', [
 	'$log',
 	'$location',
 	'socket',
+	'$mdSidenav',
+	'$mdDialog',
 	'$',
 	'AUDIO',
 	'URL',
@@ -11,7 +13,9 @@ angular.module('audioPlayerApp').controller('playerController', [
 		$scope, 
 		$log, 
 		$location, 
-		socket, 
+		socket,
+		$mdSidenav,
+		$mdDialog,
 		$, 
 		AUDIO, 
 		URL, 
@@ -53,6 +57,8 @@ angular.module('audioPlayerApp').controller('playerController', [
 	}
 
 	$scope.play = function(trackId) {
+		$scope.playing = true;
+
 		if (typeof trackId !== null) {
 			//$('#trackList li').removeClass('playing');
 			//$('#trackList').find('li#' + trackId).addClass('playing');
@@ -64,12 +70,11 @@ angular.module('audioPlayerApp').controller('playerController', [
 			$log.log('caught' + e);
 		}
 
-		$scope.playButtonText = 'pause';
-
 		//seekSlider.slider('option', 'max', audio.duration);
 	}
 
 	$scope.pause = function() {
+		$scope.playing = false;
 		try {
 			AUDIO.pause();
 		} catch (e) {
@@ -96,6 +101,36 @@ angular.module('audioPlayerApp').controller('playerController', [
 	AUDIO.onended = function() {
 		$scope.startStream(++$scope.currentTrackId);
 	}
+
+	// sidenav stuff -- break out into own service...
+	$scope.isOpen = function(){return $mdSidenav('left').isOpen()};
+	function buildToggler(navID) {
+		return function() {
+		  // Component lookup should always be available since we are not using `ng-if`
+		  $mdSidenav(navID)
+			.toggle()
+			.then(function () {
+			  $log.debug("toggle " + navID + " is done");
+			});
+		};
+	  }
+	$scope.toggleLeft = buildToggler('left');
+
+	$scope.closeLeft = function () {
+		$mdSidenav('left').close()
+		.then(function () {$log.log('close left is done')});
+	}
+
+	$scope.navigateTo = function(to, event) {
+		$mdDialog.show(
+		  $mdDialog.alert()
+			.title('Navigating')
+			.textContent('Imagine being taken to ' + to)
+			.ariaLabel('Navigation demo')
+			.ok('Neat!')
+			.targetEvent(event)
+		);
+	  };
 
 	//-------------------------------
     // Methods called by DOM
@@ -125,19 +160,12 @@ angular.module('audioPlayerApp').controller('playerController', [
 		isAsideOpen = !isAsideOpen;
 	};
 
-	$scope.selectTrack = function(event) {
-		var thisTrackId = $(event.target).parent().attr('id');
-		$scope.currentTrackId = thisTrackId;
-
-		if ($(event.target).parent().hasClass('selected')) {
-			$(event.target).parent().removeClass('selected');
-		} else {
-			$(event.target).parent().addClass('selected');
-		}
+	$scope.selectTrack = function(id) {
+		$scope.currentTrackId = id;
 	};
 
-	$scope.playTrack = function(event) {
-		$scope.startStream($(event.target).parent().attr('id'));
+	$scope.playTrack = function(id) {
+		$scope.startStream(id);
 	};
 
 	$scope.playNextTrack = function(event) {
@@ -148,7 +176,8 @@ angular.module('audioPlayerApp').controller('playerController', [
 		$scope.startStream(--$scope.currentTrackId);
 	};
 
-	$scope.playToggle = function(event) {
+	$scope.playToggle = function() {
+
 		socket.emit('message', 'playStatus: ' + AUDIO.paused);
 		if (AUDIO.paused) {
 			$scope.play($scope.currentTrackId);
@@ -199,6 +228,7 @@ angular.module('audioPlayerApp').controller('playerController', [
     // Initialize
     //-------------------------------
 
+	$scope.playing = false;
 	$scope.playButtonText = 'play';
 	$scope.isAsideOpen = false;
 	$scope.currentTrackId = 0;

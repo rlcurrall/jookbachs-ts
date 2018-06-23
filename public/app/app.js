@@ -34,24 +34,24 @@ var app = angular.module('audioPlayerApp', [
 		//--------------------------------------------------------------------
 
 		// Default Theme
-		$mdThemingProvider
-			.theme('default')
-			.primaryPalette('grey', {
+		$mdThemingProvider.theme('default')
+			.primaryPalette('deep-orange',{
+				'default': '900'})
+				 .accentPalette('blue',{
+				'default': '800'})
+			.backgroundPalette('blue-grey', {
 				'default': '900'
-			})
-			.accentPalette('grey', {
-				'default': '700'
-			})
-			.backgroundPalette('grey').dark();
+			}).dark();
 		
 		// Panel Theme
 		$mdThemingProvider
 			.theme('panel')
-			.primaryPalette('indigo', {
-				'default': '900'
-			})
+			.primaryPalette('blue',{
+				'default': '800'})
+			.accentPalette('grey',{
+				'default': '700'})
 			.backgroundPalette('grey', {
-				'default': '400'
+				'default': '500'
 			});
 	}
 ])

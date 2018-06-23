@@ -1,22 +1,74 @@
-<div id='audioPlayer' ng-controller='playerController'>
-    
-    <header>
-        <h1>jsJookBachs</h1>
-        <button ng-click='logout($event)' id="logout">Logout</button>
-    </header>
+<div ng-controller='playerController'>
+    <div layout='column' ng-cloak>
+            <md-toolbar class='md-accent'>
+                <div class='md-toolbar-tools'>
+                    <md-button class='md-icon-button' aria-label='Settings' ng-click='toggleLeft()'>
+                        <i class='material-icons'>menu</i>
+                    </md-button>
+                    <h2>jsJookBachs</h2>
+                    <span flex></span>
+                    <md-button class='md-icon-button' aria-label='Settings' ng-click=''>
+                        <i class='material-icons'>more_vert</i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+        
+            <md-sidenav class='md-sidenav-left' md-component-id='left' md-diable-backdrop md-whiteframe='24'>
+                <md-toolbar>
+                    <div class='md-toolbar-tools'>
+                        <h2>MENU</h2>
+                        <span flex></span>
+                        <md-button class='md-icon-button' aria-label='Close Sidenav' ng-click='toggleLeft()'>
+                            <i class='material-icons'>close</i>
+                        </md-button>
+                    </div>
+                </md-toolbar>
+                <md-content layout-margin>
+                    <p>
+                        Navbar stuff...
+                    </p>
+                </md-content>
+            </md-sidenav>
+    </div>
 
-    <aside id='queue'>
-        <h2>Queue</h2>
-    </aside>
+    <main layout-fill layout-align='center center'>
+        <md-content class='music-container' layout='column'>
+            <md-list>
+                <md-list-item id='{{track.id}}' ng-click="selectTrack(track.id)" ng-dblclick='playTrack(track.id)' ng-repeat="track in trackList">
+                    <p> {{ track.path }} </p>
+                    <md-button ng-if='false' class='md-icon-button md-primary md-raised' aria-label='Play' ng-click=''>
+                        <i class='material-icons md-light'>play_arrow</i>
+                    </md-button>
+                    <md-button ng-if='false' class='md-icon-button md-primary md-raised' aria-label='Play' ng-click='playTrack(track.id)'>
+                        <i class='material-icons md-light'>pause</i>
+                    </md-button>
+                </md-list-item>
+            </md-list>
+        </md-content>
+    </main>
 
-    <ul id="trackList" class="noselect">
-        <li id="{{track.id}}" ng-click='selectTrack($event)' ng-dblclick='playTrack($event)'
-            ng-repeat="track in trackList">
-            <div class="trackPath" ng-bind="track.path"></div>
-            <span class="trackId" ng-bind="track.id"></span>
-        </li>
-    </ul>
+    <footer>
+        <md-toolbar>
+            <div class='controls'>
+                <div layout="row" layout-align="left center" flex>
+                    <md-icon-button class='md-icon-button md-secondary md-raised' aria-label='Previous' ng-click=''>
+                        <i class='material-icons md-48 md-light'>skip_previous</i>
+                    </md-icon-button>
+                    <md-icon-button ng-if='!playing' class='md-icon-button md-secondary md-raised' aria-label='Previous' ng-click='playToggle()'>
+                        <i class='material-icons md-48 md-light'>play_circle_outline</i>
+                    </md-icon-button>
+                    <md-icon-button ng-if='playing' class='md-icon-button md-secondary md-raised' aria-label='Previous' ng-click='playToggle()'>
+                            <i class='material-icons md-48 md-light'>pause_circle_outline</i>
+                        </md-icon-button>
+                    <md-icon-button class='md-icon-button md-secondary md-raised' aria-label='Previous' ng-click=''>
+                        <i class='material-icons md-48 md-light'>skip_next</i>
+                    </md-icon-button>
+                </div>
+            </div>
+        </md-toolbar>
+    </footer>
 
+    <!--
     <footer>
 
         <button ng-click='hideToggle($event)' id="hideButton">   ^   </button>
@@ -38,5 +90,6 @@
         <div class="clear"></div>
 
     </footer>
+    -->
 
 </div>

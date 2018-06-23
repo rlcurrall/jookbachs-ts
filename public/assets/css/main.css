@@ -2,7 +2,7 @@ html {
 	overflow: hidden;
 }
 body {
-	font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+	font-family: 'Roboto', 'Helvetica', 'Arial';
 	/*background: #030303;*/
 	margin: 0 0;
 }
@@ -19,12 +19,18 @@ body {
                       				   supported by Chrome and Opera */
 }
 
+body * {
+	font-family: 'Roboto', 'Helvetica', 'Arial';
+}
+
+
+
 header, footer {
-	background: #191919;
+	/* background: #191919; */
 	position: absolute;
 	width: 100%;
-	border-width: 1px;
-	border-color: #080808;
+	border-width: 0px;
+	/* border-color: #080808; */
 	z-index: 2;
 }
 header {
@@ -45,9 +51,11 @@ header #logout {
 }
 footer {
 	bottom: 0; left: 0;
-	height: 3em;
+	padding: 0 !important;
+	margin: 0 !important;
+	/* height: 3em; */
 	border-top-style: solid;
-	padding: 0.5em;
+	/* padding: 0.5em; */
 }
 
 #audioPlayer {
@@ -154,4 +162,28 @@ footer button, #seekSliderHandle {
 	background: #333;
 	z-index: 1;
 	padding: 0.5em;
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+}
+
+::-webkit-scrollbar-track {
+	background: #263238;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+.controls {
+	margin: auto 2em;
+}
+
+.selected {
+	background-color: blue;
 }
