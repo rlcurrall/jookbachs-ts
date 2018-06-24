@@ -1,8 +1,3 @@
-// get reference for jqLite
-//const $ = angular.element;
-
-// AngularJS constants cannot be intercepted by decorators
-// making them safer
 app.constant('$', angular.element);
 app.constant('AUDIO', document.createElement('audio'));
 app.constant('URL', {
