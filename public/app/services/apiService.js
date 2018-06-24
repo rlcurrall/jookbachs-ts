@@ -1,9 +1,12 @@
 app.factory('apiService', [
     '$http',
+    '$location',
     '$q',
-    function ApiService ($http, $q) {
+    function ApiService ($http, $location, $q) {
         return {
-
+            redirect: function (route) {
+                $location.path(route);
+            },
             httpGet: function (url, useCache) {
                 var doCache = (typeof useCache !== "undefined") ? useCache : false;
 

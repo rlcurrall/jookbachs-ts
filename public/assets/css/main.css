@@ -1,66 +1,52 @@
 html {
-	overflow: hidden;
+	/* overflow: hidden; */
 }
+
 body {
 	font-family: 'Roboto', 'Helvetica', 'Arial';
-	/*background: #030303;*/
 	margin: 0 0;
 }
+
 .clear {
 	clear: both;
 }
+
 .noselect {
-	-webkit-touch-callout: none; 	/* iOS Safari */
- 	-webkit-user-select: none; 		/* Safari */
-  	-khtml-user-select: none; 		/* Konqueror HTML */
-   	-moz-user-select: none; 		/* Firefox */
-	-ms-user-select: none; 			/* Internet Explorer/Edge */
-    user-select: none; 				/* Non-prefixed version, currently
-                      				   supported by Chrome and Opera */
+	-webkit-touch-callout: none;
+	/* iOS Safari */
+	-webkit-user-select: none;
+	/* Safari */
+	-khtml-user-select: none;
+	/* Konqueror HTML */
+	-moz-user-select: none;
+	/* Firefox */
+	-ms-user-select: none;
+	/* Internet Explorer/Edge */
+	user-select: none;
+	/* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
 body * {
 	font-family: 'Roboto', 'Helvetica', 'Arial';
 }
 
-
-
-header, footer {
-	/* background: #191919; */
-	position: absolute;
+.header, .footer {
 	width: 100%;
-	border-width: 0px;
-	/* border-color: #080808; */
-	z-index: 2;
-}
-header {
-	top: 0; left: 0;
-	height: 4em;
-	border-bottom-style: solid;
-}
-header h1 {
-	color: #999;
-	font-size: 2em;
-	margin-top: 0;
-	padding: 0.5em;
-	display: inline-block;
-}
-header #logout {
-	float: right;
-	clear: right;
-}
-footer {
-	bottom: 0; left: 0;
+	position: fixed;
+	left: 0;
 	padding: 0 !important;
 	margin: 0 !important;
-	/* height: 3em; */
-	border-top-style: solid;
-	/* padding: 0.5em; */
+	z-index: 2;
 }
 
-#audioPlayer {
-	/*display: none;*/
+.header {
+	top: 0;
 }
+
+.footer {
+	bottom: 0;
+}
+
 #seekSlider {
 	position: relative;
 	width: calc(100% - 22em);
@@ -74,7 +60,9 @@ footer {
 	height: 1em;
 	border-right: solid 5em #000;
 }
-footer button, #seekSliderHandle {
+
+footer button,
+#seekSliderHandle {
 	height: 3em;
 	background: #111;
 	border: solid 1px #000;
@@ -82,6 +70,7 @@ footer button, #seekSliderHandle {
 	outline: 0;
 	font-size: 1em;
 }
+
 #seekSliderHandle {
 	height: 2.88em;
 	position: absolute;
@@ -90,15 +79,6 @@ footer button, #seekSliderHandle {
 	margin-left: -1em;
 	text-align: center;
 	line-height: 2.88em;
-}
-
-
-
-#playButton {
-	width: 5em;
-}
-#nextTrackButton, #prevTrackButton {
-	width: 3em;
 }
 
 #trackList {
@@ -111,54 +91,16 @@ footer button, #seekSliderHandle {
 	height: calc(100% - 8em);
 	display: block;
 	position: absolute;
-	top: 4em; right: 0;
-}
-#trackList li {
-	background: #030303;
-	font-size: 0.85em;
-	color: #999;
-	cursor: pointer;
-	border-bottom: solid 1px #000;
-}
-#trackList li:nth-child(2n) {
-	background: #090909;
-}
-#trackList li:hover {
-	background: #131313;
-	color: #ccc;
-}
-#trackList li span.trackId {
-	display: none;
-}
-#trackList li.playing {
-	background: #354;
-	color: #ccc;
-}
-#trackList li.playing:hover {
-	background: #465;
-}
-#trackList li.selected {
-	background: #543;
-	color: #ccc;
-}
-#trackList li.selected:hover {
-	background: #654;
-}
-#trackList li.selected.playing {
-	background: #545;
-}
-#trackList li.selected.playing:hover {
-	background: #656;
-}
-#trackList li div.trackPath {
-	padding: 0.75em;
+	top: 4em;
+	right: 0;
 }
 
 #queue {
 	width: 15em;
 	height: calc(100% - 9em);
 	position: fixed;
-	bottom: 4em; left: 0;
+	bottom: 4em;
+	left: 0;
 	background: #333;
 	z-index: 1;
 	padding: 0.5em;
@@ -166,6 +108,7 @@ footer button, #seekSliderHandle {
 
 ::-webkit-scrollbar {
 	width: 10px;
+	margin: 3em 0;
 }
 
 ::-webkit-scrollbar-track {
