@@ -7,6 +7,7 @@ app.factory('apiService', [
             redirect: function (route) {
                 $location.path(route);
             },
+            
             httpGet: function (url, useCache) {
                 var doCache = (typeof useCache !== "undefined") ? useCache : false;
 

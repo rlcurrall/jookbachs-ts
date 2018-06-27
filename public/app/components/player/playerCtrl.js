@@ -1,7 +1,6 @@
 app.controller('playerController', [
 	'$scope',
 	'$log',
-	'$location',
 	'socket',
 	'$mdSidenav',
 	'AUDIO',
@@ -11,7 +10,6 @@ app.controller('playerController', [
 	function (
 		$scope,
 		$log,
-		$location,
 		socket,
 		$mdSidenav,
 		AUDIO,
@@ -71,6 +69,7 @@ app.controller('playerController', [
 			try {
 				AUDIO.play();
 				$scope.playing.value = true;
+				$log.log(AUDIO);
 			} catch (e) {
 				$log.log('caught' + e);
 			}
@@ -86,19 +85,16 @@ app.controller('playerController', [
 		}
 
 		$scope.setTrack = function (trackId) {
-			if (!AUDIO.paused) {
-				$log.log(AUDIO.paused); 
+			if (!AUDIO.paused) { 
 				AUDIO.pause();
-				$log.log(AUDIO.paused);
 			}
 			try {
 				AUDIO.src = URL.streamUrl + '?trackId=' + trackId;
 				$scope.playing.id = trackId;
-				AUDIO.load();
+				$log.log(AUDIO.audioTracks);
 			} catch (e) {
 				$log.log('caught' + e);
 			}
-			$log.log(AUDIO.duration);
 		}
 
 		AUDIO.addEventListener('loadmetadata', function () {
@@ -117,17 +113,6 @@ app.controller('playerController', [
 		//-------------------------------
 		// Methods called by DOM
 		//-------------------------------
-		$scope.logout = function (event) {
-			$log.log('logout');
-			$location.path('/login');
-		};
-
-		$scope.closeLeft = function () {
-			$mdSidenav('left').close()
-				.then(function () {
-					$log.log('close left is done')
-				});
-		}
 
 		$scope.toggleLeft = menuService.buildToggler('left');
 
@@ -180,8 +165,8 @@ app.controller('playerController', [
 		};
 
 		$scope.redirect = function (route) {
-			$log.log(route);
 			AUDIO.pause();
+			AUDIO.src = null;
 			playerService.redirect(route);
 		};
 
@@ -206,6 +191,5 @@ app.controller('playerController', [
 		};
 		$scope.isAsideOpen = false;
 		$scope.loadLibrary();
-
 	}
 ]);
