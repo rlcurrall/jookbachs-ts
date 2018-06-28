@@ -34,7 +34,11 @@ app.controller('playerController', [
 					$log.err(err);
 				}
 			});
-		})
+		});
+
+		socket.on('disconnect', function () {
+
+		});
 
 		//-------------------------------
 		// Methods
@@ -44,19 +48,18 @@ app.controller('playerController', [
 			playerService.getAllLibraryTracks()
 				.then(
 					function success(allTracks) {
-						$scope.setTrack(allTracks[0].id);
 						// Temporary mapper to get the last part of a file path
-						var test = allTracks.map(function (track) {
-							var tem = track.path.substr(track.path.lastIndexOf('\\') + 1);
+						var data = allTracks.map(function (track) {
+							var p = track.path.substr(track.path.lastIndexOf('\\') + 1);
 							var it = {
 								$$hashKey: track.$$hashKey,
 								id: track.id,
-								path: tem,
+								path: p,
 								title: track.title
 							}
 							return it;
 						});
-						$scope.trackList = test;
+						$scope.trackList = data;
 					},
 					function error(error) {
 						// may include better error handling later
@@ -68,8 +71,7 @@ app.controller('playerController', [
 		$scope.play = function (trackId) {
 			try {
 				AUDIO.play();
-				$scope.playing.value = true;
-				$log.log(AUDIO);
+				$scope.current.value = true;
 			} catch (e) {
 				$log.log('caught' + e);
 			}
@@ -78,7 +80,7 @@ app.controller('playerController', [
 		$scope.pause = function () {
 			try {
 				AUDIO.pause();
-				$scope.playing.value = false;
+				$scope.current.value = false;
 			} catch (e) {
 				$log.log('caught' + e);
 			}
@@ -90,16 +92,11 @@ app.controller('playerController', [
 			}
 			try {
 				AUDIO.src = URL.streamUrl + '?trackId=' + trackId;
-				$scope.playing.id = trackId;
-				$log.log(AUDIO.audioTracks);
+				$scope.current.id = trackId;
 			} catch (e) {
 				$log.log('caught' + e);
 			}
 		}
-
-		AUDIO.addEventListener('loadmetadata', function () {
-			$log.log('Playing ' + AUDIO.src + ' for: ' + AUDIO.duration + ' seconds.');
-		})
 
 		$scope.startStream = function (trackId) {
 			$scope.setTrack(trackId);
@@ -107,8 +104,29 @@ app.controller('playerController', [
 		}
 
 		AUDIO.onended = function () {
-			$scope.startStream(++$scope.playing.id);
+			$scope.startStream(++$scope.current.id);
 		}
+
+
+		//-----------------------------------------------------------------------
+
+		$scope.stopAudio = function () {
+			AUDIO.pause();
+			AUDIO.src = null;
+		}
+
+		$scope.toggleAudio = function () {
+
+		}
+
+		$scope.setTrackData = function () {
+
+		}
+
+		AUDIO.onloadeddata = function () {
+			$log.log(AUDIO.duration);
+			$scope.current.duration = AUDIO.duration;
+		};
 
 		//-------------------------------
 		// Methods called by DOM
@@ -121,16 +139,16 @@ app.controller('playerController', [
 		};
 
 		$scope.playNextTrack = function () {
-			$scope.startStream(++$scope.playing.id);
+			$scope.startStream(++$scope.current.id);
 		};
 
 		$scope.playPreviousTrack = function () {
-			$scope.startStream(--$scope.playing.id);
+			$scope.startStream(--$scope.current.id);
 		};
 
 		$scope.playToggle = function () {
 			if (AUDIO.paused) {
-				$scope.play($scope.playing.id);
+				$scope.play($scope.current.id);
 			} else {
 				$scope.pause();
 			}
@@ -165,8 +183,7 @@ app.controller('playerController', [
 		};
 
 		$scope.redirect = function (route) {
-			AUDIO.pause();
-			AUDIO.src = null;
+			$scope.stopAudio();
 			playerService.redirect(route);
 		};
 
@@ -185,8 +202,9 @@ app.controller('playerController', [
 			}
 		]
 
-		$scope.playing = {
+		$scope.current = {
 			id: null,
+			duration: null,
 			value: false
 		};
 		$scope.isAsideOpen = false;

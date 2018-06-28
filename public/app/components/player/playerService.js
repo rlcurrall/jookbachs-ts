@@ -3,7 +3,7 @@ app.factory('playerService', [
     'apiService',
     function PlayerService(URL, apiService) {
 
-        // DEFINES HTTP REQUESTS CALLED BY CONTROLLER
+        // DEFINES HTTP/ROUTING REQUESTS CALLED BY CONTROLLER
         return {
             redirect: function (route) {
                 apiService.redirect(route);

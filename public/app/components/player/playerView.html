@@ -66,8 +66,8 @@
                     </md-icon-button>
                     <md-icon-button class='md-icon-button md-secondary md-raised' aria-label='Play/Pause' ng-click='playToggle()'>
                         <!-- May replace in future with md-icon tag with custom icons -->
-                        <i ng-if='!playing.value' class='material-icons md-48 md-light'>play_circle_outline</i>
-                        <i ng-if='playing.value' class='material-icons md-48 md-light'>pause_circle_outline</i>
+                        <i ng-if='!current.value' class='material-icons md-48 md-light'>play_circle_outline</i>
+                        <i ng-if='current.value' class='material-icons md-48 md-light'>pause_circle_outline</i>
                     </md-icon-button>
                     <md-icon-button class='md-icon-button md-secondary md-raised' aria-label='Next' ng-click='playNextTrack()'>
                         <i class='material-icons md-48 md-light'>skip_next</i>
