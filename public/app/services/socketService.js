@@ -5,7 +5,7 @@
 app.factory('socket', [
     '$rootScope',
     function Socket ($rootScope) {
-        var socket = io.connect(URL.socketUrl);
+        var socket = io.connect($rootScope.URL.socketUrl);
 
         return {
             on: function (eventName, callback) {

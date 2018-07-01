@@ -1,20 +1,28 @@
 app.controller('loginController', [ 
+	'$rootScope',
 	'$scope', 
 	'$log',
 	'$http', 
 	'$location', 
-	function LoginController( $scope, $log, $http, $location) {
+	'$cookies',
+	function LoginController( $rootScope, $scope, $log, $http, $location, $cookies) {
 
 		$scope.sharedKey = '';
-		$scope.serverAddress = '';
+		$scope.serverAddress = $cookies.get('serverAddr');
     
 		//-----------------------------
 		// Methods
 		//-----------------------------
 		
 		$scope.login = function() {
-			$log.log($scope.sharedKey + '\n' + $scope.serverAddress);
+			$cookies.put('serverAddr', $scope.serverAddress);
 			$location.path('/player');
+
+			$rootScope.URL = {
+				streamUrl: 'https://' + $scope.serverAddress + ':8443/stream',
+				apiUrl: 'https://' + $scope.serverAddress + ':8443/api',
+				socketUrl: 'https://' + $scope.serverAddress + ':8443'
+			}
 
 			// get list of all tracks from the server 
 			/*

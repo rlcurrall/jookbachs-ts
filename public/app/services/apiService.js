@@ -20,6 +20,7 @@ app.factory('apiService', [
                         },
                         function error(errorData, responseCode) {
                             deferred.reject('ERROR: ' + errorData + '\nResponse Code: ' + responseCode);
+                            $location.path('/login');
                         }
                     );
                 return deferred.promise;

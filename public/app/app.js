@@ -124,7 +124,7 @@ var app = angular.module('audioPlayerApp', [
 				   .primaryPalette('customPrimary', {'default':'800'})
 				   .accentPalette('customAccent', {'default':'200'})
 				   .warnPalette('customWarn', {'default': 'A700'})
-				   .backgroundPalette('customBackground', {'default':'300'});
+				   .backgroundPalette('customBackground', {'default':'A400'});
 		}
 	])
 
@@ -133,5 +133,10 @@ var app = angular.module('audioPlayerApp', [
 		'$location',
 		function ($rootScope, $location) {
 			// stuff
+			$rootScope.URL = {
+				// streamUrl: 'https://localhost:8443/stream',
+				// apiUrl: 'https://localhost:8443/api',
+				// socketUrl: 'https://localhost:8443'
+			};
 		}
 	]);
