@@ -6,12 +6,14 @@ app.controller('loginController', [
 	function LoginController( $scope, $log, $http, $location) {
 
 		$scope.sharedKey = '';
+		$scope.serverAddress = '';
     
 		//-----------------------------
 		// Methods
 		//-----------------------------
 		
 		$scope.login = function() {
+			$log.log($scope.sharedKey + '\n' + $scope.serverAddress);
 			$location.path('/player');
 
 			// get list of all tracks from the server 
