@@ -22,23 +22,23 @@ app.controller('playerController', [
 		// Socket.IO
 		//-------------------------------
 
-		// socket.on('connect', function () {
-		// 	$log.log('connected');
+		socket.on('connect', function () {
+			$log.log('connected');
 
-		// 	var params = {
-		// 		'playerName': 'default'
-		// 	};
+			var params = {
+				'playerName': 'default'
+			};
 
-		// 	socket.emit('join', params, function (err) {
-		// 		if (err) {
-		// 			$log.err(err);
-		// 		}
-		// 	});
-		// });
+			socket.emit('join', params, function (err) {
+				if (err) {
+					$log.err(err);
+				}
+			});
+		});
 
-		// socket.on('disconnect', function () {
+		socket.on('disconnect', function () {
 
-		// });
+		});
 
 		//-------------------------------
 		// Methods
@@ -152,7 +152,7 @@ app.controller('playerController', [
 			} else {
 				$scope.pause();
 			}
-			// socket.emit('message', 'playStatus - paused: ' + AUDIO.paused);
+			socket.emit('message', 'playStatus - paused: ' + AUDIO.paused);
 		};
 
 		//-------------------------------

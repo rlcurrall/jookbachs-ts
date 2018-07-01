@@ -8,13 +8,6 @@
             </md-toolbar>
             <md-content class="md-padding form" layout="column">
                 <md-input-container class="md-block">
-                    <label>Server Address</label>
-                    <input type='username' name='address' ng-model='serverAddress' required='required' />
-                    <div ng-messages="loginForm.address.$error" role="alert">
-                        <div ng-message="required">This is required.</div>
-                    </div>
-                </md-input-container>
-                <md-input-container class="md-block">
                     <label>Shared Key</label>
                     <input type='password' name='key' ng-model='sharedKey' required='required' />
                     <div ng-messages="loginForm.key.$error" role="alert">

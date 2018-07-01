@@ -134,9 +134,9 @@ var app = angular.module('audioPlayerApp', [
 		function ($rootScope, $location) {
 			// stuff
 			$rootScope.URL = {
-				// streamUrl: 'https://localhost:8443/stream',
-				// apiUrl: 'https://localhost:8443/api',
-				// socketUrl: 'https://localhost:8443'
+				streamUrl: 'https://' + $location.host() + ':8443/stream',
+				apiUrl: 'https://' + $location.host() + ':8443/api',
+				socketUrl: 'https://' + $location.host() + ':8443'
 			};
 		}
 	]);
