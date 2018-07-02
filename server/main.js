@@ -98,7 +98,7 @@ api.use(bodyParser.json());
 //		 conventions
 //===========================
 api.get('/getlibrary', function(req, res, next) {
-	res.status(200).json(libraryPaths[0].getAllTracks());
+	res.status(200).json(libraries[0].getAllTracks());
 	next();
 });
 
