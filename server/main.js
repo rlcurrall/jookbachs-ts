@@ -17,6 +17,7 @@ const mongo = require('mongodb');
 // define path to location of public (webui) files
 const publicPath = path.join(__dirname, '..', '/public/');
 const rootPath = path.join(__dirname, '..', '/');
+const scriptPath = path.join(__dirname, '..', '/node_modules');
 
 const track = require(rootPath + '/server/model/track');
 const library = require(rootPath + '/server/model/library');
@@ -71,14 +72,19 @@ const expressApp = express();
 const webui = express.Router();
 const api = express.Router();
 const stream = express.Router();
+const scripts = express.Router();
 
 // connect the routers to their routes
 expressApp.use('/', webui);
 expressApp.use('/api', api);
 expressApp.use('/stream', stream);
+expressApp.use('/scripts', scripts);
 
 // set static root directory for webui router
 webui.use(express.static(publicPath));
+
+// Set static directories for JS scripts
+scripts.use(express.static(scriptPath));
 
 // have api read in
 api.use(bodyParser.urlencoded({
@@ -86,16 +92,19 @@ api.use(bodyParser.urlencoded({
 }));
 api.use(bodyParser.json());
 
-// get list of libraries
-api.get('/listLibraries', function(req, res, next) {
-
-
-
+//===========================
+// NOTE: I changed naming to
+//		 closer match RESTful
+//		 conventions
+//===========================
+api.get('/getlibrary', function(req, res, next) {
+	res.status(200).json(libraryPaths[0].getAllTracks());
 	next();
-
 });
 
 // list all tracks in the library
+//===============================
+// This Route is no longer used on the front end
 api.get('/listAllLibraryTracks', function(req, res, next) {
 	res.status(200).json(libraries[0].getAllTracks());
 	next();

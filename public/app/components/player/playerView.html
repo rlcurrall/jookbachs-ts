@@ -1,0 +1,102 @@
+<div ng-controller='playerController'>
+    <!-- Header Toolbar -->
+    <div class='header' layout='column' ng-cloak>
+        <md-toolbar class='md-accent'>
+            <div class='md-toolbar-tools'>
+                <md-button class='md-icon-button' aria-label='Settings' ng-click='toggleLeft()'>
+                    <i class='material-icons'>menu</i>
+                </md-button>
+                <h2>jsJookBachs</h2>
+                <span flex></span>
+                <md-menu md-position-mode="target-right target">
+                    <md-button aria-label="Open demo menu" class="md-icon-button" ng-click="$mdMenu.open($event)">
+                        <i class='material-icons'>more_vert</i>
+                    </md-button>
+                    <md-menu-content width="4">
+                        <md-menu-item ng-repeat="item in menu">
+                            <md-button ng-click="redirect(item.route)">
+                                <div layout="row" flex>
+                                    <p flex>{{item.name}}</p>
+                                </div>
+                            </md-button>
+                        </md-menu-item>
+                    </md-menu-content>
+                </md-menu>
+            </div>
+        </md-toolbar>
+    </div>
+    
+    <!-- Sidenav -->
+    <md-sidenav class='md-sidenav-left' md-component-id='left' md-diable-backdrop md-whiteframe='24'>
+            <md-toolbar>
+                <div class='md-toolbar-tools'>
+                    <h2>MENU</h2>
+                    <span flex></span>
+                    <md-button class='md-icon-button' aria-label='Close Sidenav' ng-click='toggleLeft()'>
+                        <i class='material-icons'>close</i>
+                    </md-button>
+                </div>
+            </md-toolbar>
+            <md-content layout-margin>
+                <p>
+                    Navbar stuff...
+                </p>
+            </md-content>
+        </md-sidenav>
+
+    <!-- Content Window -->
+    <div class='music-container' layout-fill layout-align='center center'>
+        <md-content layout='column'>
+            <md-list flex>
+                <md-list-item id='{{track.id}}' class='md-3-line' ng-click='playTrack(track.id)' ng-repeat="track in trackList">
+                    <div class='track-container'><p> {{ track.path }} </p></div>
+                    <md-divider></md-divider>
+                </md-list-item>
+            </md-list>
+        </md-content>
+    </div>
+
+    <!-- Control Panel -->
+    <div class='footer'>
+        <md-toolbar layout='row' layout-align='center center'>
+            <div class='controls'>
+                <div layout="row" layout-align="center center" flex>
+                    <md-icon-button class='md-icon-button md-secondary md-raised' aria-label='Previous' ng-click='playPreviousTrack()'>
+                        <i class='material-icons md-48 md-light'>skip_previous</i>
+                    </md-icon-button>
+                    <md-icon-button class='md-icon-button md-secondary md-raised' aria-label='Play/Pause' ng-click='playToggle()'>
+                        <!-- May replace in future with md-icon tag with custom icons -->
+                        <i ng-if='!current.value' class='material-icons md-48 md-light'>play_circle_outline</i>
+                        <i ng-if='current.value' class='material-icons md-48 md-light'>pause_circle_outline</i>
+                    </md-icon-button>
+                    <md-icon-button class='md-icon-button md-secondary md-raised' aria-label='Next' ng-click='playNextTrack()'>
+                        <i class='material-icons md-48 md-light'>skip_next</i>
+                    </md-icon-button>
+                </div>
+            </div>
+        </md-toolbar>
+    </div>
+
+    <!--
+
+    ------NOTE---------
+    This may be added back end by creating a small panel that appears above
+    the control panel... but will need to consider the height of the content
+    window since it is required to be defined so that scrolling is enabled.
+
+    <footer>
+
+        <div id="currentTrackInfo">
+            <p id="currentTrackName"></p>
+            <p id="currentTrackAlbum"></p>
+            <p id="currentTrackArtist"></p>
+        </div>
+
+        <div id="seekSlider">
+            <div id="seekSliderHandle" class="ui-slider-handle"></div>
+        </div>
+
+    </footer>
+    -->
+
+</div>

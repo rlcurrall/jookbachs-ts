@@ -1,0 +1,14 @@
+md-list-item {
+    min-height: 5em !important;
+}
+
+md-list {
+    padding: 0;
+}
+
+.music-container {
+    max-height: calc( 100vh - 7em);
+    position: relative;
+    margin: 3.5em auto;
+    overflow-y: overlay;
+}

@@ -1,0 +1,132 @@
+html {
+	/* overflow: hidden; */
+}
+
+body {
+	font-family: 'Roboto', 'Helvetica', 'Arial';
+	margin: 0 0;
+}
+
+.clear {
+	clear: both;
+}
+
+.noselect {
+	-webkit-touch-callout: none;
+	/* iOS Safari */
+	-webkit-user-select: none;
+	/* Safari */
+	-khtml-user-select: none;
+	/* Konqueror HTML */
+	-moz-user-select: none;
+	/* Firefox */
+	-ms-user-select: none;
+	/* Internet Explorer/Edge */
+	user-select: none;
+	/* Non-prefixed version, currently supported by Chrome and Opera */
+}
+
+body * {
+	font-family: 'Roboto', 'Helvetica', 'Arial';
+}
+
+.header, .footer {
+	width: 100%;
+	position: fixed;
+	left: 0;
+	padding: 0 !important;
+	margin: 0 !important;
+	z-index: 2;
+}
+
+.header {
+	top: 0;
+}
+
+.footer {
+	bottom: 0;
+}
+
+#seekSlider {
+	position: relative;
+	width: calc(100% - 22em);
+	float: right;
+	bottom: 2em;
+	right: 3em;
+	padding: 0;
+	margin: 0;
+	display: inline-block;
+	background: #000;
+	height: 1em;
+	border-right: solid 5em #000;
+}
+
+footer button,
+#seekSliderHandle {
+	height: 3em;
+	background: #111;
+	border: solid 1px #000;
+	color: #999;
+	outline: 0;
+	font-size: 1em;
+}
+
+#seekSliderHandle {
+	height: 2.88em;
+	position: absolute;
+	width: 8em;
+	top: -1em;
+	margin-left: -1em;
+	text-align: center;
+	line-height: 2.88em;
+}
+
+#trackList {
+	list-style-type: none;
+	z-index: 0;
+	float: right;
+	clear: right;
+	width: calc(100% - 16em);
+	overflow-y: scroll;
+	height: calc(100% - 8em);
+	display: block;
+	position: absolute;
+	top: 4em;
+	right: 0;
+}
+
+#queue {
+	width: 15em;
+	height: calc(100% - 9em);
+	position: fixed;
+	bottom: 4em;
+	left: 0;
+	background: #333;
+	z-index: 1;
+	padding: 0.5em;
+}
+
+::-webkit-scrollbar {
+	width: 10px;
+	margin: 3em 0;
+}
+
+::-webkit-scrollbar-track {
+	background: #263238;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #888;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+.controls {
+	margin: auto 2em;
+}
+
+.selected {
+	background-color: blue;
+}
