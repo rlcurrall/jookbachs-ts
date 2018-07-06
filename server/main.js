@@ -3,6 +3,7 @@
 // ===========================
 
 const https = require('https');
+const http = require('http');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
@@ -11,7 +12,6 @@ const bodyParser = require('body-parser');
 const socketIO = require('socket.io');
 const ss = require('socket.io-stream');
 const mongo = require('mongodb');
-//const http = require('http');
 //const os = require('os');
 //const redir = require('redirect-https');
 //const cluster = require('cluster');
@@ -165,9 +165,12 @@ stream.use(function(req, res, next) {
 
 });
 
-// initialize server to listen on specified port
-//var server = expressApp.listen(config.webPort);
-//http.createServer(greenlock.middleware(redir)).listen(config.webPort);
+
+var httpServer = http.createServer(function (req, res) {
+	res.writeHead(301, { "Location": `https://${req.headers.host}${req.url}`});
+	res.end();
+}).listen(config.httpPort);
+
 var tlsServer = https.createServer(tlsOptions, expressApp).listen(config.httpsPort);
 
 /**************************************************************************************************
