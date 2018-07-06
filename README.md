@@ -19,6 +19,7 @@ Personal music streaming / synchronization service
 	{
 		"serverName": "someNameHere",
 		"httpsPort": 8443,
+		"httpPort": 8080,
 		"tlsOptions": {
 			"crtPath": "path/to/certificateFile.crt",
 			"keyPath": "path/to/keyFile.key"

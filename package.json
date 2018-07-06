@@ -29,5 +29,8 @@
 	},
 	"scripts": {
 		"start": "node ."
+	},
+	"devDependencies": {
+		"electron": "^2.0.4"
 	}
 }
