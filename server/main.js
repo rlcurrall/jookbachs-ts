@@ -1,26 +1,33 @@
-// import modules
-//const http = require('http');
+// ===========================
+// IMPORT MODULES
+// ===========================
+
 const https = require('https');
 const url = require('url');
 const fs = require('fs');
 const path = require('path');
-//const os = require('os');
 const express = require('express');
 const bodyParser = require('body-parser');
 const socketIO = require('socket.io');
 const ss = require('socket.io-stream');
-//const redir = require('redirect-https');
 const mongo = require('mongodb');
+//const http = require('http');
+//const os = require('os');
+//const redir = require('redirect-https');
 //const cluster = require('cluster');
 //const Greenlock = require('greenlock');
+
+// ===========================
+// INITIALIZATION
+// ===========================
 
 // define path to location of public (webui) files
 const publicPath = path.join(__dirname, '..', '/public/');
 const rootPath = path.join(__dirname, '..', '/');
 const scriptPath = path.join(__dirname, '..', '/node_modules');
 
-const track = require(rootPath + '/server/model/track');
-const library = require(rootPath + '/server/model/library');
+const track = require(rootPath + '/server/models/track');
+const library = require(rootPath + '/server/models/library');
 
 // read in config/server.json
 const config = JSON.parse(fs.readFileSync('server/config/server.json', 'utf8'));
@@ -98,14 +105,6 @@ api.use(bodyParser.json());
 //		 conventions
 //===========================
 api.get('/getlibrary', function(req, res, next) {
-	res.status(200).json(libraries[0].getAllTracks());
-	next();
-});
-
-// list all tracks in the library
-//===============================
-// This Route is no longer used on the front end
-api.get('/listAllLibraryTracks', function(req, res, next) {
 	res.status(200).json(libraries[0].getAllTracks());
 	next();
 });

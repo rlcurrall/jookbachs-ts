@@ -87,9 +87,6 @@ app.controller('playerController', [
 		}
 
 		$scope.setTrack = function (trackId) {
-			if (!AUDIO.paused) { 
-				AUDIO.pause();
-			}
 			try {
 				AUDIO.src = $rootScope.URL.streamUrl + '?trackId=' + trackId;
 				$scope.current.id = trackId;
@@ -147,6 +144,9 @@ app.controller('playerController', [
 		};
 
 		$scope.playToggle = function () {
+			if ($scope.current.id == null) {
+				$scope.setTrack(0);
+			}
 			if (AUDIO.paused) {
 				$scope.play($scope.current.id);
 			} else {
