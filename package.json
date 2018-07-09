@@ -23,14 +23,16 @@
 		"cluster": "^0.7.7",
 		"express": "^4.15.3",
 		"mongodb": "^3.0.10",
+		"node-id3": "^0.1.5",
 		"socket.io": "^2.1.0",
 		"socket.io-stream": "^0.9.1",
 		"walk": "^2.3.13"
 	},
 	"scripts": {
-		"start": "node ."
+		"start": "cross-env NODE_PATH=\"./server/lib\" JSON_CONFIG=\"./server/config/server.json\" node ."
 	},
 	"devDependencies": {
+		"cross-env": "^5.2.0",
 		"electron": "^2.0.4"
 	}
 }

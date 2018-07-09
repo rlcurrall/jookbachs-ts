@@ -1,33 +1,39 @@
-// import modules
-const path = require('path');
-const jsmediatags = require("@mattbasta/jsmediatags");
+// function trackService (deps) {
+// 	let path;
+// 	let nodeID3;
 
+// 	if (!deps.path || !deps.nodeID3) {
+// 		throw new Error("[ TrackService ] Dependency Error: path and node-id3 are required")
+// 	}
+
+// 	path = deps.path;
+// 	nodeID3 = deps.nodeID3;
+
+// 	return {
+// 		track: 
+		
+		
+// 	}
+// }
+
+const path = require('path');
+const nodeID3 = require('node-id3');
 
 class track {
 
 	constructor(id, filepath, libraryId) {
 
+		// Read file ID3 tags
+		let tags = nodeID3.read(filepath);
+
 		this.id = id;
 		this.path = path.normalize(filepath);
-		this.title = null;
+		this.title = tags.title;
+		this.artist = tags.artist;
+		this.album = tags.album;
+		this.year = tags.year;
+		this.image = tags.image;
 		this.libraryId = libraryId;
-
-		// read file metadata
-		jsmediatags.read(this.path, {
-
-			onSuccess: function(tag) {
-				//console.log(tag.tags.title);
-				// outputs to console, but returns null every time
-				//return tag.tags.title;
-				this.title = tag.tags.title;
-			},
-
-			onError: function(error) {
-				//console.log(':(', error.type, error.info);
-			}
-
-		});
-
 	}
 
 	insertTrack(db, callback) {

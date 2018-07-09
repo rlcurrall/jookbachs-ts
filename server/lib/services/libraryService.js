@@ -1,16 +1,39 @@
-// import modules
+// function libraryService (deps) {
+// 	let path;
+// 	let walk;
+// 	let nodeID3;
+// 	let track
+	
+// 	let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];	
+
+// 	if (!deps.path) {
+// 		// NOTE: 	cannot use error at moment, on start server will return '/Music' for deps then return actual deps
+// 		// 			need to resolve this issue before adding in error handling
+// 		//throw new Error("[ LibraryService ] Dependency Error: path, walk, node-id3, and models/track are required")
+// 	}
+
+// 	path = deps.path;
+// 	walk = deps.walk;
+// 	nodeID3 = deps.nodeID3;
+// 	track = deps.track;
+
+// 	return {
+		
+// 	}
+// }
+
 const path = require('path');
 const walk = require('walk');
-const mongo = require('mongodb');
-const track = require('./track');
+const nodeID3 = require('node-id3');
+const track = require('services/trackService');
 
-var fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
+let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];	
 
 class library {
 
-	constructor(dirpath) {
-
-		this.path = path.normalize(dirpath);
+	constructor(dirPath) {
+		
+		this.path = path.normalize(dirPath);
 		this.isLoaded = false;
 		var tracksList = [];
 		var count = 0;
@@ -45,7 +68,6 @@ class library {
 
 		this.tracksList = tracksList;
 		this.currentTrackIndex = 0;
-
 	}
 
 	getAllTracks() {
