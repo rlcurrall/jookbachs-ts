@@ -3,7 +3,7 @@
 // 	let walk;
 // 	let nodeID3;
 // 	let track
-	
+
 // 	let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];	
 
 // 	if (!deps.path) {
@@ -18,7 +18,7 @@
 // 	track = deps.track;
 
 // 	return {
-		
+
 // 	}
 // }
 
@@ -27,25 +27,27 @@ const walk = require('walk');
 const nodeID3 = require('node-id3');
 const track = require('services/trackService');
 
-let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];	
+let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
 
 class library {
 
 	constructor(dirPath) {
-		
+
 		this.path = path.normalize(dirPath);
 		this.isLoaded = false;
 		var tracksList = [];
 		var count = 0;
 
 		// setup walker for music library directory
-		var walker  = walk.walk(this.path, { followLinks: false });
+		var walker = walk.walk(this.path, {
+			followLinks: false
+		});
 
-		walker.on('file', function(root, stat, next) {
+		walker.on('file', function (root, stat, next) {
 
 			// instantiate new track object
 			let newTrack = new track(count, root + path.sep + stat.name);
-			let included = fileTypeInclusions.find(function(element) {
+			let included = fileTypeInclusions.find(function (element) {
 				return element === path.extname(newTrack.path);
 			});
 			let hidden = path.basename(newTrack.path).substr(0, 1) === '.';
@@ -60,7 +62,7 @@ class library {
 
 		});
 
-		walker.on('end', function() {
+		walker.on('end', function () {
 			//console.log(tracksList);
 			//tracksList.reverse();
 			this.isLoaded = true;

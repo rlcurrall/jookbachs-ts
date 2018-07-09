@@ -21,8 +21,13 @@ const track = require('services/trackService');
 const library = require('services/libraryService');
 console.log(process.env.JSON_CONFIG);
 const libraries = require('repos/libraryRepo.js');
-const apiRouter = require('controllers/apiCtrl')({ bodyParser: bodyParser });
-const streamRouter = require('controllers/streamCtrl')({ fs: fs, url: url});
+const apiRouter = require('controllers/apiCtrl')({
+	bodyParser: bodyParser
+});
+const streamRouter = require('controllers/streamCtrl')({
+	fs: fs,
+	url: url
+});
 
 // ===========================
 // INITIALIZATION
@@ -45,7 +50,7 @@ const tlsOptions = {
 var dbURL = "mongodb://" + config.db.host + ":" + config.db.port + "/";
 var dbInitURL = dbURL + config.db.name;
 
-MongoClient.connect(dbInitURL, function(err, db) {
+MongoClient.connect(dbInitURL, function (err, db) {
 
 	if (err) {
 		console.log('unable to connect to database: ' + dbURL);
@@ -94,7 +99,9 @@ apiRouter.assignRoutes(api);
 streamRouter.assignRoutes(stream);
 
 var httpServer = http.createServer(function (req, res) {
-	res.writeHead(301, { "Location": `https://${req.headers.host}${req.url}`});
+	res.writeHead(301, {
+		"Location": `https://${req.headers.host}${req.url}`
+	});
 	res.end();
 }).listen(config.httpPort);
 
@@ -107,21 +114,21 @@ var tlsServer = https.createServer(tlsOptions, expressApp).listen(config.httpsPo
 // initialize socket.io
 var io = socketIO.listen(tlsServer);
 
-io.on('connect', function(socket) {
+io.on('connect', function (socket) {
 
 	console.log('connected');
 
-	socket.on('join', function(params, callback) {
+	socket.on('join', function (params, callback) {
 
 		socket.join(params.playerName);
 
 	});
 
-	socket.on('message', function(msg) {
+	socket.on('message', function (msg) {
 		console.log('message: ' + msg);
 	});
 
-	socket.on('disconnect', function() {
+	socket.on('disconnect', function () {
 		console.log('disconnected');
 	});
 

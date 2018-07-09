@@ -191,8 +191,7 @@ app.controller('playerController', [
 		// Initialize
 		//-------------------------------
 
-		$scope.menu = [
-			{
+		$scope.menu = [{
 				name: 'Account',
 				route: '/account'
 			},

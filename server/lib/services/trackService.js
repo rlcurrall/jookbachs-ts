@@ -11,8 +11,8 @@
 
 // 	return {
 // 		track: 
-		
-		
+
+
 // 	}
 // }
 
@@ -42,7 +42,9 @@ class track {
 		var collection = db.collection('tracks');
 
 		// Insert some documents
-		collection.insertOne({'path': this.path}, function(err, result) {
+		collection.insertOne({
+			'path': this.path
+		}, function (err, result) {
 
 			if (err) throw err;
 
@@ -57,7 +59,7 @@ class track {
 		var collection = db.collection('tracks');
 
 		// Insert some documents
-		collection.find({}).toArray(function(err, result) {
+		collection.find({}).toArray(function (err, result) {
 
 			if (err) throw err;
 

@@ -10,7 +10,7 @@ const config = JSON.parse(fs.readFileSync('server/config/server.json', 'utf8'));
 
 // create new library objects for all elements in config
 var libraries = [];
-config.libraryPaths.forEach(function(libraryPath) {
+config.libraryPaths.forEach(function (libraryPath) {
     libraries.push(new library(libraryPath));
 });
 
