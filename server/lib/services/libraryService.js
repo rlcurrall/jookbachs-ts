@@ -3,19 +3,23 @@
  * @param {*} deps 
  */
 function libraryService(deps) {
+	let Logger;
 	let path;
 	let walk;
 	let track
 
-	let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
+	Logger = deps.logger;
 
 	if (!deps.path || !deps.walk || !deps.track) {
-		throw new Error("[ LibraryService ] Missing Dependency: path, walk, node-id3, and models/track are required")
+        Logger.log({label:'DbService', level: 'error', message: `Missing Dependency: path, walk, and track are required!`});
+        // Add error handling...
 	}
 
 	path = deps.path;
 	walk = deps.walk;
 	track = deps.track;
+	
+	let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
 
 	/**
 	 * 

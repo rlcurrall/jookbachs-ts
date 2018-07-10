@@ -3,14 +3,18 @@
  * @param {*} deps 
  */
 function expressService(deps) {
+    let Logger;
     let express;
     let webuiRouter;
     let scriptsRouter;
     let apiRouter;
     let streamRouter;
+    
+    Logger = deps.Logger;
 
     if (!deps.express) {
-        throw new Error("[ ExpressService ] Missing Dependency: express is required")
+        Logger.log({label:'DbService', level: 'error', message: `Missing Dependency: express is required!`});
+        // Add error handling...
     }
 
     express = deps.express;

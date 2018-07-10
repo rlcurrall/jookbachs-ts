@@ -3,15 +3,18 @@
  * @param {*} deps 
  */
 function serverFactory(deps) {
-
+    let Logger;
     let fs;
     let http;
     let https;
     let config;
     let socketService;
 
+    Logger = deps.Logger;
+    
     if (!deps.fs || !deps.http || !deps.https || !deps.config) {
-        throw new Error('[ ServerFactory ] Missing Dependency: fs, http, https, config, and socketService are required');
+        Logger.log({label:'DbService', level: 'error', message: `Missing Dependency: Logger, fs, http, https, config, and socketService are required!`});
+        // Add error handling...
     }
 
     fs = deps.fs;

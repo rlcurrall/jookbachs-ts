@@ -3,6 +3,7 @@
  * @param {*} deps 
  */
 function socketService(deps) {
+    let Logger = deps.Logger;
     let socketIO;
 
     if (!deps.socketIO) {
@@ -21,7 +22,8 @@ function socketService(deps) {
 
         io.on('connect', function (socket) {
 
-            console.log('[ SocketService ]\tconnected');
+            Logger.log({label:'SocketService', level: 'info', message: 'Socket connected'});
+            // console.log('[ SocketService ]\tconnected');
 
             socket.on('join', function (params, callback) {
 
@@ -30,11 +32,13 @@ function socketService(deps) {
             });
 
             socket.on('message', function (msg) {
-                console.log('[ SocketService ]/tmessage: ' + msg);
+                Logger.log({label:'SocketService', level: 'info', message: `Message; ${msg}`});
+                // console.log('[ SocketService ]/tmessage: ' + msg);
             });
 
             socket.on('disconnect', function () {
-                console.log('[ SocketService ]\tdisconnected');
+                Logger.log({label:'SocketService', level: 'info', message: 'Socket disconnected'});
+                // console.log('[ SocketService ]\tdisconnected');
             });
 
         });

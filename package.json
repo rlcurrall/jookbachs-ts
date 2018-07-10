@@ -24,12 +24,12 @@
 		"cross-env": "^5.2.0",
 		"express": "^4.15.3",
 		"hoek": "^4.2.1",
-		"log4js": "^2.10.0",
 		"mongodb": "^3.0.10",
 		"node-id3": "^0.1.5",
 		"socket.io": "^2.1.0",
 		"socket.io-stream": "^0.9.1",
-		"walk": "^2.3.13"
+		"walk": "^2.3.13",
+		"winston": "^3.0.0"
 	},
 	"scripts": {
 		"start": "npm run -s echo-start && npm run -s echo-sep && npm run -s start-script",

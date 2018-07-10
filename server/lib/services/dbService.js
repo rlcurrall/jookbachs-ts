@@ -4,11 +4,15 @@
  */
 function dbService(deps) {
 
+    let Logger;
     let MongoClient;
     let config;
 
-    if (!deps.MongoClient || !deps.config) {
-        throw new Error('[ DbService ] Missing Dependency: MongoClient and config are required');
+    Logger = deps.Logger;
+
+    if (!deps.Logger || !deps.MongoClient || !deps.config) {
+        Logger.log({label:'DbService', level: 'error', message: `Missing Dependency: Logger, MongoClient, and config are required!`});
+        // Add error handling...
     }
 
     MongoClient = deps.MongoClient;
@@ -26,11 +30,10 @@ function dbService(deps) {
         MongoClient.connect(dbURL, function (err, db) {
 
             if (err) {
-                console.log('[ DbService ]\t\tError: unable to connect to database: ' + dbURL);
-                console.log(err);
+                Logger.log({label:'DbService', level: 'error', message: `Unable to connect to database - ${dbURL}\n${err}`});
             }
 
-            console.log("[ DbService ]\t\tDatabase connected/created!");
+            Logger.log({label:'DbService', level:'info', message: 'Database connected/created!'});
 
             _db = db;
 
