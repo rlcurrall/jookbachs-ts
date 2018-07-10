@@ -5,20 +5,16 @@
 function libraryService(deps) {
 	let path;
 	let walk;
-	let nodeID3;
 	let track
 
 	let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
 
-	if (!deps.path) {
-		// NOTE: 	cannot use error at moment, on start server will return '/Music' for deps then return actual deps
-		// 			need to resolve this issue before adding in error handling
-		//throw new Error("[ LibraryService ] Dependency Error: path, walk, node-id3, and models/track are required")
+	if (!deps.path || !deps.walk || !deps.track) {
+		throw new Error("[ LibraryService ] Missing Dependency: path, walk, node-id3, and models/track are required")
 	}
 
 	path = deps.path;
 	walk = deps.walk;
-	nodeID3 = deps.nodeID3;
 	track = deps.track;
 
 	/**
@@ -86,14 +82,3 @@ function libraryService(deps) {
 }
 
 module.exports = libraryService;
-
-// const path = require('path');
-// const walk = require('walk');
-// const nodeID3 = require('node-id3');
-// const track = require('services/trackService');
-
-// let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
-
-
-
-// module.exports = library;

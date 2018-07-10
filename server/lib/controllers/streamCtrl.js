@@ -9,7 +9,7 @@ function streamRouter(deps) {
     let libraries;
 
     if (!deps.fs || !deps.url || !deps.libraries) {
-        throw new Error('[ streamCtrl ] Dependency Error: fs and url are required');
+        throw new Error('[ streamCtrl ] Missing Dependency: fs and url are required');
     }
 
     fs = deps.fs;

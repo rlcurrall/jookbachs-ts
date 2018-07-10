@@ -29,7 +29,10 @@
 		"walk": "^2.3.13"
 	},
 	"scripts": {
-		"start": "cross-env NODE_PATH=\"./server/lib\" JSON_CONFIG=\"./server/config/server.json\" node ."
+		"start": "npm run -s echo-start && npm run -s echo-sep && npm run -s start-script",
+		"echo-start": "echo Starting JookBachs",
+		"echo-sep": "echo --------------------------",
+		"start-script": "cross-env NODE_PATH=\"./server/lib\" JSON_CONFIG=\"./server/config/server.json\" node ."
 	},
 	"devDependencies": {
 		"cross-env": "^5.2.0",

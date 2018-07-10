@@ -8,7 +8,7 @@ function apiRouter(deps) {
 	let libraries;
 
 	if (!deps.bodyParser || !deps.libraries) {
-		throw new Error('[ apiCtrl ] Dependency Error: bodyParser is required');
+		throw new Error('[ apiCtrl ] Missing Dependency: bodyParser and libraries are required');
 	}
 
 	bodyParser = deps.bodyParser;
