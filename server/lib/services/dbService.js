@@ -26,11 +26,11 @@ function dbService(deps) {
         MongoClient.connect(dbURL, function (err, db) {
 
             if (err) {
-                console.log('unable to connect to database: ' + dbURL);
+                console.log('[ DbService ]\t\tError: unable to connect to database: ' + dbURL);
                 console.log(err);
             }
 
-            console.log("Database connected/created!");
+            console.log("[ DbService ]\t\tDatabase connected/created!");
 
             _db = db;
 

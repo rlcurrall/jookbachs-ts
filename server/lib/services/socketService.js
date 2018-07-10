@@ -21,7 +21,7 @@ function socketService(deps) {
 
         io.on('connect', function (socket) {
 
-            console.log('connected');
+            console.log('[ SocketService ]\tconnected');
 
             socket.on('join', function (params, callback) {
 
@@ -30,11 +30,11 @@ function socketService(deps) {
             });
 
             socket.on('message', function (msg) {
-                console.log('message: ' + msg);
+                console.log('[ SocketService ]/tmessage: ' + msg);
             });
 
             socket.on('disconnect', function () {
-                console.log('disconnected');
+                console.log('[ SocketService ]\tdisconnected');
             });
 
         });
