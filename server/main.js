@@ -14,19 +14,40 @@ const path = require('path');
 const walk = require('walk');
 const nodeID3 = require('node-id3');
 
+const config = JSON.parse(fs.readFileSync(process.env.JSON_CONFIG, 'utf8'));
+
 // ===========================
 // DEPENDENCY INJECTION
 // ===========================
-const track = require('services/trackService');
-const library = require('services/libraryService');
+const track = require('services/trackService')({
+	path: path,
+	nodeID3: nodeID3
+}).track;
+
+const library = require('services/libraryService')({
+	path: path,
+	walk: walk,
+	nodeID3: nodeID3,
+	track: track
+}).library;
+
+const libraries = require('repos/libraryRepo.js')({
+	fs: fs,
+	config: config,
+	track: track,
+	library: library
+}).libraries;
+
 console.log(process.env.JSON_CONFIG);
-const libraries = require('repos/libraryRepo.js');
 const apiRouter = require('controllers/apiCtrl')({
-	bodyParser: bodyParser
+	bodyParser: bodyParser,
+	libraries: libraries
 });
+
 const streamRouter = require('controllers/streamCtrl')({
 	fs: fs,
-	url: url
+	url: url,
+	libraries: libraries
 });
 
 // ===========================
@@ -36,10 +57,6 @@ const streamRouter = require('controllers/streamCtrl')({
 // define path to location of public (webui) files
 const publicPath = path.join(__dirname, '..', '/public/');
 const scriptPath = path.join(__dirname, '..', '/node_modules');
-
-
-// read in config/server.json
-const config = JSON.parse(fs.readFileSync(process.env.JSON_CONFIG, 'utf8'));
 
 // TLS options
 const tlsOptions = {

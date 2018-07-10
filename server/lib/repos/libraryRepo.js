@@ -1,17 +1,26 @@
-// ===========================
-// IMPORT MODULES
-// ===========================
-const fs = require('fs');
-const track = require('services/trackService');
-const library = require('services/libraryService');
+function libraryRepo (deps) {
+    let fs;
+    let config;
+    let track;
+    let library;
+    let libraries = [];
 
-// read in config/server.json
-const config = JSON.parse(fs.readFileSync('server/config/server.json', 'utf8'));
+	if (!deps.fs || !deps.config || !deps.track || !deps.library) {
+		throw new Error("[ LibraryRepo ] Dependency Error: fs, track, and library are required")
+	}
 
-// create new library objects for all elements in config
-var libraries = [];
-config.libraryPaths.forEach(function (libraryPath) {
-    libraries.push(new library(libraryPath));
-});
+    fs = deps.fs;
+    config = deps.config;
+    track = deps.track;
+    library = deps.library;
 
-module.exports = libraries;
+    config.libraryPaths.forEach(function (libraryPath) {
+        libraries.push(new library(libraryPath));
+    });
+
+	return {
+        libraries: libraries
+	}
+}
+
+module.exports = libraryRepo;
