@@ -1,6 +1,6 @@
-// ===========================
-// IMPORT MODULES
-// ===========================
+// ================================================================================================
+// IMPORT MODULES & CONFIG
+// ================================================================================================
 const url = require('url');
 const http = require('http');
 const https = require('https');
@@ -13,12 +13,11 @@ const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
 const nodeID3 = require('node-id3');
-
 const config = JSON.parse(fs.readFileSync(process.env.JSON_CONFIG, 'utf8'));
 
-// ===========================
+// ================================================================================================
 // DEPENDENCY INJECTION
-// ===========================
+// ================================================================================================
 const track = require('services/trackService')({
 	path: path,
 	nodeID3: nodeID3
@@ -38,7 +37,6 @@ const libraries = require('repos/libraryRepo.js')({
 	library: library
 }).libraries;
 
-console.log(process.env.JSON_CONFIG);
 const apiRouter = require('controllers/apiCtrl')({
 	bodyParser: bodyParser,
 	libraries: libraries
@@ -50,9 +48,9 @@ const streamRouter = require('controllers/streamCtrl')({
 	libraries: libraries
 });
 
-// ===========================
+// ================================================================================================
 // INITIALIZATION
-// ===========================
+// ================================================================================================
 
 // define path to location of public (webui) files
 const publicPath = path.join(__dirname, '..', '/public/');
@@ -88,9 +86,9 @@ MongoClient.connect(dbInitURL, function (err, db) {
 
 });
 
-/**************************************************************************************************
-	Express
-**************************************************************************************************/
+// ================================================================================================
+// Express
+// ================================================================================================
 
 // initialize express
 const expressApp = express();
@@ -124,9 +122,10 @@ var httpServer = http.createServer(function (req, res) {
 
 var tlsServer = https.createServer(tlsOptions, expressApp).listen(config.httpsPort);
 
-/**************************************************************************************************
-	Socket.IO
-**************************************************************************************************/
+// ================================================================================================
+// Socket.IO
+// ================================================================================================
+
 
 // initialize socket.io
 var io = socketIO.listen(tlsServer);
