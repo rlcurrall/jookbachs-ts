@@ -13,6 +13,7 @@ const socketIO = require('socket.io');
 const ss = require('socket.io-stream');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
@@ -29,33 +30,29 @@ config.appDir = path.join(__dirname, '..'); // update config to have root dir of
 
 // #region DI
 
+const {ShutdownManager} = require('utils/ShutdownManager')({ 
+	Logger: Logger, 
+	readline: readline 
+});
+
 const dbService = require('services/dbService')({
 	Logger: Logger,
 	MongoClient: MongoClient,
 	config: config
 });
 
-const socketService = require('services/socketService')({
+const {Socket} = require('services/socketService')({
 	Logger: Logger,
 	socketIO: socketIO
 });
 
-const serverFactory = require('services/serverFactory')({
-	Logger: Logger,
-	fs: fs,
-	http: http,
-	https: https,
-	config: config,
-	socketService: socketService
-})
-
-const { Track } = require('models/trackService')({
+const { Track } = require('models/trackModel')({
 	Logger: Logger,
 	path: path,
 	nodeID3: nodeID3
 });
 
-const { Library } = require('models/libraryService')({
+const { Library } = require('models/libraryModel')({
 	Logger: Logger,
 	path: path,
 	walk: walk,
@@ -97,7 +94,7 @@ const scriptsRouter = require('routers/scriptsRouter.js')({
 	config: config
 });
 
-const expressService = require('services/expressService')({
+const {ExpressApp} = require('services/expressService')({
 	Logger: Logger,
 	express: express,
 	webuiRouter: webuiRouter,
@@ -105,6 +102,16 @@ const expressService = require('services/expressService')({
 	apiRouter: apiRouter,
 	streamRouter: streamRouter
 });
+
+const {Server} = require('services/serverFactory')({
+	Logger: Logger,
+	fs: fs,
+	http: http,
+	https: https,
+	config: config,
+	Socket: Socket,
+	ExpressApp: ExpressApp
+})
 
 // #endregion
 
@@ -115,17 +122,12 @@ const expressService = require('services/expressService')({
 // Initialize DB
 dbService.initDB();
 
-// Initialize Express App
-const expressApp = expressService.createApp();
-
 // Initiallize Server
-serverFactory.createServer(expressApp);
+// serverFactory.createServer();
+const serverBndl = new Server();
 
 // ================================================================================================
 // SHUTDOWN
 // ================================================================================================
 
-const readline = require('readline');
-const {ShutdownManager} = require('utils/ShutdownManager')({ Logger: Logger, readline: readline });
-
-let test = new ShutdownManager();
+const SDM = new ShutdownManager();

@@ -3,14 +3,16 @@
  * @param {*} deps 
  */
 function serverFactory(deps) {
-    let Logger;
+
+    // #region Dependency setup
+
+    let Logger = deps.Logger;
     let fs;
     let http;
     let https;
     let config;
-    let socketService;
-
-    Logger = deps.Logger;
+    let Socket;
+    let ExpressApp;
     
     if (!deps.fs || !deps.http || !deps.https || !deps.config) {
         Logger.log({label:'DbService', level: 'error', message: `Missing Dependency: Logger, fs, http, https, config, and socketService are required!`});
@@ -21,37 +23,44 @@ function serverFactory(deps) {
     http = deps.http;
     https = deps.https;
     config = deps.config;
-    socketService = deps.socketService;
+    Socket = deps.Socket;
+    ExpressApp = deps.ExpressApp;
 
-    // TLS options
-    const tlsOptions = {
-        key: fs.readFileSync(config.tlsOptions.keyPath),
-        cert: fs.readFileSync(config.tlsOptions.crtPath)
-    };
+    // #endregion
 
-    /**
-     * 
-     * @param {*} expressApp 
-     */
-    function createServer(expressApp) {
+    class Server {
+        constructor() {
+            // TLS options
+            const tlsOptions = {
+                key: fs.readFileSync(config.tlsOptions.keyPath),
+                cert: fs.readFileSync(config.tlsOptions.crtPath)
+            };
 
-        // HTTP Server (redirect to https)
-        let httpServer = http.createServer(function (req, res) {
-            res.writeHead(301, {
-                "Location": `https://${req.headers.host}${req.url}`
-            });
-            res.end();
-        }).listen(config.httpPort);
+            this.expressApp = new ExpressApp().app;
+            this.httpServer = http.createServer(function (req, res) {
+                res.writeHead(301, {
+                    "Location": `https://${req.headers.host}${req.url}`
+                });
+                res.end();
+            }).listen(config.httpPort);
+    
+            // HTTPS Server
+            this.tlsServer = https.createServer(tlsOptions, this.expressApp).listen(config.httpsPort);
+    
+            // Socket on HTTPS Server
+            this.socket = new Socket(this.tlsServer);
 
-        // HTTPS Server
-        let tlsServer = https.createServer(tlsOptions, expressApp).listen(config.httpsPort);
+        }
 
-        // Socket on HTTPS Server
-        socketService.init(tlsServer);
+        closeServer() {
+            this.httpServer.close();
+            this.tlsServer.close();
+            this.socket.closeSockets();
+        }
     }
 
     return {
-        createServer: createServer
+        Server: Server
     }
 }
 

@@ -2,7 +2,7 @@
  * 
  * @param {*} deps 
  */
-function libraryService(deps) {
+function libraryModel(deps) {
 	let Logger;
 	let path;
 	let walk;
@@ -85,4 +85,4 @@ function libraryService(deps) {
 	}
 }
 
-module.exports = libraryService;
+module.exports = libraryModel;

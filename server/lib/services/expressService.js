@@ -3,6 +3,9 @@
  * @param {*} deps 
  */
 function expressService(deps) {
+
+    // #region Dependency setup
+
     let Logger;
     let express;
     let webuiRouter;
@@ -23,39 +26,34 @@ function expressService(deps) {
     apiRouter = deps.apiRouter;
     streamRouter = deps.streamRouter;
 
-    /**
-     * 
-     */
-    function createApp() {
-        app = express();
-        setRoutes(app);
-
-        return app;
-    }
+    // #endregion
 
     /**
      * 
-     * @param {*} app 
      */
-    function setRoutes(app) {
-        const webui = express.Router();
-        const api = express.Router();
-        const stream = express.Router();
-        const scripts = express.Router();
+    class ExpressApp {
+        constructor() {
+            this.app = express();
 
-        app.use('/', webui);
-        app.use('/api', api);
-        app.use('/stream', stream);
-        app.use('/scripts', scripts);
+            const webui = express.Router();
+            const api = express.Router();
+            const stream = express.Router();
+            const scripts = express.Router();
 
-        webuiRouter.assignRoutes(webui);
-        apiRouter.assignRoutes(api);
-        streamRouter.assignRoutes(stream);
-        scriptsRouter.assignRoutes(scripts);
+            this.app.use('/', webui);
+            this.app.use('/api', api);
+            this.app.use('/stream', stream);
+            this.app.use('/scripts', scripts);
+
+            webuiRouter.assignRoutes(webui);
+            apiRouter.assignRoutes(api);
+            streamRouter.assignRoutes(stream);
+            scriptsRouter.assignRoutes(scripts);
+        }
     }
 
     return {
-        createApp: createApp
+        ExpressApp: ExpressApp
     }
 }
 

@@ -4,7 +4,7 @@
  * 
  * @param {object} deps 
  */
-function trackService(deps) {
+function trackModel(deps) {
 	let path;
 	let nodeID3;
 
@@ -93,4 +93,4 @@ function trackService(deps) {
 	}
 }
 
-module.exports = trackService;
+module.exports = trackModel;

@@ -75,11 +75,12 @@ const Logger = createLogger({
         })
     ],
     exceptionHandlers: [
+        new transports.Console(),
         new transports.File({
             filename: 'server/logs/exceptions.log'
         })
     ],
-    exitOnError: false
+    exitOnError: true
 })
 
 module.exports = Logger;

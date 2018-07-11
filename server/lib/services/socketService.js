@@ -3,45 +3,54 @@
  * @param {*} deps 
  */
 function socketService(deps) {
+
+    // #region Dependency setup
+
     let Logger = deps.Logger;
     let socketIO;
 
     if (!deps.socketIO) {
         throw new Error("[ SocketService ] Missing Dependency: socketIO is required")
     }
-
     socketIO = deps.socketIO;
 
-    /**
-     * 
-     * @param {*} server 
-     */
-    function init(server) {
+    // #endregion
 
-        var io = socketIO.listen(server);
+    class Socket {
+        constructor(server) {
 
-        io.on('connect', function (socket) {
+            this.sockets = [];
+            this.nextSocketId = 0;
 
-            Logger.log({label:'SocketService', level: 'socket', message: 'Connected'});
+            let io = socketIO.listen(server);
 
-            socket.on('join', function (params, callback) {
-
-                socket.join(params.playerName);
-
+            io.on('connect', function (socket) {
+            
+                let socketId = this.nextSocketId++;
+                this.sockets[socketId] = socket;
+    
+                Logger.log({label:'SocketService', level: 'socket', message: 'Connected'});
+    
+                socket.on('message', function (msg) {
+                    Logger.log({label:'SocketService', level: 'socket', message: `${msg}`});
+                });
+    
+                socket.on('disconnect', function () {
+                    Logger.log({label:'SocketService', level: 'socket', message: 'Disconnected'});
+                });
+    
             });
+        }
 
-            socket.on('message', function (msg) {
-                Logger.log({label:'SocketService', level: 'socket', message: `${msg}`});
-            });
-
-            socket.on('disconnect', function () {
-                Logger.log({label:'SocketService', level: 'socket', message: 'Disconnected'});
-            });
-
-        });
+        closeSockets () {
+            for (var socketId in this.sockets) {
+                sockets[socketId].destroy();
+            }
+        }
     }
+
     return {
-        init: init
+        Socket: Socket
     }
 }
 
