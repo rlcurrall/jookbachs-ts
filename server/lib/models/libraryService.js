@@ -24,7 +24,7 @@ function libraryService(deps) {
 	/**
 	 * 
 	 */
-	class library {
+	class Library {
 
 		/**
 		 * 
@@ -81,7 +81,7 @@ function libraryService(deps) {
 	}
 
 	return {
-		library: library
+		Library: Library
 	}
 }
 

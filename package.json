@@ -26,6 +26,7 @@
 		"hoek": "^4.2.1",
 		"mongodb": "^3.0.10",
 		"node-id3": "^0.1.5",
+		"q": "^1.5.1",
 		"socket.io": "^2.1.0",
 		"socket.io-stream": "^0.9.1",
 		"walk": "^2.3.13",
@@ -34,7 +35,7 @@
 	"scripts": {
 		"start": "npm run -s echo-start && npm run -s echo-sep && npm run -s start-script",
 		"echo-start": "echo Starting JookBachs",
-		"echo-sep": "echo --------------------------",
+		"echo-sep": "echo -----------------------------------------------------------------------------------",
 		"start-script": "cross-env NODE_PATH=\"./server/lib\" JSON_CONFIG=\"./server/config/server.json\" node ."
 	},
 	"devDependencies": {

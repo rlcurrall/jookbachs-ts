@@ -1,5 +1,23 @@
-const { createLogger, format, transports, addColors } = require('winston');
-const { combine, timestamp, printf, colorize, align } = format;
+// ================================================================================================
+// IMPORT MODULES
+// ================================================================================================
+const {
+    createLogger,
+    format,
+    transports,
+    addColors
+} = require('winston');
+const {
+    combine,
+    timestamp,
+    printf,
+    colorize,
+    align
+} = format;
+
+// ================================================================================================
+// DEFINE LOGGER
+// ================================================================================================
 
 /**
  * Define custom Levels and Colors
@@ -26,10 +44,13 @@ addColors(jbLevels.colors);
  * Define custom format
  */
 const jbFormat = printf(info => {
-    let label = String(info.label + "           ").slice(0, 14);
+    let label = String(info.label + "              ").slice(0, 14);
     return `${info.timestamp} [${label}]  ${info.level}:\t${info.message}`
 });
 
+/**
+ * Instantiate Logger
+ */
 const Logger = createLogger({
     levels: jbLevels.levels,
     format: combine(
@@ -37,13 +58,26 @@ const Logger = createLogger({
         jbFormat
     ),
     transports: [
-        new transports.Console({ level: 'request', format: combine( colorize(), timestamp(), jbFormat ) }),
-        new transports.File({ filename: `server/logs/info.log` }),
-        new transports.File({ filename: `server/logs/error.log`, level: 'error' }),
-        new transports.File({ filename: `server/logs/robust.log`, level: 'request' })
+        new transports.Console({
+            level: 'request',
+            format: combine(colorize(), timestamp(), jbFormat)
+        }),
+        new transports.File({
+            filename: `server/logs/info.log`
+        }),
+        new transports.File({
+            filename: `server/logs/error.log`,
+            level: 'error'
+        }),
+        new transports.File({
+            filename: `server/logs/robust.log`,
+            level: 'request'
+        })
     ],
     exceptionHandlers: [
-        new transports.File({ filename: 'server/logs/exceptions.log' })
+        new transports.File({
+            filename: 'server/logs/exceptions.log'
+        })
     ],
     exitOnError: false
 })

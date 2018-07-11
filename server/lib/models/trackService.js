@@ -18,7 +18,7 @@ function trackService(deps) {
 	/**
 	 * Represents a music track
 	 */
-	class track {
+	class Track {
 
 		/**
 		 * Constructor for a track object, populates the object properties by
@@ -89,7 +89,7 @@ function trackService(deps) {
 	}
 
 	return {
-		track: track
+		Track: Track
 	}
 }
 

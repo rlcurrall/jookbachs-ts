@@ -1,21 +1,21 @@
 function libraryRepo(deps) {
     let fs;
     let config;
-    let track;
-    let library;
+    let Track;
+    let Library;
     let libraries = [];
 
-    if (!deps.fs || !deps.config || !deps.track || !deps.library) {
-        throw new Error("[ LibraryRepo ] Missing Dependency: fs, track, and library are required")
+    if (!deps.fs || !deps.config || !deps.Track || !deps.Library) {
+        throw new Error("[ LibraryRepo ] Missing Dependency: fs, Track, and Library are required")
     }
 
     fs = deps.fs;
     config = deps.config;
-    track = deps.track;
-    library = deps.library;
+    Track = deps.Track;
+    Library = deps.Library;
 
     config.libraryPaths.forEach(function (libraryPath) {
-        libraries.push(new library(libraryPath));
+        libraries.push(new Library(libraryPath));
     });
 
     return {

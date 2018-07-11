@@ -36,6 +36,7 @@ function dbService(deps) {
             _db = db;
 
         });
+
     }
 
     /**

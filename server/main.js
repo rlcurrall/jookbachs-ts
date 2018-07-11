@@ -4,6 +4,7 @@
 
 // #region Imports
 
+const q = require('q');
 const url = require('url');
 const http = require('http');
 const https = require('https');
@@ -16,7 +17,7 @@ const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
 const nodeID3 = require('node-id3');
-const Logger = require('utils/logger');
+const Logger = require('utils/Logger');
 const config = JSON.parse(fs.readFileSync(process.env.JSON_CONFIG, 'utf8'));
 config.appDir = path.join(__dirname, '..'); // update config to have root dir of app
 
@@ -48,31 +49,25 @@ const serverFactory = require('services/serverFactory')({
 	socketService: socketService
 })
 
-const {
-	track
-} = require('services/trackService')({
+const { Track } = require('models/trackService')({
 	Logger: Logger,
 	path: path,
 	nodeID3: nodeID3
 });
 
-const {
-	library
-} = require('services/libraryService')({
+const { Library } = require('models/libraryService')({
 	Logger: Logger,
 	path: path,
 	walk: walk,
-	track: track
+	track: Track
 });
 
-const {
-	libraries
-} = require('repos/libraryRepo.js')({
+const { libraries } = require('repos/libraryRepo.js')({
 	Logger: Logger,
 	fs: fs,
 	config: config,
-	track: track,
-	library: library
+	Track: Track,
+	Library: Library
 });
 
 const apiRouter = require('routers/apiRouter')({
@@ -125,3 +120,12 @@ const expressApp = expressService.createApp();
 
 // Initiallize Server
 serverFactory.createServer(expressApp);
+
+// ================================================================================================
+// SHUTDOWN
+// ================================================================================================
+
+const readline = require('readline');
+const {ShutdownManager} = require('utils/ShutdownManager')({ Logger: Logger, readline: readline });
+
+let test = new ShutdownManager();
