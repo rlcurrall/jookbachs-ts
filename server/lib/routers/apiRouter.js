@@ -4,6 +4,7 @@
  */
 function apiRouter(deps) {
 
+	let Logger = deps.Logger;
 	let bodyParser;
 	let libraries;
 
@@ -46,8 +47,7 @@ function apiRouter(deps) {
 
 		// log api requests to console
 		router.use(function (req, res, next) {
-			let time = new Date(Date.now());
-			console.log('[ api    ](%s) %s %s', time.toJSON(), req.method, req.url);
+			Logger.log({label: 'API', level: 'request', message: `${req.method} ${req.url}`});
 		});
 	}
 

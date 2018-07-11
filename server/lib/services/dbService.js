@@ -4,13 +4,11 @@
  */
 function dbService(deps) {
 
-    let Logger;
+    let Logger = deps.Logger;
     let MongoClient;
     let config;
 
-    Logger = deps.Logger;
-
-    if (!deps.Logger || !deps.MongoClient || !deps.config) {
+    if (!deps.MongoClient || !deps.config) {
         Logger.log({label:'DbService', level: 'error', message: `Missing Dependency: Logger, MongoClient, and config are required!`});
         // Add error handling...
     }

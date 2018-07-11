@@ -4,6 +4,7 @@
  */
 function streamRouter(deps) {
 
+    let Logger = deps.Logger;
     let fs;
     let url;
     let libraries;
@@ -31,14 +32,11 @@ function streamRouter(deps) {
 
             //
             try {
-
-                // get current time
-                let time = new Date(Date.now());
-
                 // get path from
                 filename = libraries[0].tracksList[input.trackId].path;
-                console.log('[ stream ](%s) id=%s', time.toJSON(),
-                    libraries[0].tracksList[input.trackId].id);
+                Logger.log({label: 'Stream', level: 'request', message: `${req.method} ${req.url}`});
+                // console.log('[ stream ](%s) id=%s', time.toJSON(),
+                //     libraries[0].tracksList[input.trackId].id);
 
             } catch (e) {
 

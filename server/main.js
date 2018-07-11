@@ -75,27 +75,27 @@ const {
 	library: library
 });
 
-const apiRouter = require('controllers/apiCtrl')({
+const apiRouter = require('routers/apiRouter')({
 	Logger: Logger,
 	bodyParser: bodyParser,
 	libraries: libraries
 });
 
-const streamRouter = require('controllers/streamCtrl')({
+const streamRouter = require('routers/streamRouter')({
 	Logger: Logger,
 	fs: fs,
 	url: url,
 	libraries: libraries
 });
 
-const webuiRouter = require('controllers/webuiCtrl.js')({
+const webuiRouter = require('routers/webuiRouter.js')({
 	Logger: Logger,
 	path: path,
 	express: express,
 	config: config
 });
 
-const scriptsRouter = require('controllers/scriptsCtrl.js')({
+const scriptsRouter = require('routers/scriptsRouter.js')({
 	Logger: Logger,
 	path: path,
 	express: express,
