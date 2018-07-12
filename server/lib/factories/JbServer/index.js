@@ -98,30 +98,55 @@ function serverFactory(deps) {
         /**
          * 
          */
-        closeServer() {
-            try {
-                Logger.log({label: 'Shutdown', level: 'info', message: 'Closing HTTP server'});
-                this.httpServer.close();
-            }
-            catch (e) {
-                Logger.log({label: 'Shutdown', level: 'error', message: `Could not close HTTP server: ${e}`});
-            }
+        getShutdownFunctions() {
+            let promises = [];
+            let httpServer = this.httpServer;
+            let tlsServer = this.tlsServer;
+            let socket = this.socket;
 
-            try {
-                Logger.log({label: 'Shutdown', level: 'info', message: 'Closing HTTPS server'});
-                this.tlsServer.close();
-            }
-            catch (e) {
-                Logger.log({label: 'Shutdown', level: 'error', message: `Could not close HTTPS server: ${e}`});
-            }
-            
-            try {
-                Logger.log({label: 'Shutdown', level: 'info', message: 'Destroying sockets'});
-                this.socket.closeSockets();
-            }
-            catch (e) {
-                Logger.log({label: 'Shutdown', level: 'error', message: `Could not destory sockets: ${e}`});
-            }
+            let shutdownHttp = function () {
+                try {
+                    Logger.log({label: 'Shutdown', level: 'info', message: 'Closing HTTP server'});
+                    httpServer.close();
+                    return null;
+                }
+                catch (e) {
+                    Logger.log({label: 'Shutdown', level: 'error', message: `Could not close HTTP server`});
+                    return e;
+                }
+            };
+
+            promises.push(shutdownHttp);
+
+            let shutdownHttps = function () {
+                try {
+                    Logger.log({label: 'Shutdown', level: 'info', message: 'Closing HTTPS server'});
+                    tlsServer.close();
+                    return null;
+                }
+                catch (e) {
+                    Logger.log({label: 'Shutdown', level: 'error', message: `Could not close HTTPS server`});
+                    return e;
+                }
+            };
+
+            promises.push(shutdownHttps);
+
+            let shutdownSockets = function () {
+                try {
+                    Logger.log({label: 'Shutdown', level: 'info', message: 'Destroying sockets'});
+                    socket.closeSockets();
+                    return null;
+                }
+                catch (e) {
+                    Logger.log({label: 'Shutdown', level: 'error', message: `Could not destory sockets`});
+                    return e;
+                }
+            };
+
+            promises.push(shutdownSockets);
+
+            return promises;
         }
     }
 

@@ -36,7 +36,7 @@
 		"start": "npm run -s echo-start && npm run -s echo-sep && npm run -s start-script",
 		"echo-start": "echo Starting JookBachs",
 		"echo-sep": "echo -----------------------------------------------------------------------------------",
-		"start-script": "cross-env NODE_PATH=\"./server/lib\" JSON_CONFIG=\"./server/config/server.json\" node ."
+		"start-script": "cross-env NODE_PATH=./server/lib:./server/lib/factories:./server/lib/utils JSON_CONFIG=\"./server/config/server.json\" node ."
 	},
 	"devDependencies": {
 		"electron": "^2.0.4"

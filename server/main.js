@@ -13,12 +13,11 @@ const socketIO = require('socket.io');
 const ss = require('socket.io-stream');
 const bodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
-const readline = require('readline');
 const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
 const nodeID3 = require('node-id3');
-const Logger = require('utils/Logger');
+const Logger = require('Logger');
 const config = JSON.parse(fs.readFileSync(process.env.JSON_CONFIG, 'utf8'));
 config.appDir = path.join(__dirname, '..'); // update config to have root dir of app
 
@@ -49,17 +48,12 @@ const { Library } = require('models/libraryModel')({
 	track: Track
 });
 
-const { libraries } = require('repos/libraryRepo.js')({
+const { libraries } = require('repos/libraryRepo')({
 	Logger: Logger,
 	fs: fs,
 	config: config,
 	Track: Track,
 	Library: Library
-});
-
-const { JbSocket } = require('services/socketFactory')({
-	Logger: Logger,
-	socketIO: socketIO
 });
 
 const { JbApi } = require('routers/apiRouter')({
@@ -73,32 +67,34 @@ const { JbStream } = require('routers/streamRouter')({
 	url: url
 });
 
-const { JbWebUI } = require('routers/webuiRouter.js')({
+const { JbWebUI } = require('routers/webuiRouter')({
 	Logger: Logger,
 	express: express
 });
 
-const { JbScripts } = require('routers/scriptsRouter.js')({
+const { JbScripts } = require('routers/scriptsRouter')({
 	Logger: Logger,
 	express: express
 });
 
-const { JbExpress } = require('services/expressFactory')({
+const { JbExpress } = require('JbExpress')({
 	Logger: Logger,
 	express: express
 });
 
-const { JbServer } = require('services/serverFactory')({
+const { JbSocket } = require('JbSocket')({
+	Logger: Logger,
+	socketIO: socketIO
+});
+
+const { JbServer } = require('JbServer')({
 	Logger: Logger,
 	fs: fs,
 	http: http,
 	https: https
 });
 
-const { ShutdownManager } = require('utils/ShutdownManager')({
-	Logger: Logger,
-	readline: readline
-});
+const ShutdownManager = require('ShutdownManager');
 
 // #endregion
 
@@ -106,11 +102,7 @@ const { ShutdownManager } = require('utils/ShutdownManager')({
 // INITIALIZATION
 // ================================================================================================
 
-Logger.log({
-	label: 'Main',
-	level: 'info',
-	message: 'Initializing Application'
-});
+Logger.log({ label: 'Main', level: 'info', message: 'Initializing Application' });
 
 // Initialize DB
 dbService.initDB();
@@ -133,4 +125,8 @@ const jbServer = new JbServer(
 // SHUTDOWN
 // ================================================================================================
 
-const SDM = new ShutdownManager(jbServer);
+// Use .push() to add any extra functions
+let shutdownFunctions = jbServer.getShutdownFunctions();
+
+const SDM = new ShutdownManager(shutdownFunctions);
+// SDM.setLogger(Logger);

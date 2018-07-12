@@ -18,8 +18,6 @@ function libraryModel(deps) {
 	path = deps.path;
 	walk = deps.walk;
 	track = deps.track;
-	
-	let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
 
 	/**
 	 * 
@@ -31,6 +29,7 @@ function libraryModel(deps) {
 		 * @param {*} dirPath 
 		 */
 		constructor(dirPath) {
+			let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
 
 			this.path = path.normalize(dirPath);
 			this.isLoaded = false;
