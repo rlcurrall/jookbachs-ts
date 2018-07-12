@@ -4,30 +4,48 @@
  */
 function scriptsRouter(deps) {
 
-	let path;
-	let express;
-	let config;
+	// #region Dependency Setup
 
-	if (!deps.path || !deps.express || !deps.config) {
+	let express;
+	let Logger = deps.Logger;
+
+	if (!deps.express) {
 		throw new Error('[ scriptsCtrl ] Missing Dependency: path, express, and config are required');
 	}
 
-	path = deps.path;
 	express = deps.express;
-	config = deps.config;
 
-	const scriptPath = path.join(config.appDir, '/node_modules');
+	// #endregion
 
-	/**
-	 * 
-	 * @param {*} router 
-	 */
-	function assignRoutes(router) {
-		router.use(express.static(scriptPath))
+	class JbScripts {
+		/**
+		 * 
+		 * @param {*} config 
+		 */
+		constructor(config) {
+			this.scriptPath = `${config.appDir}\\node_modules\\`;
+			this.url = '/scripts';
+		}
+
+		/**
+		 * 
+		 * @param {*} router 
+		 */
+		assignRoute(router) {
+			router.use(express.static(this.scriptPath));
+            Logger.log({label: 'JbScripts', level: 'info', message: 'Route Created'});
+		}
+
+		/**
+		 * 
+		 */
+		getUrl() {
+			return this.url;
+		}
 	}
 
 	return {
-		assignRoutes: assignRoutes
+		JbScripts: JbScripts
 	}
 }
 

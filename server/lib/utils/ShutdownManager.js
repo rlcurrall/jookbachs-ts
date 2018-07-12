@@ -14,31 +14,22 @@ function ShutdownManagerFactory(deps) {
 
     readline = deps.readline;
 
-    function ShutdownManager () {
+    let Server;
+
+    function ShutdownManager (server) {
+        Server = server;
         
         readline.emitKeypressEvents(process.stdin);
         process.stdin.setRawMode(true);
 
         process.stdin.on('keypress', function (str, key) {
             if (key.ctrl && key.name === 'c'){
-                closeDBConn();
-                killServer();
-                logShutdown();
+                Logger.log({label: 'Shutdown', level: 'info', message: 'Starting shutdown process'});
+                Server.closeServer();
+                Logger.log({label: 'Shutdown', level: 'info', message: 'Shutdown complete'});
                 process.exit();
             }
         });
-    }
-
-    function logShutdown() {
-        Logger.log({label: 'Shutdown', level: 'info', message: 'Shutting Down'});
-    }
-
-    function closeDBConn() {
-        Logger.log({label: 'Shutdown', level: 'info', message: 'Closing DB connection'});
-    }
-
-    function killServer() {
-        Logger.log({label: 'Shutdown', level: 'info', message: 'Shutting down server'});
     }
 
     return {

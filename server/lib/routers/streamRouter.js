@@ -4,63 +4,87 @@
  */
 function streamRouter(deps) {
 
+    // #region Dependency Setup
+
     let Logger = deps.Logger;
     let fs;
     let url;
-    let libraries;
 
-    if (!deps.fs || !deps.url || !deps.libraries) {
+    if (!deps.fs || !deps.url) {
         throw new Error('[ streamCtrl ] Missing Dependency: fs and url are required');
     }
 
     fs = deps.fs;
     url = deps.url;
-    libraries = deps.libraries;
 
-    /**
-     * 
-     * @param {*} router 
-     */
-    function assignRoutes(router) {
+    // #endregion
 
-        router.use(function (req, res, next) {
+    class JbStream {
+        /**
+         * 
+         * @param {*} config 
+         * @param {*} DB 
+         */
+		constructor(config, DB) {
+            this.publicPath = `${config.appDir}\\public\\`;
+            this.DB = DB;
+			this.url = '/stream';
+		}
 
-            // get requested file name from url
-            var q = url.parse(req.url, true);
-            var input = q.query;
-            var filename;
+        /**
+         * 
+         * @param {*} router 
+         */
+		assignRoute(router) {
+            // Expose lib to router -- this will likely not be necessary when we start using the mongodb to store data
+            let lib = this.DB;
 
-            //
-            try {
-                // get path from
-                filename = libraries[0].tracksList[input.trackId].path;
-                Logger.log({label: 'Stream', level: 'request', message: `${req.method} ${req.url}`});
-                // console.log('[ stream ](%s) id=%s', time.toJSON(),
-                //     libraries[0].tracksList[input.trackId].id);
+			router.use(function (req, res, next) {
 
-            } catch (e) {
+                // get requested file name from url
+                var q = url.parse(req.url, true);
+                var input = q.query;
+                var filename;
+    
+                //
+                try {
+                    // get path from
+                    filename = lib[0].tracksList[input.trackId].path;
+                    Logger.log({label: 'Stream', level: 'request', message: `${req.method} ${req.url}`});
+    
+                } catch (e) {
+    
+                    // send 404 code to indicate track not found
+                    res.writeHead(404, {
+                        'Content-Type': 'text/html'
+                    });
+    
+                    // display error
+                    var error = 'Cannot access library index: ' + input.trackId;
+                    Logger.log({label: 'JbStream', level: 'info', message: error });
+                    return res.end(error);
+    
+                }
+    
+                // need to check if file can be read or not
+                // create stream of file and send it to the response object
+                fs.createReadStream(filename).pipe(res);
+    
+            });
+            
+            Logger.log({label: 'JbStream', level: 'info', message: 'Route Created'});
+		}
 
-                // send 404 code to indicate track not found
-                res.writeHead(404, {
-                    'Content-Type': 'text/html'
-                });
+        /**
+         * 
+         */
+		getUrl() {
+			return this.url;
+		}
+	}
 
-                // display error
-                var error = 'cannot access library index: ' + input.trackId;
-                console.log(error);
-                return res.end(error);
-
-            }
-
-            // need to check if file can be read or not
-            // create stream of file and send it to the response object
-            fs.createReadStream(filename).pipe(res);
-
-        });
-    }
-
-    return {
-        assignRoutes: assignRoutes
+	return {
+		JbStream: JbStream
     }
 }
 

@@ -30,20 +30,10 @@ config.appDir = path.join(__dirname, '..'); // update config to have root dir of
 
 // #region DI
 
-const {ShutdownManager} = require('utils/ShutdownManager')({ 
-	Logger: Logger, 
-	readline: readline 
-});
-
 const dbService = require('services/dbService')({
 	Logger: Logger,
 	MongoClient: MongoClient,
 	config: config
-});
-
-const {Socket} = require('services/socketService')({
-	Logger: Logger,
-	socketIO: socketIO
 });
 
 const { Track } = require('models/trackModel')({
@@ -67,51 +57,48 @@ const { libraries } = require('repos/libraryRepo.js')({
 	Library: Library
 });
 
-const apiRouter = require('routers/apiRouter')({
+const { JbSocket } = require('services/socketFactory')({
 	Logger: Logger,
-	bodyParser: bodyParser,
-	libraries: libraries
+	socketIO: socketIO
 });
 
-const streamRouter = require('routers/streamRouter')({
+const { JbApi } = require('routers/apiRouter')({
+	Logger: Logger,
+	bodyParser: bodyParser
+});
+
+const { JbStream } = require('routers/streamRouter')({
 	Logger: Logger,
 	fs: fs,
-	url: url,
-	libraries: libraries
+	url: url
 });
 
-const webuiRouter = require('routers/webuiRouter.js')({
+const { JbWebUI } = require('routers/webuiRouter.js')({
 	Logger: Logger,
-	path: path,
-	express: express,
-	config: config
+	express: express
 });
 
-const scriptsRouter = require('routers/scriptsRouter.js')({
+const { JbScripts } = require('routers/scriptsRouter.js')({
 	Logger: Logger,
-	path: path,
-	express: express,
-	config: config
+	express: express
 });
 
-const {ExpressApp} = require('services/expressService')({
+const { JbExpress } = require('services/expressFactory')({
 	Logger: Logger,
-	express: express,
-	webuiRouter: webuiRouter,
-	scriptsRouter: scriptsRouter,
-	apiRouter: apiRouter,
-	streamRouter: streamRouter
+	express: express
 });
 
-const {Server} = require('services/serverFactory')({
+const { JbServer } = require('services/serverFactory')({
 	Logger: Logger,
 	fs: fs,
 	http: http,
-	https: https,
-	config: config,
-	Socket: Socket,
-	ExpressApp: ExpressApp
-})
+	https: https
+});
+
+const { ShutdownManager } = require('utils/ShutdownManager')({
+	Logger: Logger,
+	readline: readline
+});
 
 // #endregion
 
@@ -119,15 +106,31 @@ const {Server} = require('services/serverFactory')({
 // INITIALIZATION
 // ================================================================================================
 
+Logger.log({
+	label: 'Main',
+	level: 'info',
+	message: 'Initializing Application'
+});
+
 // Initialize DB
 dbService.initDB();
 
 // Initiallize Server
-// serverFactory.createServer();
-const serverBndl = new Server();
+const jbServer = new JbServer(
+	config, 		// Server configuration
+	libraries, 		// DB instance (currently just has the array of libraries)
+	JbSocket, 		// Socket Factory - Must implement constructor (1: http/https server)
+	JbExpress, 		// Express Factory - Must implement constructor (0), getApp (0), and setRoute (1: router factory)
+	[				// Router Factory Array - Must implement constructor (2: config, db instance), 
+		JbWebUI, 	//						  assignRoute(1: express router), and getUrl (0)
+		JbScripts, 
+		JbApi, 
+		JbStream
+	]	
+);
 
 // ================================================================================================
 // SHUTDOWN
 // ================================================================================================
 
-const SDM = new ShutdownManager();
+const SDM = new ShutdownManager(jbServer);

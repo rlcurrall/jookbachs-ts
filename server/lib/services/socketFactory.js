@@ -2,7 +2,7 @@
  * 
  * @param {*} deps 
  */
-function socketService(deps) {
+function socketFactory(deps) {
 
     // #region Dependency setup
 
@@ -16,7 +16,11 @@ function socketService(deps) {
 
     // #endregion
 
-    class Socket {
+    class JbSocket {
+        /**
+         * 
+         * @param {*} server 
+         */
         constructor(server) {
 
             this.sockets = [];
@@ -29,19 +33,24 @@ function socketService(deps) {
                 let socketId = this.nextSocketId++;
                 this.sockets[socketId] = socket;
     
-                Logger.log({label:'SocketService', level: 'socket', message: 'Connected'});
+                Logger.log({label:'JbSocket', level: 'socket', message: 'Connected'});
     
                 socket.on('message', function (msg) {
-                    Logger.log({label:'SocketService', level: 'socket', message: `${msg}`});
+                    Logger.log({label:'JbSocket', level: 'socket', message: `${msg}`});
                 });
     
                 socket.on('disconnect', function () {
-                    Logger.log({label:'SocketService', level: 'socket', message: 'Disconnected'});
+                    Logger.log({label:'JbSocket', level: 'socket', message: 'Disconnected'});
                 });
     
             });
+            
+            Logger.log({label: 'JbSocket', level: 'info', message: 'Sockets Initialized'});
         }
 
+        /**
+         * 
+         */
         closeSockets () {
             for (var socketId in this.sockets) {
                 sockets[socketId].destroy();
@@ -50,8 +59,8 @@ function socketService(deps) {
     }
 
     return {
-        Socket: Socket
+        JbSocket: JbSocket
     }
 }
 
-module.exports = socketService;
+module.exports = socketFactory;

@@ -4,30 +4,47 @@
  */
 function webuiRouter(deps) {
 
-	let path;
+	// #region Dependency setup
 	let express;
-	let config;
+	let Logger = deps.Logger;
 
-	if (!deps.path || !deps.express || !deps.config) {
+	if (!deps.express) {
 		throw new Error('[ webuiCtrl ] Missing Dependency: path, express, and config are required');
 	}
 
-	path = deps.path;
 	express = deps.express;
-	config = deps.config;
 
-	const publicPath = path.join(config.appDir, '/public/');
+	// #endregion
 
-	/**
-	 * 
-	 * @param {*} router 
-	 */
-	function assignRoutes(router) {
-		router.use(express.static(publicPath))
+	class JbWebUI {
+		/**
+		 * 
+		 * @param {*} config 
+		 */
+		constructor(config) {
+			this.publicPath = `${config.appDir}\\public\\`;
+			this.url = '/';
+		}
+
+		/**
+		 * 
+		 * @param {*} router 
+		 */
+		assignRoute(router) {
+			router.use(express.static(this.publicPath));
+            Logger.log({label: 'JbWebUI', level: 'info', message: 'Route Created'});
+		}
+
+		/**
+		 * 
+		 */
+		getUrl() {
+			return this.url;
+		}
 	}
 
 	return {
-		assignRoutes: assignRoutes
+		JbWebUI: JbWebUI
 	}
 }
 

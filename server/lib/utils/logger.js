@@ -34,7 +34,7 @@ const jbLevels = {
         error: 'red',
         warn: 'yellow',
         info: 'blue',
-        socket: 'cyan',
+        socket: 'magenta',
         request: 'green'
     }
 }
@@ -63,23 +63,23 @@ const Logger = createLogger({
             format: combine(colorize(), timestamp(), jbFormat)
         }),
         new transports.File({
-            filename: `server/logs/info.log`
+            filename: `server/logs/sysInfo.log`
         }),
         new transports.File({
             filename: `server/logs/error.log`,
             level: 'error'
         }),
         new transports.File({
-            filename: `server/logs/robust.log`,
+            filename: `server/logs/traffic.log`,
             level: 'request'
         })
     ],
-    exceptionHandlers: [
-        new transports.Console(),
-        new transports.File({
-            filename: 'server/logs/exceptions.log'
-        })
-    ],
+    // exceptionHandlers: [
+    //     new transports.Console(),
+    //     new transports.File({
+    //         filename: 'server/logs/exceptions.log'
+    //     })
+    // ],
     exitOnError: true
 })
 
