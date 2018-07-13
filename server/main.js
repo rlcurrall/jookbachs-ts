@@ -4,7 +4,6 @@
 
 // #region Imports
 
-const q = require('q');
 const url = require('url');
 const http = require('http');
 const https = require('https');
@@ -18,6 +17,7 @@ const path = require('path');
 const walk = require('walk');
 const nodeID3 = require('node-id3');
 const Logger = require('Logger');
+const ShutdownManager = require('ShutdownManager');
 const config = JSON.parse(fs.readFileSync(process.env.JSON_CONFIG, 'utf8'));
 config.appDir = path.join(__dirname, '..'); // update config to have root dir of app
 
@@ -28,6 +28,16 @@ config.appDir = path.join(__dirname, '..'); // update config to have root dir of
 // ================================================================================================
 
 // #region DI
+
+const JbServer = require('JbServer')({
+	fs: fs,
+	http: http,
+	https: https,
+	socketIO: socketIO,
+	express: express
+});
+
+// #region DB
 
 const dbService = require('services/dbService')({
 	Logger: Logger,
@@ -56,45 +66,32 @@ const { libraries } = require('repos/libraryRepo')({
 	Library: Library
 });
 
-const { JbApi } = require('routers/apiRouter')({
+// #endregion
+
+// #region Routers
+
+const JbApi = require('JbApi')({
 	Logger: Logger,
 	bodyParser: bodyParser
 });
 
-const { JbStream } = require('routers/streamRouter')({
+const JbStream = require('JbStream')({
 	Logger: Logger,
 	fs: fs,
 	url: url
 });
 
-const { JbWebUI } = require('routers/webuiRouter')({
+const JbWebUI = require('JbWebUI')({
 	Logger: Logger,
 	express: express
 });
 
-const { JbScripts } = require('routers/scriptsRouter')({
+const JbScripts = require('JbScripts')({
 	Logger: Logger,
 	express: express
 });
 
-const { JbExpress } = require('JbExpress')({
-	Logger: Logger,
-	express: express
-});
-
-const { JbSocket } = require('JbSocket')({
-	Logger: Logger,
-	socketIO: socketIO
-});
-
-const { JbServer } = require('JbServer')({
-	Logger: Logger,
-	fs: fs,
-	http: http,
-	https: https
-});
-
-const ShutdownManager = require('ShutdownManager');
+// #endregion
 
 // #endregion
 
@@ -107,12 +104,10 @@ Logger.log({ label: 'Main', level: 'info', message: 'Initializing Application' }
 // Initialize DB
 dbService.initDB();
 
-// Initiallize Server
+// Create Server
 const jbServer = new JbServer(
 	config, 		// Server configuration
 	libraries, 		// DB instance (currently just has the array of libraries)
-	JbSocket, 		// Socket Factory - Must implement constructor (1: http/https server)
-	JbExpress, 		// Express Factory - Must implement constructor (0), getApp (0), and setRoute (1: router factory)
 	[				// Router Factory Array - Must implement constructor (2: config, db instance), 
 		JbWebUI, 	//						  assignRoute(1: express router), and getUrl (0)
 		JbScripts, 
@@ -121,6 +116,9 @@ const jbServer = new JbServer(
 	]	
 );
 
+jbServer.setLogger(Logger);
+jbServer.startServer();
+
 // ================================================================================================
 // SHUTDOWN
 // ================================================================================================
@@ -128,5 +126,7 @@ const jbServer = new JbServer(
 // Use .push() to add any extra functions
 let shutdownFunctions = jbServer.getShutdownFunctions();
 
-const SDM = new ShutdownManager(shutdownFunctions);
-// SDM.setLogger(Logger);
+const SDM = new ShutdownManager();
+
+SDM.setLogger(Logger);
+SDM.setShutdownFunctions(shutdownFunctions);

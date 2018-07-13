@@ -26,7 +26,6 @@ function streamRouter(deps) {
          * @param {*} DB 
          */
 		constructor(config, DB) {
-            this.publicPath = `${config.appDir}\\public\\`;
             this.DB = DB;
 			this.url = '/stream';
 		}
@@ -36,7 +35,6 @@ function streamRouter(deps) {
          * @param {*} router 
          */
 		assignRoute(router) {
-            // Expose lib to router -- this will likely not be necessary when we start using the mongodb to store data
             let lib = this.DB;
 
 			router.use(function (req, res, next) {
@@ -83,9 +81,7 @@ function streamRouter(deps) {
 		}
 	}
 
-	return {
-		JbStream: JbStream
-    }
+	return JbStream;
 }
 
 module.exports = streamRouter;

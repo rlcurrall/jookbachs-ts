@@ -1,17 +1,18 @@
 const readline = require('readline'); // Required here as to not expose module to rest of app
-let Logger = require('Logger');
 
 class ShutdownManager {
-    constructor (functions) {
+    constructor () {
+        this.functions = [];
+        let that = this;
 
         readline.emitKeypressEvents(process.stdin);
         process.stdin.setRawMode(true);
 
         process.stdin.on('keypress', function (str, key) {
             if (key.ctrl && key.name === 'c'){
-                Logger.log({label: 'Shutdown', level: 'info', message: 'Starting shutdown process'});
+                that.log('Starting shutdown process');
 
-                Promise.all(functions).then(function (result) {
+                Promise.all(that.functions).then(function (result) {
                     let success = true;
                     let error = '';
 
@@ -24,18 +25,52 @@ class ShutdownManager {
                         }
                     }
                     if (success) {
-                        Logger.log({label: 'Shutdown', level: 'info', message: 'Shutdown complete'});
+                        that.log('Shutdown complete');
                         process.exit();
                     }
                     else 
                     {
-                        Logger.log({label: 'Shutdown', level: 'error', message: `Error: ${error}`});
-                        Logger.log({label: 'Shutdown', level: 'info', message: `Exiting now`});
+                        that.log(`Error: ${error}`);
+                        that.log(`Exiting now`);
                         process.exit();
                     }
                 });
             }
         });
+    }
+
+    /**
+     * 
+     * @param {*} funcArray 
+     */
+    setShutdownFunctions (funcArray) {
+        this.functions = funcArray;
+    }
+
+    /**
+     * 
+     * @param {*} func 
+     */
+    addShutdownFunc (func) {
+        this.functions.push(func);
+    }
+
+    setLogger (logger) {
+        this.Logger = logger;
+    }
+
+    /**
+     * 
+     * @param {*} msg 
+     */
+    log(msg) {
+        if (this.Logger) {
+            this.Logger.log({label: 'Shutdown', level: 'info', message: msg});
+        }
+        else {
+            console.log(msg);
+        }
+        
     }
 }
 

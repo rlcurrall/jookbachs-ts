@@ -6,7 +6,6 @@ function socketFactory(deps) {
 
     // #region Dependency setup
 
-    let Logger = deps.Logger;
     let socketIO;
 
     if (!deps.socketIO) {
@@ -21,10 +20,13 @@ function socketFactory(deps) {
          * 
          * @param {*} server 
          */
-        constructor(server) {
+        constructor(server, logger) {
 
+            this.Logger = logger;
             this.sockets = [];
             this.nextSocketId = 0;
+
+            let that = this;
 
             let io = socketIO.listen(server);
 
@@ -33,19 +35,19 @@ function socketFactory(deps) {
                 let socketId = this.nextSocketId++;
                 this.sockets[socketId] = socket;
     
-                Logger.log({label:'JbSocket', level: 'socket', message: 'Connected'});
+                that.log('JbSocket', 'socket', 'Connected');
     
                 socket.on('message', function (msg) {
-                    Logger.log({label:'JbSocket', level: 'socket', message: `${msg}`});
+                    that.log('JbSocket', 'socket', msg);
                 });
     
                 socket.on('disconnect', function () {
-                    Logger.log({label:'JbSocket', level: 'socket', message: 'Disconnected'});
+                    that.log('JbSocket', 'socket', 'Disconnected');
                 });
     
             });
             
-            Logger.log({label: 'JbSocket', level: 'info', message: 'Sockets Initialized'});
+            that.log('JbSocket', 'info', 'Sockets Initialized');
         }
 
         /**
@@ -56,11 +58,32 @@ function socketFactory(deps) {
                 sockets[socketId].destroy();
             }
         }
+
+        /**
+         * 
+         * @param {*} logger 
+         */
+        setLogger (logger) {
+            this.Logger = logger;
+        }
+
+        /**
+         * 
+         * @param {*} label 
+         * @param {*} level 
+         * @param {*} msg 
+         */
+        log (label, level, msg) {
+            if (this.Logger) {
+                this.Logger.log({label: label, level: level, message: msg});
+            }
+            else {
+                console.log(msg);
+            }
+        }
     }
 
-    return {
-        JbSocket: JbSocket
-    }
+    return JbSocket;
 }
 
 module.exports = socketFactory;

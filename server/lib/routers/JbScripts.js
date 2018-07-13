@@ -22,7 +22,7 @@ function scriptsRouter(deps) {
 		 * 
 		 * @param {*} config 
 		 */
-		constructor(config) {
+		constructor(config, DB) {
 			this.scriptPath = `${config.appDir}\\node_modules\\`;
 			this.url = '/scripts';
 		}
@@ -44,9 +44,7 @@ function scriptsRouter(deps) {
 		}
 	}
 
-	return {
-		JbScripts: JbScripts
-	}
+	return JbScripts;
 }
 
 module.exports = scriptsRouter;

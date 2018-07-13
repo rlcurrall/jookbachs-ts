@@ -43,9 +43,7 @@ function webuiRouter(deps) {
 		}
 	}
 
-	return {
-		JbWebUI: JbWebUI
-	}
+	return JbWebUI;
 }
 
 module.exports = webuiRouter;

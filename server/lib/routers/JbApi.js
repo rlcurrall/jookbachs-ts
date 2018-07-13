@@ -77,9 +77,7 @@ function apiRouter(deps) {
 		}
 	}
 
-	return {
-		JbApi: JbApi
-    }
+	return JbApi;
 }
 
 module.exports = apiRouter;
