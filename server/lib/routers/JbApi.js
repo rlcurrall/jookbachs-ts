@@ -1,83 +1,53 @@
-/**
- * 
- * @param {*} deps 
- */
-function apiRouter(deps) {
 
-	// #region Dependency Setup
+function apiFactory (deps) {
 
-	let Logger = deps.Logger;
-	let bodyParser;
-
-	if (!deps.bodyParser) {
-		throw new Error('[ apiCtrl ] Missing Dependency: bodyParser and libraries are required');
+    if (!deps.bodyParser) {
+		throw new Error('[ JbApi ] Missing Dependency: bodyParser is required');
 	}
 
-	bodyParser = deps.bodyParser;
+    const bodyParser = deps.bodyParser;
+    const JbRouter = require('JbRouter');
 
-	// #endregion
+    class JbApi extends JbRouter {
 
-	class JbApi {
-		/**
-		 * 
-		 * @param {*} config 
-		 * @param {*} DB 
-		 */
-		constructor(config, DB) {
-            this.publicPath = `${config.appDir}\\public\\`;
-            this.DB = DB;
-			this.url = '/api';
-		}
+        constructor (config, DB) {
+            super(config, DB, '/api');
+        }
 
-		/**
-		 * 
-		 * @param {*} router 
-		 */
-		assignRoute(router) {
-            // Expose lib to router -- this will likely not be necessary when we start using the mongodb to store data
+        assignRoute(router) {
             let lib = this.DB;
+            let that = this;
 
-			router.use(bodyParser.urlencoded({
-				extended: true
-			}));
-			router.use(bodyParser.json());
-	
-			router.get('/getlibrary', function (req, res, next) {
-				res.status(200).json(lib[0].getAllTracks());
-				next();
-			});
-	
-			router.post('/authTest', function (req, res, next) {
-	
-				//console.log(req.body.sharedKey);
-	
-				if (req.body.sharedKey === config.sharedKey) {
-					res.status(202).end();
-				} else {
-					res.status(401).end();
-				}
-	
-				next();
-	
-			});
-	
-			// log api requests to console
-			router.use(function (req, res, next) {
-				Logger.log({label: 'API', level: 'request', message: `${req.method} ${req.url}`});
-			});
-			
-            Logger.log({label: 'JbApi', level: 'info', message: 'Route Created'});
-		}
+            router.use(bodyParser.urlencoded({
+                extended: true
+            }));
+            router.use(bodyParser.json());
 
-		/**
-		 * 
-		 */
-		getUrl() {
-			return this.url;
-		}
-	}
+            router.get('/getlibrary', function (req, res, next) {
+                res.status(200).json(lib[0].getAllTracks());
+                next();
+            })
 
-	return JbApi;
+            router.post('/authTest', function(req, res, next) {
+                if (req.body.sharedKey === config.sharedKey) {
+                    res.status(202).end();
+                } else {
+                    res.status(401).end();
+                }
+
+                next();
+            });
+
+            router.use(function (req, res, next) {
+                that.log('JbApi', 'request', `${req.method} ${req.url}`);
+            });
+
+            
+            that.log('JbStream', 'info', 'Route Created');
+        }
+    }
+
+    return JbApi;
 }
 
-module.exports = apiRouter;
+module.exports = apiFactory;

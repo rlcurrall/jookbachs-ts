@@ -67,6 +67,7 @@ function serverFactory(deps) {
          */
         createRoute(appFactory, router) {
             let r = new router(this.config, this.DB);
+            r.setLogger(this.Logger);
 
             appFactory.setRoute(r);
         }

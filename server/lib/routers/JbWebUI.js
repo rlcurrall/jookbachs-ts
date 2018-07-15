@@ -1,49 +1,27 @@
-/**
- * 
- * @param {*} deps 
- */
-function webuiRouter(deps) {
 
-	// #region Dependency setup
-	let express;
-	let Logger = deps.Logger;
+function webUIFactory (deps) {
 
-	if (!deps.express) {
-		throw new Error('[ webuiCtrl ] Missing Dependency: path, express, and config are required');
+    if (!deps.express) {
+		throw new Error('[ JbWebUI ] Missing Dependency: express is config are required');
 	}
 
-	express = deps.express;
+	const express = deps.express;
+    const JbRouter = require('JbRouter');
 
-	// #endregion
+    class JbWebUI extends JbRouter {
 
-	class JbWebUI {
-		/**
-		 * 
-		 * @param {*} config 
-		 */
-		constructor(config) {
-			this.publicPath = `${config.appDir}\\public\\`;
-			this.url = '/';
-		}
+        constructor (config, DB) {
+            super(config, DB, '/');
+            this.publicPath = `${config.appDir}\\public\\`;
+        }
 
-		/**
-		 * 
-		 * @param {*} router 
-		 */
-		assignRoute(router) {
-			router.use(express.static(this.publicPath));
-            Logger.log({label: 'JbWebUI', level: 'info', message: 'Route Created'});
-		}
+        assignRoute(router) {
+            router.use(express.static(this.publicPath));
+            this.log('JbWebUI', 'info', 'Route Created');
+        }
+    }
 
-		/**
-		 * 
-		 */
-		getUrl() {
-			return this.url;
-		}
-	}
-
-	return JbWebUI;
+    return JbWebUI;
 }
 
-module.exports = webuiRouter;
+module.exports = webUIFactory;

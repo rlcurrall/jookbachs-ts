@@ -1,50 +1,27 @@
-/**
- * 
- * @param {*} deps 
- */
-function scriptsRouter(deps) {
 
-	// #region Dependency Setup
+function scriptsFactory (deps) {
 
-	let express;
-	let Logger = deps.Logger;
-
-	if (!deps.express) {
+    if (!deps.express) {
 		throw new Error('[ scriptsCtrl ] Missing Dependency: path, express, and config are required');
 	}
 
-	express = deps.express;
+	const express = deps.express;
+    const JbRouter = require('JbRouter');
 
-	// #endregion
+    class JbApi extends JbRouter {
 
-	class JbScripts {
-		/**
-		 * 
-		 * @param {*} config 
-		 */
-		constructor(config, DB) {
-			this.scriptPath = `${config.appDir}\\node_modules\\`;
-			this.url = '/scripts';
-		}
+        constructor (config, DB) {
+            super(config, DB, '/scripts');
+            this.scriptPath = `${config.appDir}\\node_modules\\`;
+        }
 
-		/**
-		 * 
-		 * @param {*} router 
-		 */
-		assignRoute(router) {
-			router.use(express.static(this.scriptPath));
-            Logger.log({label: 'JbScripts', level: 'info', message: 'Route Created'});
-		}
+        assignRoute(router) {
+            router.use(express.static(this.scriptPath));
+            this.log('JbScripts', 'info', 'Route Created');
+        }
+    }
 
-		/**
-		 * 
-		 */
-		getUrl() {
-			return this.url;
-		}
-	}
-
-	return JbScripts;
+    return JbApi;
 }
 
-module.exports = scriptsRouter;
+module.exports = scriptsFactory;
