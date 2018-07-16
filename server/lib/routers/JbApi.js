@@ -11,7 +11,8 @@ function apiFactory (deps) {
     class JbApi extends JbRouter {
 
         constructor (config, DB) {
-            super(config, DB, '/api');
+            super(config, DB);
+            this.url = '/api';
         }
 
         assignRoute(router) {
@@ -43,7 +44,7 @@ function apiFactory (deps) {
             });
 
             
-            that.log('JbStream', 'info', 'Route Created');
+            that.log('JbApi', 'info', 'Route Created');
         }
     }
 

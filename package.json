@@ -24,6 +24,7 @@
 		"cross-env": "^5.2.0",
 		"express": "^4.15.3",
 		"hoek": "^4.2.1",
+		"less": "^3.7.1",
 		"mongodb": "^3.0.10",
 		"node-id3": "^0.1.5",
 		"q": "^1.5.1",
@@ -33,9 +34,9 @@
 		"winston": "^3.0.0"
 	},
 	"scripts": {
-		"start": "npm run -s echo-start && npm run -s echo-sep && npm run -s start-script",
-		"echo-start": "echo Starting JookBachs",
-		"echo-sep": "echo -----------------------------------------------------------------------------------",
+		"start": "npm run -s start-echo && npm run -s start-sep && npm run -s start-script",
+		"start-echo": "echo Starting JookBachs",
+		"start-sep": "echo -----------------------------------------------------------------------------------",
 		"start-script": "cross-env NODE_PATH=./server/lib:./server/lib/factories:./server/lib/utils:./server/lib/routers JSON_CONFIG=\"./server/config/server.json\" node ."
 	},
 	"devDependencies": {

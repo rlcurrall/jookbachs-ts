@@ -6,38 +6,45 @@ class ShutdownManager {
         let that = this;
 
         readline.emitKeypressEvents(process.stdin);
-        process.stdin.setRawMode(true);
+		
+		try {
+			process.stdin.setRawMode(true);
 
-        process.stdin.on('keypress', function (str, key) {
-            if (key.ctrl && key.name === 'c'){
-                that.log('Starting shutdown process');
+			process.stdin.on('keypress', function (str, key) {
+				if (key.ctrl && key.name === 'c'){
+					that.log('Starting shutdown process');
 
-                Promise.all(that.functions).then(function (result) {
-                    let success = true;
-                    let error = '';
+					Promise.all(that.functions).then(function (result) {
+						let success = true;
+						let error = '';
 
-                    for (let r in result) {
-                        let f = result[r]();
-                        
-                        if (f !== null) {
-                            success = false;
-                            error = `${error}\n\n${f}`;
-                        }
-                    }
-                    if (success) {
-                        that.log('Shutdown complete');
-                        process.exit();
-                    }
-                    else 
-                    {
-                        that.log(`Error: ${error}`);
-                        that.log(`Exiting now`);
-                        process.exit();
-                    }
-                });
-            }
-        });
+						for (let r in result) {
+							let f = result[r]();
+
+							if (f !== null) {
+								success = false;
+								error = `${error}\n${f}\n`;
+							}
+						}
+						if (success) {
+							that.log('Shutdown complete');
+							process.exit();
+						}
+						else 
+						{
+							that.log(`Error: ${error}`);
+							that.log(`Exiting now`);
+							process.exit();
+						}
+					});
+				}
+			});
+		}
+		catch (e) {
+			console.warn('[Shutdown Manager] - Terminal not supported must have a tty/std-in-out attached.');
+		}
     }
+	
 
     /**
      * 

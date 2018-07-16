@@ -1,6 +1,6 @@
 /**
- * 
- * @param {*} deps 
+ * A Factory used to generate the JbSocket class
+ * @param {*} deps - an object containing all dependencies to be injected.
  */
 function socketFactory(deps) {
 
@@ -15,25 +15,31 @@ function socketFactory(deps) {
 
     // #endregion
 
+    /**
+     * Class to create a socket that will listen on the given https server
+     */
     class JbSocket {
         /**
-         * 
-         * @param {*} server 
+         * Creates the socket
+         * @param {HTTPS server} server 
          */
-        constructor(server, logger) {
-
-            this.Logger = logger;
+        constructor(server) {
+            this.server = server;
             this.sockets = [];
             this.nextSocketId = 0;
+        }
 
+        /**
+         * Have socket begin listening on the server and define socket responses
+         */
+        startListening() {
             let that = this;
-
-            let io = socketIO.listen(server);
+            let io = socketIO.listen(this.server);
 
             io.on('connect', function (socket) {
             
-                let socketId = this.nextSocketId++;
-                this.sockets[socketId] = socket;
+                let socketId = that.nextSocketId++;
+                that.sockets[socketId] = socket;
     
                 that.log('JbSocket', 'socket', 'Connected');
     
@@ -51,27 +57,31 @@ function socketFactory(deps) {
         }
 
         /**
-         * 
+         * Begin listening on the server provided by constructor
          */
         closeSockets () {
-            for (var socketId in this.sockets) {
-                sockets[socketId].destroy();
+            let that = this;
+            for (let socketId in that.sockets) {
+                let socket = that.sockets[socketId];
+                socket.disconnect(true);
             }
         }
 
         /**
+         * Set the logger to be used by the application
          * 
-         * @param {*} logger 
+         * @param {Winston Logger} logger 
          */
         setLogger (logger) {
             this.Logger = logger;
         }
 
         /**
+         * Log data to the console
          * 
-         * @param {*} label 
-         * @param {*} level 
-         * @param {*} msg 
+         * @param {string} label 
+         * @param {string} level 
+         * @param {string/error object} msg 
          */
         log (label, level, msg) {
             if (this.Logger) {

@@ -1,6 +1,6 @@
 /**
- * 
- * @param {*} deps 
+ * Factory to generate the JbExpress class
+ * @param {object} deps - object with all dependencies being injected
  */
 function expressFactory(deps) {
 
@@ -17,15 +17,22 @@ function expressFactory(deps) {
     // #endregion
 
     /**
-     * 
+     * Class to implement the express application used by the JbServer
      */
     class JbExpress {
-        constructor(logger) {
-            this.Logger = logger;
+
+        /**
+         * Express app constructor, creates an express app. 
+         */
+        constructor() {
             this.app = express();
-            this.log('JbExpress', 'info', 'Express App Created');
         }
 
+        /**
+         * Sets a route for the express app
+         * 
+         * @param {JbRouter Concrete Implementation} router 
+         */
         setRoute(router) {
             let route = express.Router();
 
@@ -34,12 +41,15 @@ function expressFactory(deps) {
             router.assignRoute(route);
         }
 
+        /**
+         * Used to return the app created by this class
+         */
         getApp() {
             return this.app;
         }
 
         /**
-         * 
+         * Used to set the logger used by the app
          * @param {*} logger 
          */
         setLogger (logger) {
@@ -47,10 +57,11 @@ function expressFactory(deps) {
         }
 
         /**
+         * Used to log info to the console
          * 
-         * @param {*} label 
-         * @param {*} level 
-         * @param {*} msg 
+         * @param {string} label 
+         * @param {string} level 
+         * @param {string/error object} msg 
          */
         log (label, level, msg) {
             if (this.Logger) {

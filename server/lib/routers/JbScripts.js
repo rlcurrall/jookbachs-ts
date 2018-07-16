@@ -11,7 +11,8 @@ function scriptsFactory (deps) {
     class JbApi extends JbRouter {
 
         constructor (config, DB) {
-            super(config, DB, '/scripts');
+            super(config, DB);
+            this.url = '/scripts';
             this.scriptPath = `${config.appDir}\\node_modules\\`;
         }
 

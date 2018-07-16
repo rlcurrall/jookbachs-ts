@@ -3,6 +3,7 @@
 // ================================================================================================
 
 // #region Imports
+// <editor-fold defaultstate="collapsed" desc="Imports">
 
 const url = require('url');
 const http = require('http');
@@ -21,6 +22,7 @@ const ShutdownManager = require('ShutdownManager');
 const config = JSON.parse(fs.readFileSync(process.env.JSON_CONFIG, 'utf8'));
 config.appDir = path.join(__dirname, '..'); // update config to have root dir of app
 
+// </editor-fold>
 // #endregion
 
 // ================================================================================================
@@ -28,6 +30,7 @@ config.appDir = path.join(__dirname, '..'); // update config to have root dir of
 // ================================================================================================
 
 // #region DI
+// <editor-fold defaultstate="collapsed" desc="DI">
 
 const JbServer = require('JbServer')({
 	fs: fs,
@@ -37,7 +40,31 @@ const JbServer = require('JbServer')({
 	express: express
 });
 
+// #region Routers
+// <editor-fold desc="Routers">
+
+const JbApi = require('JbApi')({
+	bodyParser: bodyParser
+});
+
+const JbStream = require('JbStream')({
+	fs: fs,
+	url: url
+});
+
+const JbWebUI = require('JbWebUI')({
+	express: express
+});
+
+const JbScripts = require('JbScripts')({
+	express: express
+});
+
+// </editor-fold>
+// #endregion
+
 // #region DB
+// <editor-fold desc="DB">
 
 const dbService = require('services/dbService')({
 	Logger: Logger,
@@ -66,33 +93,10 @@ const { libraries } = require('repos/libraryRepo')({
 	Library: Library
 });
 
+// </editor-fold>
 // #endregion
 
-// #region Routers
-
-const JbApi = require('JbApi')({
-	Logger: Logger,
-	bodyParser: bodyParser
-});
-
-const JbStream = require('JbStream')({
-	Logger: Logger,
-	fs: fs,
-	url: url
-});
-
-const JbWebUI = require('JbWebUI')({
-	Logger: Logger,
-	express: express
-});
-
-const JbScripts = require('JbScripts')({
-	Logger: Logger,
-	express: express
-});
-
-// #endregion
-
+// </editor-fold>
 // #endregion
 
 // ================================================================================================
@@ -105,16 +109,7 @@ Logger.log({ label: 'Main', level: 'info', message: 'Initializing Application' }
 dbService.initDB();
 
 // Create Server
-const jbServer = new JbServer(
-	config, 		// Server configuration
-	libraries, 		// DB instance (currently just has the array of libraries)
-	[				// Router Factory Array - Must implement constructor (2: config, db instance), 
-		JbWebUI, 	//						  assignRoute(1: express router), and getUrl (0)
-		JbScripts, 
-		JbApi, 
-		JbStream
-	]	
-);
+const jbServer = new JbServer( config, libraries, [ JbWebUI, JbScripts, JbApi, JbStream ] );
 
 jbServer.setLogger(Logger);
 jbServer.startServer();

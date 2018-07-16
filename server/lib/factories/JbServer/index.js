@@ -23,7 +23,7 @@ function serverFactory(deps) {
         /**
          * Constructor for the JbServer
          * 
-         * @param {JSON object} config - JSON object that contains all configuration needed for the server
+         * @param {object} config - Object from JSON that contains all configuration needed for the server
          * @param {MongoClient} DB - Database instance that is used by the application
          * @param {Array} Routes - An array of Router Factories that is used to define the routes for the express app 
          */
@@ -48,7 +48,9 @@ function serverFactory(deps) {
          */
         initExpress() {
             // Create app factory
-            let jbExpress = new JbExpress(this.Logger);
+            let jbExpress = new JbExpress();
+            jbExpress.setLogger(this.Logger);
+            this.log('JbExpress', 'info', 'Express App Created');
 
             // Assign routes
             for (let r in this.Routes) {
@@ -62,8 +64,8 @@ function serverFactory(deps) {
         /**
          * Used to define a router and assign the router to the express app
          * 
-         * @param {*} appFactory 
-         * @param {*} router 
+         * @param {Express App} appFactory 
+         * @param {JbRouter Concrete Implementation} router 
          */
         createRoute(appFactory, router) {
             let r = new router(this.config, this.DB);
@@ -95,7 +97,9 @@ function serverFactory(deps) {
             this.tlsServer = https.createServer(tlsOptions, this.app).listen(this.config.httpsPort);
     
             // Socket on HTTPS Server
-            this.socket = new JbSocket(this.tlsServer, this.Logger);
+            this.socket = new JbSocket(this.tlsServer);
+            this.socket.setLogger(this.Logger);
+            this.socket.startListening();
         }
 
         /**
@@ -107,6 +111,21 @@ function serverFactory(deps) {
             let tlsServer = this.tlsServer;
             let socket = this.socket;
             let that = this;
+
+            // Attempts to destory all active sockets
+            let shutdownSockets = function () {
+                try {
+                    that.log('Shutdown', 'info', 'Destroying sockets');
+                    socket.closeSockets();
+                    return null;
+                }
+                catch (e) {
+                    that.log('Shutdown', 'error', `Could not destory sockets`);
+                    return e;
+                }
+            };
+
+            funcs.push(shutdownSockets);
 
             // Attempts to shutdown HTTP server
             let shutdownHttp = function () {
@@ -137,21 +156,6 @@ function serverFactory(deps) {
             };
 
             funcs.push(shutdownHttps);
-
-            // Attempts to destory all active sockets
-            let shutdownSockets = function () {
-                try {
-                    that.log('Shutdown', 'info', 'Destroying sockets');
-                    socket.closeSockets();
-                    return null;
-                }
-                catch (e) {
-                    that.log('Shutdown', 'error', `Could not destory sockets`);
-                    return e;
-                }
-            };
-
-            funcs.push(shutdownSockets);
 
             return funcs;
         }
