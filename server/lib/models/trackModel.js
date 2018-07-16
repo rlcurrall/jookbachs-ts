@@ -41,9 +41,6 @@ function trackModel(deps) {
 			this.year = tags.raw.TYER;
 			this.image = tags.raw.APIC;
 			this.libraryId = libraryId;
-
-			console.log('\n\n');
-			console.log(tags);
 		}
 
 		/**
