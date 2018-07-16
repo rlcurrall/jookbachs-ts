@@ -10,6 +10,14 @@ Personal music streaming / synchronization service
 * You must provide your own .key/.crt/.pem files at this time.
 * To disable SSL/TLS, edit the code.
 
+### Logging ###
+The server implements a logger that writes to three files:
+* error.log
+* sysInfo.log
+* traffic.log
+
+Each of these logs are stored in the */server/logs* folder which is not created by default. To start logging to these files simply create the *logs* folder, otherwise nothing will be logged.
+
 ### How to run ###
 * Clone the repo.
 * Under the **server/** directory, create a directory named **config**.
@@ -35,14 +43,6 @@ Personal music streaming / synchronization service
 		"appDir": "Populated by the app"
 	}
     ```
-
-### Logging ###
-The server implements a logger that writes to three files:
-* error.log
-* sysInfo.log
-* traffic.log
-
-Each of these logs are stored in the */server/logs* folder which is not created by default. To start logging to these files simply create the *logs* folder, otherwise nothing will be logged.
 
 * **Either:** run ```npm install``` then start script with ```npm start```
 * **Or:** build a Docker image using:
