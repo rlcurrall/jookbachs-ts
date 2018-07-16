@@ -7,4 +7,6 @@ windows_standalone.bat
 node_modules/
 server/config
 /lib/
-server/logs/*.log
+server/logs/error.log
+server/logs/sysInfo.log
+server/logs/traffic.log
