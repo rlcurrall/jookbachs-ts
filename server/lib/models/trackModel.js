@@ -34,12 +34,16 @@ function trackModel(deps) {
 
 			this.id = id;
 			this.path = path.normalize(filepath);
-			this.title = tags.title;
-			this.artist = tags.artist;
-			this.album = tags.album;
-			this.year = tags.year;
-			this.image = tags.image;
+			this.title = tags.raw.TIT2;
+			this.artist = tags.raw.TPE1;
+			this.track = tags.raw.TRCK;
+			this.album = tags.raw.TALB;
+			this.year = tags.raw.TYER;
+			this.image = tags.raw.APIC;
 			this.libraryId = libraryId;
+
+			console.log('\n\n');
+			console.log(tags);
 		}
 
 		/**

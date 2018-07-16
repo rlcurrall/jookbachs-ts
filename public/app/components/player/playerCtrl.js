@@ -48,14 +48,28 @@ app.controller('playerController', [
 			playerService.getAllLibraryTracks()
 				.then(
 					function success(allTracks) {
-						// Temporary mapper to get the last part of a file path
 						var data = allTracks.map(function (track) {
-							var p = track.path.substr(track.path.lastIndexOf('\\') + 1);
+							var canvas = document.createElement('canvas');
+							canvas.width = 100;
+							canvas.height = 100;
+							var ctx = canvas.getContext("2d");
+							var imgData = ctx.createImageData(100, 100);
+							img = track.image.imageBuffer.data; // need to do more research on how to convert to an image
+							for (var i = 0; i < imgData.data.length; i += 4) {
+								imgData.data[i+0] = 0;
+								imgData.data[i+1] = 0;
+								imgData.data[i+2] = 255;
+								imgData.data[i+3] = 255;
+							}
+							ctx.putImageData(imgData, 0, 0);
+							var dataURL = canvas.toDataURL("image/jpeg");
 							var it = {
-								$$hashKey: track.$$hashKey,
 								id: track.id,
-								path: p,
-								title: track.title
+								title: track.title,
+								artist: track.artist,
+								cover: dataURL,
+								album: track.album,
+								year: track.year
 							}
 							return it;
 						});

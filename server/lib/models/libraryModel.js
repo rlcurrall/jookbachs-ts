@@ -43,15 +43,13 @@ function libraryModel(deps) {
 
 			walker.on('file', function (root, stat, next) {
 
-				// instantiate new track object
-				let newTrack = new track(count, root + path.sep + stat.name);
 				let included = fileTypeInclusions.find(function (element) {
-					return element === path.extname(newTrack.path);
+					return element === path.extname(stat.name);
 				});
-				let hidden = path.basename(newTrack.path).substr(0, 1) === '.';
+				let hidden = stat.name.substr(0, 1) === '.';
 
 				if (included && !hidden) {
-					// Add this file to the list of files
+					let newTrack = new track(count, root + path.sep + stat.name);
 					tracksList.push(newTrack);
 					count++;
 				}
