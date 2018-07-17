@@ -1,7 +1,18 @@
 {
-	"name": "JookBachs",
-	"version": "0.0.1",
+	"name": "jookbachs",
+	"version": "1.0.1",
+	"homepage": "https://www.jookbachs.io",
 	"author": "sweylo",
+	"contributors": [
+		{
+			"name": "Robb Currall",
+			"email": "robert@currall.net",
+			"url": "http://www.currall.net"
+		},
+		{
+			"name": "sweylo"
+		}
+	],
 	"description": "decentralized personal music management and streaming service",
 	"license": "MIT",
 	"repository": "https://gitlab.com/sweylo/jsJookBachs.git",
@@ -28,17 +39,20 @@
 		"node-id3": "^0.1.5",
 		"q": "^1.5.1",
 		"socket.io": "^2.1.0",
-		"socket.io-stream": "^0.9.1",
 		"walk": "^2.3.13",
 		"winston": "^3.0.0"
 	},
 	"scripts": {
-		"start": "npm run -s start-echo && npm run -s start-sep && npm run -s start-script",
-		"start-echo": "echo Starting JookBachs",
-		"start-sep": "echo -----------------------------------------------------------------------------------",
-		"start-script": "cross-env NODE_PATH=./server/lib:./server/lib/JbFactories:./server/lib/utils:./server/lib/routers JSON_CONFIG=\"./server/config/server.json\" node ."
+		"start": "npm run -s s-echo && npm run -s s-sep && npm run -s s-script",
+		"watch": "cross-env NODE_PATH=./server/lib:./server/lib/JbFactories:./server/lib/utils:./server/lib/routers JSON_CONFIG=\"./server/config/server.json\" nodemon .",
+		"s-echo": "echo Starting JookBachs",
+		"s-sep": "echo -----------------------------------------------------------------------------------",
+		"s-script": "cross-env NODE_PATH=./server/lib:./server/lib/JbFactories:./server/lib/utils:./server/lib/routers JSON_CONFIG=\"./server/config/server.json\" node ."
 	},
 	"devDependencies": {
-		"electron": "^2.0.4"
+		"electron": "^2.0.4",
+		"expect": "^23.4.0",
+		"mocha": "^5.2.0",
+		"nodemon": "^1.18.2"
 	}
 }
