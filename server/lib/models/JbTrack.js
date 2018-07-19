@@ -36,9 +36,12 @@ function trackModel(deps) {
 
 			let that = this;
 
-			tagReader.read(filepath, {
-				onSuccess: function  (res) {
-					let tags = res.tags
+			// NEW METHOD USING MUSIC-METADATA
+			// This module seems to have the most active developer and far more popular than the other two by far
+			tagReader.parseFile(filepath)
+			.then(
+				function (metadata) {
+					let tags = metadata.common;
 					that.id = id;
 					that.path = path.normalize(filepath);
 					that.title = (typeof tags === 'undefined' || typeof tags.title === 'undefined') ? 'Unknown' : tags.title;
@@ -48,11 +51,27 @@ function trackModel(deps) {
 					that.year = (typeof tags === 'undefined' || typeof tags.year === 'undefined') ? 'Unknown' : tags.year;
 					that.image = (typeof tags === 'undefined' || typeof tags.picture === 'undefined') ? {data: 'none'} : tags.picture;
 					that.libraryId = libraryId;
-				},
-				onError: function (error) {
-					console.log(error)
 				}
-			})
+			);
+
+			// METHOD USING JSMEDIATAGS
+			// tagReader.read(filepath, {
+			// 	onSuccess: function  (res) {
+			// 		let tags = res.tags
+			// 		that.id = id;
+			// 		that.path = path.normalize(filepath);
+			// 		that.title = (typeof tags === 'undefined' || typeof tags.title === 'undefined') ? 'Unknown' : tags.title;
+			// 		that.artist = (typeof tags === 'undefined' || typeof tags.artist === 'undefined') ? 'Unknown' : tags.artist;
+			// 		that.track = (typeof tags === 'undefined' || typeof tags.track === 'undefined') ? 'Unknown' : tags.track;
+			// 		that.album = (typeof tags === 'undefined' || typeof tags.album === 'undefined') ? 'Unknown' : tags.album;
+			// 		that.year = (typeof tags === 'undefined' || typeof tags.year === 'undefined') ? 'Unknown' : tags.year;
+			// 		that.image = (typeof tags === 'undefined' || typeof tags.picture === 'undefined') ? {data: 'none'} : tags.picture;
+			// 		that.libraryId = libraryId;
+			// 	},
+			// 	onError: function (error) {
+			// 		console.log(error)
+			// 	}
+			// })
 
 			// OLD METHOD USING NODE-ID3
 			// let tags = tagReader.read(filepath);

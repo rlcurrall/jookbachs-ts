@@ -17,6 +17,7 @@ const path = require('path');
 const walk = require('walk');
 const nodeID3 = require('node-id3');
 const jsmediatags = require('jsmediatags');
+const mm = require('music-metadata');
 const Logger = require('Logger');
 const ShutdownManager = require('ShutdownManager');
 const config = JSON.parse(fs.readFileSync(process.env.JSON_CONFIG, 'utf8'));
@@ -72,7 +73,7 @@ const JbDatabse = require('JbDatabase')({
 
 const JbTrack = require('models/JbTrack')({
 	path: path,
-	tagReader: jsmediatags
+	tagReader: mm
 });
 
 const JbLibrary = require('models/JbLibrary')({

@@ -37,6 +37,7 @@
 		"jsmediatags": "^3.8.1",
 		"less": "^3.7.1",
 		"mongodb": "^3.0.10",
+		"music-metadata": "^2.4.0",
 		"node-id3": "^0.1.5",
 		"q": "^1.5.1",
 		"socket.io": "^2.1.0",
