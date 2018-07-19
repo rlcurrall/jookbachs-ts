@@ -31,15 +31,16 @@ function trackModel(deps) {
 		constructor(id, filepath, libraryId) {
 
 			let tags = nodeID3.read(filepath);
+			console.log(tags);
 
 			this.id = id;
 			this.path = path.normalize(filepath);
-			this.title = tags.raw.TIT2;
-			this.artist = tags.raw.TPE1;
-			this.track = tags.raw.TRCK;
-			this.album = tags.raw.TALB;
-			this.year = tags.raw.TYER;
-			this.image = tags.raw.APIC;
+			this.title = (typeof tags === 'undefined' || typeof tags.title === 'undefined') ? 'Unknown' : tags.title;
+			this.artist = (typeof tags === 'undefined' || typeof tags.artist === 'undefined') ? 'Unknown' : tags.artist;
+			this.track = (typeof tags === 'undefined' || typeof tags.trackNumber === 'undefined') ? 'Unknown' : tags.trackNumber;
+			this.album = (typeof tags === 'undefined' || typeof tags.album === 'undefined') ? 'Unknown' : tags.album;
+			this.year = (typeof tags === 'undefined' || typeof tags.year === 'undefined') ? 'Unknown' : tags.year;
+			this.image = (typeof tags === 'undefined' || typeof tags.image === 'undefined') ? 'Unknown' : tags.image;
 			this.libraryId = libraryId;
 		}
 

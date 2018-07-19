@@ -65,8 +65,7 @@ const JbScripts = require('JbScripts')({
 // #region DB
 // <editor-fold desc="DB">
 
-const dbService = require('services/dbService')({
-	Logger: Logger,
+const JbDatabse = require('JbDatabase')({
 	MongoClient: MongoClient,
 	config: config
 });
@@ -105,7 +104,10 @@ const { libraries } = require('repos/libraryRepo')({
 Logger.log({ label: 'Main', level: 'info', message: 'Initializing Application' });
 
 // Initialize DB
-dbService.initDB();
+// JbDatabse.initDB();
+const jbDatabase = new JbDatabse();
+jbDatabase.setLogger(Logger);
+jbDatabase.init();
 
 // Create Server
 const jbServer = new JbServer( config, libraries, [ JbWebUI, JbScripts, JbApi, JbStream ] );
