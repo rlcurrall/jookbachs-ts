@@ -101,13 +101,10 @@ function trackModel(deps) {
 			collection.insertOne({
 				'path': this.path
 			}, function (err, result) {
-
 				if (err) throw err;
 
 				callback(result);
-
 			});
-
 		}
 
 		/**

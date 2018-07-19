@@ -6,12 +6,12 @@ function dbFactory(deps) {
 
     // #region Dependency Setup
     // <editor-fold desc="Dependency Setup">
-    if (!deps.MongoClient) {
+    if (!deps.MongoDB) {
         throw new Error(`Missing Dependency: Logger, MongoClient, and config are required!`);
     }
 
-    const MongoClient = deps.MongoClient;
-    const config = deps.config;
+    const MongoClient = deps.MongoDB.MongoClient;
+    const Server = deps.MongoDB.Server;
 
     // </editor-fold>
     // #endregion
@@ -31,23 +31,56 @@ function dbFactory(deps) {
         connect() {
             let that = this;
 
-            MongoClient.connect(this.dbURL, function (err, db) {
-
+            MongoClient.connect(this.dbURL, function (err, client) {
                 if (err) {
-                    that.log('DbService', 'error', `Unable to connect to database - ${this.dbURL}\n${err}`);
+                    that._log('DbService', 'error', `Unable to connect to database - ${that.dbURL}\n${err}`);
                 }
 
-                that.log('DbService', 'info', 'Database connected/created!');
+                that._log('DbService', 'info', 'Database connected/created!');
 
-                that.db = db;
+                that.client = client;
+                that.db = client.db(that.config.db.name);
+
+                // // Trying to find a way to validate that the Tracks collection is in the DB
+                // that.db.listCollections().toArray(function (err, res) {
+                //     console.log(res)
+                // })
+
+                // // Testing out how to insert and query database
+                // that.db.collection("Tracks").insertOne({
+                //     name: 'test'
+                // })
+                // let val = that.db.collection("Tracks").find({
+                //     name: 'test'
+                // }).toArray(function(err, res) {
+                //     if (err) throw err;
+                //     console.log(res)
+                // })
             });
+        }
+
+        insertTrack (track) {
+            // have validation for schema
+            this.db.collection('Tracks').insertOne(track, function (err, res) {
+                if (err) return false
+                else return true
+            });
+        }
+
+        getTrack(query) {
+            // have some kind of query validation
+            return this.db.collection('Tracks').find(query)
+        }
+
+        getLibrary() {
+            return this.db.collection('Tracks').find({})
         }
 
         /**
          * 
          */
         disconnect() {
-            this.db.close();
+            this.client.close();
         }
 
         /**
@@ -64,20 +97,13 @@ function dbFactory(deps) {
          * @param {*} level 
          * @param {*} msg 
          */
-        log (label, level, msg) {
+        _log (label, level, msg) {
             if (this.Logger) {
                 this.Logger.log({label: label, level: level, message: msg});
             }
             else {
                 console.log(msg);
             }
-        }
-
-        /**
-         * 
-         */
-        getDB() {
-            return this.db;
         }
     }
 

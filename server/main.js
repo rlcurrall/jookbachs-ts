@@ -11,7 +11,7 @@ const https = require('https');
 const express = require('express');
 const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
-const MongoClient = require('mongodb').MongoClient;
+const MongoDB = require('mongodb');
 const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
@@ -68,7 +68,7 @@ const JbScripts = require('JbScripts')({
 // <editor-fold desc="DB">
 
 const JbDatabse = require('JbDatabase')({
-	MongoClient: MongoClient
+	MongoDB: MongoDB
 });
 
 const JbTrack = require('models/JbTrack')({
