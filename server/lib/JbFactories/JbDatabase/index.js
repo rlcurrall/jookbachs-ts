@@ -6,7 +6,7 @@ function dbFactory(deps) {
 
     // #region Dependency Setup
     // <editor-fold desc="Dependency Setup">
-    if (!deps.MongoClient || !deps.config) {
+    if (!deps.MongoClient) {
         throw new Error(`Missing Dependency: Logger, MongoClient, and config are required!`);
     }
 
@@ -15,17 +15,20 @@ function dbFactory(deps) {
 
     // </editor-fold>
     // #endregion
-    
+
     class JbDatabase {
 
         /**
          * 
+         * @param {*} config 
          */
-        constructor () {
+        constructor (config) {
+            this.config = config;
+
             this.dbURL = "mongodb://" + config.db.host + ":" + config.db.port + "/" + config.db.name;            
         }
 
-        init() {
+        connect() {
             let that = this;
 
             MongoClient.connect(this.dbURL, function (err, db) {
@@ -40,10 +43,27 @@ function dbFactory(deps) {
             });
         }
 
+        /**
+         * 
+         */
+        disconnect() {
+            this.db.close();
+        }
+
+        /**
+         * 
+         * @param {*} logger 
+         */
         setLogger(logger) {
             this.Logger = logger;
         }
 
+        /**
+         * 
+         * @param {*} label 
+         * @param {*} level 
+         * @param {*} msg 
+         */
         log (label, level, msg) {
             if (this.Logger) {
                 this.Logger.log({label: label, level: level, message: msg});
@@ -58,13 +78,6 @@ function dbFactory(deps) {
          */
         getDB() {
             return this.db;
-        }
-
-        /**
-         * 
-         */
-        closeDbConnection() {
-            this.db.close();
         }
     }
 

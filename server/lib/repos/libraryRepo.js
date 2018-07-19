@@ -1,26 +1,18 @@
 function libraryRepo(deps) {
-    let fs;
-    let config;
-    let Track;
-    let Library;
-    let libraries = [];
 
-    if (!deps.fs || !deps.config || !deps.Track || !deps.Library) {
-        throw new Error("[ LibraryRepo ] Missing Dependency: fs, Track, and Library are required")
+    if (!deps.config || !deps.JbLibrary) {
+        throw new Error("[ LibraryRepo ] Missing Dependency: config and JbLibrary are required")
     }
 
-    fs = deps.fs;
-    config = deps.config;
-    Track = deps.Track;
-    Library = deps.Library;
+    const config = deps.config;
+    const JbLibrary = deps.JbLibrary;
 
+    let libraries = [];
     config.libraryPaths.forEach(function (libraryPath) {
-        libraries.push(new Library(libraryPath));
+        libraries.push(new JbLibrary(libraryPath));
     });
 
-    return {
-        libraries: libraries
-    }
+    return libraries;
 }
 
 module.exports = libraryRepo;

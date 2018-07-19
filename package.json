@@ -34,6 +34,7 @@
 		"cluster": "^0.7.7",
 		"cross-env": "^5.2.0",
 		"express": "^4.15.3",
+		"jsmediatags": "^3.8.1",
 		"less": "^3.7.1",
 		"mongodb": "^3.0.10",
 		"node-id3": "^0.1.5",

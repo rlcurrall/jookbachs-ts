@@ -16,6 +16,7 @@ const fs = require('fs');
 const path = require('path');
 const walk = require('walk');
 const nodeID3 = require('node-id3');
+const jsmediatags = require('jsmediatags');
 const Logger = require('Logger');
 const ShutdownManager = require('ShutdownManager');
 const config = JSON.parse(fs.readFileSync(process.env.JSON_CONFIG, 'utf8'));
@@ -39,8 +40,8 @@ const JbServer = require('JbServer')({
 	express: express
 });
 
-// #region Routers
-// <editor-fold desc="Routers">
+// #region JbRouters
+// <editor-fold desc="JbRouters">
 
 const JbApi = require('JbApi')({
 	bodyParser: bodyParser
@@ -66,29 +67,23 @@ const JbScripts = require('JbScripts')({
 // <editor-fold desc="DB">
 
 const JbDatabse = require('JbDatabase')({
-	MongoClient: MongoClient,
-	config: config
+	MongoClient: MongoClient
 });
 
-const { Track } = require('models/trackModel')({
-	Logger: Logger,
+const JbTrack = require('models/JbTrack')({
 	path: path,
-	nodeID3: nodeID3
+	tagReader: jsmediatags
 });
 
-const { Library } = require('models/libraryModel')({
-	Logger: Logger,
+const JbLibrary = require('models/JbLibrary')({
 	path: path,
 	walk: walk,
-	track: Track
+	JbTrack: JbTrack
 });
 
-const { libraries } = require('repos/libraryRepo')({
-	Logger: Logger,
-	fs: fs,
+const libraries = require('repos/libraryRepo')({
 	config: config,
-	Track: Track,
-	Library: Library
+	JbLibrary: JbLibrary
 });
 
 // </editor-fold>
@@ -103,15 +98,13 @@ const { libraries } = require('repos/libraryRepo')({
 
 Logger.log({ label: 'Main', level: 'info', message: 'Initializing Application' });
 
-// Initialize DB
-// JbDatabse.initDB();
-const jbDatabase = new JbDatabse();
+// Initialize DB Connection
+const jbDatabase = new JbDatabse( config );
 jbDatabase.setLogger(Logger);
-jbDatabase.init();
+jbDatabase.connect();
 
 // Create Server
 const jbServer = new JbServer( config, libraries, [ JbWebUI, JbScripts, JbApi, JbStream ] );
-
 jbServer.setLogger(Logger);
 jbServer.startServer();
 
@@ -122,7 +115,7 @@ jbServer.startServer();
 // Use .push() to add any extra functions
 let shutdownFunctions = jbServer.getShutdownFunctions();
 
+// Create Shutdown Manager (Currently only works on a few terminals... looking into other options. Though this feature is not necessary)
 const SDM = new ShutdownManager();
-
 SDM.setLogger(Logger);
 SDM.setShutdownFunctions(shutdownFunctions);

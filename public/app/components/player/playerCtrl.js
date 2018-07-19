@@ -54,7 +54,7 @@ app.controller('playerController', [
 							canvas.height = 100;
 							var ctx = canvas.getContext("2d");
 							var imgData = ctx.createImageData(100, 100);
-							img = track.image.imageBuffer.data; // need to do more research on how to convert to an image
+							img = track.image.data; // need to do more research on how to convert to an image
 							for (var i = 0; i < imgData.data.length; i += 4) {
 								imgData.data[i+0] = 0;
 								imgData.data[i+1] = 0;

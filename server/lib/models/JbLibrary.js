@@ -3,26 +3,27 @@
  * @param {*} deps 
  */
 function libraryModel(deps) {
-	let Logger;
-	let path;
-	let walk;
-	let track
 
-	Logger = deps.logger;
+	// #region Dependency Setup
+	// <editor-fold desc="Dependency Setup">
 
-	if (!deps.path || !deps.walk || !deps.track) {
-        Logger.log({label:'DbService', level: 'error', message: `Missing Dependency: path, walk, and track are required!`});
+
+	if (!deps.path || !deps.walk || !deps.JbTrack) {
+        throw new Error(`Missing Dependency: path, walk, and JbTrack are required!`);
         // Add error handling...
 	}
 
-	path = deps.path;
-	walk = deps.walk;
-	track = deps.track;
+	const path = deps.path;
+	const walk = deps.walk;
+	const JbTrack = deps.JbTrack;
+
+	// </editor-fold>
+	// #endregion
 
 	/**
 	 * 
 	 */
-	class Library {
+	class JbLibrary {
 
 		/**
 		 * 
@@ -49,7 +50,7 @@ function libraryModel(deps) {
 				let hidden = stat.name.substr(0, 1) === '.';
 
 				if (included && !hidden) {
-					let newTrack = new track(count, root + path.sep + stat.name);
+					let newTrack = new JbTrack(count, root + path.sep + stat.name);
 					tracksList.push(newTrack);
 					count++;
 				}
@@ -77,9 +78,7 @@ function libraryModel(deps) {
 
 	}
 
-	return {
-		Library: Library
-	}
+	return JbLibrary;
 }
 
 module.exports = libraryModel;
