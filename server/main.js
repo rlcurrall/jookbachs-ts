@@ -104,7 +104,7 @@ const jbDatabase = new JbDatabse( config, { Logger: Logger } );
 jbDatabase.connect();
 
 // Create Server
-const jbServer = new JbServer( config, libraries, [ JbWebUI, JbScripts, JbApi, JbStream ], { Logger: Logger } );
+const jbServer = new JbServer( config, libraries, [ JbWebUI, JbScripts, JbApi, JbStream ], { Logger: Logger, db: jbDatabase } );
 jbServer.startServer();
 
 // ================================================================================================

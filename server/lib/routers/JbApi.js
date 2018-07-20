@@ -13,6 +13,12 @@ function apiFactory (deps) {
         constructor (config, DB, options) {
             super(config, DB, options);
             this.url = '/api';
+
+            if (options) {
+                if (options.db){
+                    this.testDB = options.db;
+                }
+            }
         }
 
         assignRoute(router) {
@@ -23,6 +29,10 @@ function apiFactory (deps) {
                 extended: true
             }));
             router.use(bodyParser.json());
+
+            router.get('/test', function (req, res, next) {
+                
+            })
 
             router.get('/getlibrary', function (req, res, next) {
                 res.status(200).json(lib[0].getAllTracks());

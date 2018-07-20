@@ -73,11 +73,13 @@ function dbFactory(deps) {
                     /* Uncomment to see how to retrieve data from db */
                     // that.insertTrack({name: 'test'})
 
-                    // setTimeout(() => {
-                    //     that.getTrack({name: 'test'}, console.log)
-                    // }, 2000) // added timer to ensure record inserted
+                    // that.getTrack({name: 'test'}).then(function(res) {
+                    //     console.log(res)
+                    // })
 
-                    // that.getLibrary(console.log)
+                    // that.getLibrary().then(function (res) {
+                    //     console.log(res)
+                    // })
                 })
             });
         }
@@ -100,25 +102,29 @@ function dbFactory(deps) {
             });
         }
 
-        getTrack(query, callback) {
-            this.db.collection('Tracks').findOne(query).then(function(res) {
-                callback(res)
+        getTrack(query) {
+            return this.db.collection('Tracks').findOne(query).then(function(res) {
+                return res
             })
         }
 
-        getManyTracks(query, callback) {
-            this.db.collection('Tracks').find(query).toArray(function (err, res) {
-                if (err) throw err
+        getManyTracks(query) {
+            return new Promise ((resolve, reject) => {
+                this.db.collection('Tracks').find(query).toArray(function (err, res) {
+                    if (err) throw err
 
-                callback(res)
+                    resolve(res)
+                })
             })
         }
 
-        getLibrary(callback) {
-            this.db.collection('Tracks').find({}).toArray(function (err, res) {
-                if (err) throw err
+        getLibrary() {
+            return new Promise ((resolve, reject) => {
+                this.db.collection('Tracks').find({}).toArray(function (err, res) {
+                    if (err) throw err
 
-                callback(res)
+                    resolve(res)
+                })
             })
         }
 
