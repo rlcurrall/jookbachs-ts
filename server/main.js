@@ -100,23 +100,24 @@ const libraries = require('repos/libraryRepo')({
 Logger.log({ label: 'Main', level: 'info', message: 'Initializing Application' });
 
 // Initialize DB Connection
-const jbDatabase = new JbDatabse( config );
-jbDatabase.setLogger(Logger);
+const jbDatabase = new JbDatabse( config, { Logger: Logger } );
 jbDatabase.connect();
 
 // Create Server
-const jbServer = new JbServer( config, libraries, [ JbWebUI, JbScripts, JbApi, JbStream ] );
-jbServer.setLogger(Logger);
+const jbServer = new JbServer( config, libraries, [ JbWebUI, JbScripts, JbApi, JbStream ], { Logger: Logger } );
 jbServer.startServer();
 
 // ================================================================================================
 // SHUTDOWN
 // ================================================================================================
 
-// Use .push() to add any extra functions
-let shutdownFunctions = jbServer.getShutdownFunctions();
+// NOTE: Leaving commented out for now as many terminals are not suported, may need to look into an
+// alternate option or drop the feature as it is not necessary
 
-// Create Shutdown Manager (Currently only works on a few terminals... looking into other options. Though this feature is not necessary)
-const SDM = new ShutdownManager();
-SDM.setLogger(Logger);
-SDM.setShutdownFunctions(shutdownFunctions);
+// // Use .push() to add any extra functions
+// let shutdownFunctions = jbServer.getShutdownFunctions();
+
+// // Create Shutdown Manager (Currently only works on a few terminals... looking into other options. Though this feature is not necessary)
+// const SDM = new ShutdownManager();
+// SDM.setLogger(Logger);
+// SDM.setShutdownFunctions(shutdownFunctions);

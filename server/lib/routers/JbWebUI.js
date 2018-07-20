@@ -10,8 +10,8 @@ function webUIFactory (deps) {
 
     class JbWebUI extends JbRouter {
 
-        constructor (config, DB) {
-            super(config, DB);
+        constructor (config, DB, options) {
+            super(config, DB, options);
             this.url = '/';
             this.publicPath = `${config.appDir}\\public\\`;
         }

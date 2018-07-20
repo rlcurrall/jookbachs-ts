@@ -22,12 +22,21 @@ function dbFactory(deps) {
          * 
          * @param {*} config 
          */
-        constructor (config) {
+        constructor (config, options) {
             this.config = config;
+
+            if (options) {
+                if (options.Logger)
+                    this.Logger = options.Logger;
+            }
 
             this.dbURL = "mongodb://" + config.db.host + ":" + config.db.port + "/" + config.db.name;            
         }
 
+        /**
+         * Create connection to database, if the necessary collections do not exist
+         * then create the collections.
+         */
         connect() {
             let that = this;
 
@@ -36,28 +45,52 @@ function dbFactory(deps) {
                     that._log('DbService', 'error', `Unable to connect to database - ${that.dbURL}\n${err}`);
                 }
 
-                that._log('DbService', 'info', 'Database connected/created!');
+                that._log('DbService', 'info', 'Database connected');
 
                 that.client = client;
                 that.db = client.db(that.config.db.name);
 
-                // // Trying to find a way to validate that the Tracks collection is in the DB
-                // that.db.listCollections().toArray(function (err, res) {
-                //     console.log(res)
-                // })
+                that.db.listCollections().toArray(function (err, res) {
+                    let hasTracks = false;
+                    let hasPlaylists = false;
 
-                // // Testing out how to insert and query database
-                // that.db.collection("Tracks").insertOne({
-                //     name: 'test'
-                // })
-                // let val = that.db.collection("Tracks").find({
-                //     name: 'test'
-                // }).toArray(function(err, res) {
-                //     if (err) throw err;
-                //     console.log(res)
-                // })
+                    for ( let c in res) {
+                        if (res[c].name == 'Tracks')
+                            hasTracks = true;
+                        if (res[c].name == 'Playlists')
+                            hasPlaylists = true;
+                    }
+
+                    if (!hasTracks) {
+                        that.db.createCollection('Tracks');
+                        that._log('DbService', 'info', 'Tracks collection created');
+                    }
+                    if (!hasPlaylists) {
+                        that.db.createCollection('Playlists');
+                        that._log('DbService', 'info', 'Playlists collection created');
+                    }
+
+                    /* Uncomment to see how to retrieve data from db */
+                    // that.insertTrack({name: 'test'})
+
+                    // setTimeout(() => {
+                    //     that.getTrack({name: 'test'}, console.log)
+                    // }, 2000) // added timer to ensure record inserted
+
+                    // that.getLibrary(console.log)
+                })
             });
         }
+
+        /**
+         * Close connection to the database
+         */
+        disconnect() {
+            this.client.close();
+        }
+
+        // #region DB Queries
+        // <editor-fold desc="DB Queries">
 
         insertTrack (track) {
             // have validation for schema
@@ -67,29 +100,30 @@ function dbFactory(deps) {
             });
         }
 
-        getTrack(query) {
-            // have some kind of query validation
-            return this.db.collection('Tracks').find(query)
+        getTrack(query, callback) {
+            this.db.collection('Tracks').findOne(query).then(function(res) {
+                callback(res)
+            })
         }
 
-        getLibrary() {
-            return this.db.collection('Tracks').find({})
+        getManyTracks(query, callback) {
+            this.db.collection('Tracks').find(query).toArray(function (err, res) {
+                if (err) throw err
+
+                callback(res)
+            })
         }
 
-        /**
-         * 
-         */
-        disconnect() {
-            this.client.close();
+        getLibrary(callback) {
+            this.db.collection('Tracks').find({}).toArray(function (err, res) {
+                if (err) throw err
+
+                callback(res)
+            })
         }
 
-        /**
-         * 
-         * @param {*} logger 
-         */
-        setLogger(logger) {
-            this.Logger = logger;
-        }
+        // </editor-fold>
+        // #endregion
 
         /**
          * 

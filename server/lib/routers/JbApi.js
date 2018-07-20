@@ -10,8 +10,8 @@ function apiFactory (deps) {
 
     class JbApi extends JbRouter {
 
-        constructor (config, DB) {
-            super(config, DB);
+        constructor (config, DB, options) {
+            super(config, DB, options);
             this.url = '/api';
         }
 

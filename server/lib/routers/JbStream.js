@@ -11,8 +11,8 @@ function streamFactory (deps) {
 
     class JbStream extends JbRouter {
 
-        constructor (config, DB) {
-            super(config, DB);
+        constructor (config, DB, options) {
+            super(config, DB, options);
             this.url = '/stream';
         }
 

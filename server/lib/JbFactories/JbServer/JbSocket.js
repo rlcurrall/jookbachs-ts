@@ -22,11 +22,17 @@ function socketFactory(deps) {
         /**
          * Creates the socket
          * @param {HTTPS server} server 
+         * @param {object} options - An object used to pass the different options for the socket
          */
-        constructor(server) {
+        constructor(server, options) {
             this.server = server;
             this.sockets = [];
             this.nextSocketId = 0;
+
+            if (options) {
+                if (options.Logger)
+                    this.Logger = options.Logger;
+            }
         }
 
         /**
@@ -41,19 +47,19 @@ function socketFactory(deps) {
                 let socketId = that.nextSocketId++;
                 that.sockets[socketId] = socket;
     
-                that.log('JbSocket', 'socket', 'Connected');
+                that._log('JbSocket', 'socket', 'Connected');
     
                 socket.on('message', function (msg) {
-                    that.log('JbSocket', 'socket', msg);
+                    that._log('JbSocket', 'socket', msg);
                 });
     
                 socket.on('disconnect', function () {
-                    that.log('JbSocket', 'socket', 'Disconnected');
+                    that._log('JbSocket', 'socket', 'Disconnected');
                 });
     
             });
             
-            that.log('JbSocket', 'info', 'Sockets Initialized');
+            that._log('JbSocket', 'info', 'Sockets Initialized');
         }
 
         /**
@@ -68,22 +74,13 @@ function socketFactory(deps) {
         }
 
         /**
-         * Set the logger to be used by the application
-         * 
-         * @param {Winston Logger} logger 
-         */
-        setLogger (logger) {
-            this.Logger = logger;
-        }
-
-        /**
          * Log data to the console
          * 
          * @param {string} label 
          * @param {string} level 
          * @param {string/error object} msg 
          */
-        log (label, level, msg) {
+        _log (label, level, msg) {
             if (this.Logger) {
                 this.Logger.log({label: label, level: level, message: msg});
             }

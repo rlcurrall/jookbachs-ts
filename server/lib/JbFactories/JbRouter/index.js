@@ -9,7 +9,7 @@ class JbRouter {
      * @param {object} config 
      * @param {MongoClient object} DB 
      */
-    constructor (config, DB) {
+    constructor (config, DB, options) {
 
         if (this.constructor === JbRouter) {
             throw new TypeError('Abstract class "JbRouter" cannot be instantiated directly.');
@@ -17,6 +17,11 @@ class JbRouter {
 
         if (this.assignRoute === undefined) {
             throw new TypeError('Classes extening JbRouter must implement the assignRoute method');
+        }
+
+        if (options) {
+            if (options.Logger)
+                this.Logger = options.Logger;
         }
 
         this.config = config;
@@ -28,15 +33,6 @@ class JbRouter {
      */
     getUrl () {
         return this.url;
-    }
-
-    /**
-     * Defines the logger to be used by the JbRouter
-     * 
-     * @param {Winston Logger} logger 
-     */
-    setLogger (logger) {
-        this.Logger = logger;
     }
 
     /**
@@ -59,7 +55,7 @@ class JbRouter {
      * Requires user to define the assignRoute function
      */
     assignRoute () {
-        throw new ReferenceError('The assignRoute function must be defined');
+        throw new ReferenceError('Classes extening JbRouter must implement the assignRoute method');
     }
 }
 

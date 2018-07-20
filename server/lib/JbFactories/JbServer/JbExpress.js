@@ -24,8 +24,14 @@ function expressFactory(deps) {
         /**
          * Express app constructor, creates an express app. 
          */
-        constructor() {
-            this.app = express();
+        constructor(options) {
+            if (options) {
+                if (options.Logger)
+                    this.Logger = options.Logger;
+            }
+
+            this._app = express();
+            this._log('JbExpress', 'info', 'Express App Created');
         }
 
         /**
@@ -36,7 +42,7 @@ function expressFactory(deps) {
         setRoute(router) {
             let route = express.Router();
 
-            this.app.use(router.getUrl(), route);
+            this._app.use(router.getUrl(), route);
 
             router.assignRoute(route);
         }
@@ -45,15 +51,7 @@ function expressFactory(deps) {
          * Used to return the app created by this class
          */
         getApp() {
-            return this.app;
-        }
-
-        /**
-         * Used to set the logger used by the app
-         * @param {*} logger 
-         */
-        setLogger (logger) {
-            this.Logger = logger;
+            return this._app;
         }
 
         /**
@@ -63,7 +61,7 @@ function expressFactory(deps) {
          * @param {string} level 
          * @param {string/error object} msg 
          */
-        log (label, level, msg) {
+        _log (label, level, msg) {
             if (this.Logger) {
                 this.Logger.log({label: label, level: level, message: msg});
             }

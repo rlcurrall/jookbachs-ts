@@ -86,47 +86,20 @@ function trackModel(deps) {
 			// this.libraryId = libraryId;
 		}
 
-		/**
-		 * Inserts the provided track into the database
-		 * 
-		 * @param {object} db 
-		 * @param {function} callback 
-		 */
-		insertTrack(db, callback) {
-
-			// Get the documents collection
-			var collection = db.collection('tracks');
-
-			// Insert some documents
-			collection.insertOne({
-				'path': this.path
-			}, function (err, result) {
-				if (err) throw err;
-
-				callback(result);
-			});
+		toJson() {
+			let res = {
+				_id: this.id,
+				path: this.path,
+				title: this.title,
+				artist: this.artist,
+				album: this.album,
+				track: this.track,
+				year: this.year,
+				image: this.image,
+				libraryId: this.libraryId
+			}
+			return res;
 		}
-
-		/**
-		 * 
-		 * @param {*} db 
-		 * @param {*} callback 
-		 */
-		findAllTracks(db, callback) {
-
-			var collection = db.collection('tracks');
-
-			// Insert some documents
-			collection.find({}).toArray(function (err, result) {
-
-				if (err) throw err;
-
-				callback(result);
-
-			});
-
-		}
-
 	}
 
 	return JbTrack;
