@@ -55,25 +55,76 @@ function dbFactory(deps) {
                     let hasPlaylists = false;
 
                     for ( let c in res) {
-                        if (res[c].name == 'Tracks')
+                        if (res[c].name == 'tracks')
                             hasTracks = true;
-                        if (res[c].name == 'Playlists')
+                        if (res[c].name == 'playlists')
                             hasPlaylists = true;
                     }
 
                     if (!hasTracks) {
-                        that.db.createCollection('Tracks');
+                        that.db.createCollection('tracks', {
+                            validator: {
+                               $jsonSchema: {
+                                  bsonType: "object",
+                                  required: [ "title", "artist", "album", "track", "year", "path" ],
+                                  properties: {
+                                      title: {
+                                          bsonType: "string",
+                                          description: "must be a string and is required"
+                                      },
+                                      artist: {
+                                        bsonType: "string",
+                                        description: "must be a string and is required"
+                                      },
+                                      album: {
+                                        bsonType: "string",
+                                        description: "must be a string and is required"
+                                      },
+                                      track: {
+                                        bsonType: "int",
+                                        minimum: 0,
+                                        maximum: 3000,
+                                        description: "must be an integer in [0, 3000] and is required"
+                                      },
+                                      year: {
+                                        bsonType: "int",
+                                        minimum: 0,
+                                        maximum: 3000,
+                                        description: "must be an integer in [0, 3000] and is required"
+                                      },
+                                      path: {
+                                        bsonType: "string",
+                                        description: "must be a string and is required"
+                                      }
+                                  }
+                               }
+                            }
+                        });
                         that._log('DbService', 'info', 'Tracks collection created');
                     }
                     if (!hasPlaylists) {
-                        that.db.createCollection('Playlists');
+                        that.db.createCollection('playlists');
                         that._log('DbService', 'info', 'Playlists collection created');
                     }
 
                     /* Uncomment to see how to retrieve data from db */
-                    // that.insertTrack({name: 'test'})
+                    // setTimeout(() => { // delay incase collection not created
+                    //     that.insertTrack({
+                    //         title: "Fake Title",
+                    //         artist: "Some guy",
+                    //         album: "That One Album",
+                    //         track: 10,
+                    //         year: 12,
+                    //         path: "path/to/song.mp3"
+                    //     }).then(function (res) {
+                    //         console.log(res.result)
+                    //     }, function (err) {
+                    //         console.log(err.message)
+                    //     })
+                    // }, 2000)
 
-                    // that.getTrack({name: 'test'}).then(function(res) {
+
+                    // that.getTrack({title: 'Fake Title'}).then(function(res) {
                     //     console.log(res)
                     // })
 
@@ -88,42 +139,58 @@ function dbFactory(deps) {
          * Close connection to the database
          */
         disconnect() {
+            console.log('Disconnecting');
             this.client.close();
         }
 
         // #region DB Queries
         // <editor-fold desc="DB Queries">
 
+        /**
+         * 
+         * @param {*} track 
+         */
         insertTrack (track) {
             // have validation for schema
-            this.db.collection('Tracks').insertOne(track, function (err, res) {
-                if (err) return false
-                else return true
-            });
-        }
-
-        getTrack(query) {
-            return this.db.collection('Tracks').findOne(query).then(function(res) {
-                return res
-            })
-        }
-
-        getManyTracks(query) {
-            return new Promise ((resolve, reject) => {
-                this.db.collection('Tracks').find(query).toArray(function (err, res) {
-                    if (err) throw err
-
-                    resolve(res)
+            return new Promise( (resolve, reject) => {
+                this.db.collection('tracks').insert(track, function (err, res) {
+                    if (err) reject(err)
+                    else resolve(res)
                 })
             })
         }
 
+        /**
+         * 
+         * @param {*} query 
+         */
+        getTrack(query) {
+            return this.db.collection('tracks').findOne(query).then(function(res) {
+                return res
+            })
+        }
+
+        /**
+         * 
+         * @param {*} query 
+         */
+        getManyTracks(query) {
+            return new Promise ((resolve, reject) => {
+                this.db.collection('tracks').find(query).toArray(function (err, res) {
+                    if (err) reject(err)
+                    else resolve(res)
+                })
+            })
+        }
+
+        /**
+         * 
+         */
         getLibrary() {
             return new Promise ((resolve, reject) => {
-                this.db.collection('Tracks').find({}).toArray(function (err, res) {
-                    if (err) throw err
-
-                    resolve(res)
+                this.db.collection('tracks').find({}).toArray(function (err, res) {
+                    if (err) reject(err)
+                    else resolve(res)
                 })
             })
         }
