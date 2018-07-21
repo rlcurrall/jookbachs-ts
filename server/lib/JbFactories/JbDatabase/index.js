@@ -147,7 +147,9 @@ function dbFactory(deps) {
         // <editor-fold desc="DB Queries">
 
         /**
-         * 
+         * Returns a promise to insert a track and on a success will return an object
+         * containing the result and number of records inserted, and on a failure will
+         * return the error object
          * @param {*} track 
          */
         insertTrack (track) {
@@ -161,17 +163,21 @@ function dbFactory(deps) {
         }
 
         /**
-         * 
+         * Returns a promise that on a success will return a track object that matches
+         * the query, and on a failure will return the error object
          * @param {*} query 
          */
         getTrack(query) {
             return this.db.collection('tracks').findOne(query).then(function(res) {
                 return res
+            }, function (err) {
+                return err
             })
         }
 
         /**
-         * 
+         * Returns a promise that on a success will return an array of tracks that match
+         * the query, and on a failure will return the error object
          * @param {*} query 
          */
         getManyTracks(query) {
@@ -184,7 +190,8 @@ function dbFactory(deps) {
         }
 
         /**
-         * 
+         * Returns a promise that on a success will return an array of all tracks in
+         * the database, and on a failure will return the error object
          */
         getLibrary() {
             return new Promise ((resolve, reject) => {
