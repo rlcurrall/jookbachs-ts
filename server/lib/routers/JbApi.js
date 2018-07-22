@@ -30,8 +30,51 @@ function apiFactory (deps) {
             }));
             router.use(bodyParser.json());
 
-            router.get('/test', function (req, res, next) {
-                
+            // Get all tracks
+            router.get('/track', function (req, res, next) {
+                that.testDB.getLibrary().then(
+                    function (lib) {
+                        res.status(200).json(lib);
+                        next();
+                    },
+                    function (err) {
+                        res.status(400).json(err);
+                        next();
+                    }
+                )
+                next();
+            })
+
+            // Get track by id
+            router.get('/track/:track_id', function (req, res, next) {
+                console.log(req.params.track_id)
+                let id = parseInt(req.params.track_id)
+                that.testDB.getTrack({id: id}).then(
+                    function (val) {
+                        res.status(200).json(val);
+                        next();
+                    },
+                    function (err) {
+                        res.status(400).json(err);
+                        next();
+                    }
+                )
+                next();
+            })
+
+            // Get track by title
+            router.get('/track/title/:track_title', function (req, res, next) {
+                that.testDB.getTrack({title: req.params.track_title}).then(
+                    function (val) {
+                        res.status(200).json(val);
+                        next();
+                    },
+                    function (err) {
+                        res.status(400).json(err);
+                        next();
+                    }
+                )
+                next();
             })
 
             router.get('/getlibrary', function (req, res, next) {

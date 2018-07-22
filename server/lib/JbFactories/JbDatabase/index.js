@@ -115,7 +115,8 @@ function dbFactory(deps) {
                     //         album: "That One Album",
                     //         track: 10,
                     //         year: 12,
-                    //         path: "path/to/song.mp3"
+                    //         path: "path/to/song.mp3",
+                    //         id: 1
                     //     }).then(function (res) {
                     //         console.log(res.result)
                     //     }, function (err) {
@@ -124,7 +125,7 @@ function dbFactory(deps) {
                     // }, 2000)
 
 
-                    // that.getTrack({title: 'Fake Title'}).then(function(res) {
+                    // that.getTrack({id: 0}).then(function(res) {
                     //     console.log(res)
                     // })
 
@@ -153,7 +154,6 @@ function dbFactory(deps) {
          * @param {*} track 
          */
         insertTrack (track) {
-            // have validation for schema
             return new Promise( (resolve, reject) => {
                 this.db.collection('tracks').insert(track, function (err, res) {
                     if (err) reject(err)
