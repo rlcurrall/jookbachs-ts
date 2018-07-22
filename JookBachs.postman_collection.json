@@ -1,0 +1,69 @@
+{
+	"info": {
+		"_postman_id": "f60fe79e-2412-4cd6-81ba-b2029877aca5",
+		"name": "JookBachs",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get All Tracks",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/track",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"track"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Track By ID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/track/0",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"track",
+						"0"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Track By Title",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {},
+				"url": {
+					"raw": "{{url}}/api/track/title/Fake%20Title",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"api",
+						"track",
+						"title",
+						"Fake%20Title"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
