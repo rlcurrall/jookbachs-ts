@@ -35,7 +35,9 @@ function libraryModel(deps) {
 			this.path = path.normalize(dirPath);
 			this.isLoaded = false;
 			var tracksList = [];
-			var count = 0;
+			this.count = 0;
+
+			let that = this;
 
 			// setup walker for music library directory
 			var walker = walk.walk(this.path, {
@@ -50,12 +52,21 @@ function libraryModel(deps) {
 				let hidden = stat.name.substr(0, 1) === '.';
 
 				if (included && !hidden) {
-					let newTrack = new JbTrack(count, root + path.sep + stat.name);
-					tracksList.push(newTrack);
-					count++;
+					let newTrack = new JbTrack(that.count, root + path.sep + stat.name);
+					newTrack.loadMetaData().then(
+						(res) => {
+							tracksList.push(newTrack);
+							that.count++;
+							next();
+						},
+						(err) => {
+							console.log("error " + err)
+						}
+					)
 				}
-
-				next();
+				else {
+					next();
+				}
 
 			});
 

@@ -13,6 +13,14 @@ function dbFactory(deps) {
     const ObjectId = deps.MongoDB.ObjectId;
     const MongoClient = deps.MongoDB.MongoClient;
 
+    const path = require('path');
+    const mm = require('music-metadata');
+    const walk = require('walk');
+    const JbTrack = require('models/JbTrack')({
+        path: path,
+        tagReader: mm
+    })
+
     // </editor-fold>
     // #endregion
 
@@ -54,8 +62,8 @@ function dbFactory(deps) {
                     function (res) {
                         that._createAllCollections().then(
                             (res) => {
-                                console.log(res)
-                                // that._populateDB();
+                                // console.log(res)
+                                that._populateDB();
                             },
                             (err) => {
                                 console.log(err);
@@ -215,12 +223,12 @@ function dbFactory(deps) {
                                     bsonType: "string",
                                     description: "must be a string and is required"
                                 },
-                                track: {
-                                    bsonType: "int",
-                                    minimum: 0,
-                                    maximum: 3000,
-                                    description: "must be an integer in [0, 3000] and is required"
-                                },
+                                // track: {
+                                //     bsonType: "int",
+                                //     minimum: 0,
+                                //     maximum: 3000,
+                                //     description: "must be an integer in [0, 3000] and is required"
+                                // },
                                 year: {
                                     bsonType: "int",
                                     minimum: 0,
@@ -234,60 +242,57 @@ function dbFactory(deps) {
                             }
                         }
                     }
-                });
-                that._log('DbService', 'info', 'Tracks collection created');
-
-                that.db.createCollection('playlists');
-                that._log('DbService', 'info', 'Playlists collection created');
-
-                resolve();
+                }).then(
+                    (res) => {
+                        resolve(res)
+                        that._log('DbService', 'info', 'Tracks collection created');
+                    },
+                    (err) => {
+                        reject(err)
+                    }
+                );
             })
         }
 
-        // _populateDB() {
-        //     let that = this
+        _populateDB() {
+            let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
+            let that = this;
 
-        //     let dirPath = this.config.libraryPaths[0];
-        // 	let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
+			let dirPath = path.normalize(this.config.libraryPaths[0]);
+			let count = 0;
 
-        // 	// this.path = path.normalize(dirPath);
-        // 	var tracksList = [];
+			// setup walker for music library directory
+			var walker = walk.walk(dirPath, {
+				followLinks: false
+			});
 
-        //     var walker = walk.walk(dirPath, {
-        // 		followLinks: false
-        //     });
+			walker.on('file', function (root, stat, next) {
 
-        //     walker.on('file', function (root, stat, next) {
+				let included = fileTypeInclusions.find(function (element) {
+					return element === path.extname(stat.name);
+				});
+				let hidden = stat.name.substr(0, 1) === '.';
 
-        // 		let included = fileTypeInclusions.find(function (element) {
-        // 			return element === path.extname(stat.name);
-        // 		});
-        // 		let hidden = stat.name.substr(0, 1) === '.';
+				if (included && !hidden) {
+					let newTrack = new JbTrack(count, root + path.sep + stat.name);
+					newTrack.loadMetaData().then(
+						(res) => {
+                            // console.log(newTrack)
+                            that.insertTrack(newTrack.toJson())
+							count++;
+							next();
+						},
+						(err) => {
+							console.log("error " + err)
+						}
+					)
+				}
+				else {
+					next();
+				}
 
-        // 		if (included && !hidden) {
-        //             let newTrack = new JbTrack(root + path.sep + stat.name);
-        //             newTrack.loadMetaData().then(
-        //                 (res) => {
-        //                     console.log("succ")
-        //                 },
-        //                 (err) => {
-        //                     console.log("err")
-        //                 }
-        //             )
-        // 			that.insertTrack(newTrack.toJson()).then(
-        //                 (res) => {
-        //                     console.log("res")
-        //                 },
-        //                 (err) => {
-        //                     console.log("err")
-        //                 }
-        //             );
-        // 		}
-
-        // 		next();
-
-        // 	});
-        // }
+			});
+        }
 
         /**
          * 
