@@ -104,7 +104,7 @@ app.controller('playerController', [
 
 		$scope.setTrack = function (trackId) {
 			try {
-				AUDIO.src = $rootScope.URL.streamUrl + '?trackId=' + trackId;
+				AUDIO.src = $rootScope.URL.streamUrl + '?id=' + trackId;
 				$scope.current.id = trackId;
 			} catch (e) {
 				$log.log('caught' + e);

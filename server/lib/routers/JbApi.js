@@ -14,9 +14,7 @@ function apiFactory(deps) {
             this.url = '/api';
 
             if (options) {
-                if (options.db) {
-                    this.testDB = options.db;
-                }
+                // load in options
             }
         }
 
@@ -27,7 +25,7 @@ function apiFactory(deps) {
             // #region Track Queries
 
             let getTrackById = function (req, res, next) {
-                that.testDB.getTrackById(req.params.id).then(
+                that.DB.getTrackById(req.params.id).then(
                     function (track) {
                         res.status(200).json(track)
                     },
@@ -38,7 +36,7 @@ function apiFactory(deps) {
             }
 
             let getAllTracks = function (req, res, next) {
-                that.testDB.getAllTracks().then(
+                that.DB.getAllTracks().then(
                     function (lib) {
                         res.status(200).json(lib);
                     },
@@ -51,7 +49,7 @@ function apiFactory(deps) {
             let getTracksByQuery = function (req, res, next) {
                 let query = req.query;
                 if (query.title || query.artist || query.album || query.year) {
-                    that.testDB.getTracksByQuery(query).then(
+                    that.DB.getTracksByQuery(query).then(
                         function (val) {
                             res.status(200).json(val);
                         },
@@ -77,11 +75,6 @@ function apiFactory(deps) {
             // Tracks Routes
             router.get('/tracks', getTracksByQuery, getAllTracks)
             router.get('/tracks/:id', getTrackById)
-
-            router.get('/getlibrary', function (req, res, next) {
-                res.status(200).json(lib[0].getAllTracks());
-                next();
-            })
 
             router.post('/authTest', function (req, res, next) {
                 if (req.body.sharedKey === config.sharedKey) {

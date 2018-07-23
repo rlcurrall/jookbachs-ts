@@ -68,23 +68,14 @@ const JbScripts = require('JbScripts')({
 // <editor-fold desc="DB">
 
 const JbDatabse = require('JbDatabase')({
-	MongoDB: MongoDB
+	MongoDB: MongoDB,
+	path: path,
+	walk: walk
 });
 
 const JbTrack = require('models/JbTrack')({
 	path: path,
 	tagReader: mm
-});
-
-const JbLibrary = require('models/JbLibrary')({
-	path: path,
-	walk: walk,
-	JbTrack: JbTrack
-});
-
-const libraries = require('repos/libraryRepo')({
-	config: config,
-	JbLibrary: JbLibrary
 });
 
 // </editor-fold>
@@ -100,11 +91,11 @@ const libraries = require('repos/libraryRepo')({
 Logger.log({ label: 'Main', level: 'info', message: 'Initializing Application' });
 
 // Initialize DB Connection
-const jbDatabase = new JbDatabse( config, { Logger: Logger } );
+const jbDatabase = new JbDatabse( config, JbTrack, { Logger: Logger } );
 jbDatabase.connect();
 
 // Create Server
-const jbServer = new JbServer( config, libraries, [ JbWebUI, JbScripts, JbApi, JbStream ], { Logger: Logger, db: jbDatabase } );
+const jbServer = new JbServer( config, jbDatabase, [ JbWebUI, JbScripts, JbApi, JbStream ], { Logger: Logger, db: jbDatabase } );
 jbServer.startServer();
 
 // ================================================================================================

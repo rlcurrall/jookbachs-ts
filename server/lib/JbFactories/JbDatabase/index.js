@@ -12,14 +12,8 @@ function dbFactory(deps) {
 
     const ObjectId = deps.MongoDB.ObjectId;
     const MongoClient = deps.MongoDB.MongoClient;
-
-    const path = require('path');
-    const mm = require('music-metadata');
-    const walk = require('walk');
-    const JbTrack = require('models/JbTrack')({
-        path: path,
-        tagReader: mm
-    })
+    const path = deps.path;
+    const walk = deps.walk;
 
     // </editor-fold>
     // #endregion
@@ -30,8 +24,9 @@ function dbFactory(deps) {
          * 
          * @param {*} config 
          */
-        constructor(config, options) {
+        constructor(config, JbModel, options) {
             this.config = config;
+            this.JbModel = JbModel;
 
             if (options) {
                 if (options.Logger)
@@ -66,41 +61,15 @@ function dbFactory(deps) {
                                 that._populateDB();
                             },
                             (err) => {
-                                console.log(err);
+                                that._log('JbDatabase', 'error', err);
                             }
                         );
                     },
                     function (err) {
-                        console.log('Collection already deleted')
+                        that._log('JbDatabase', 'warn', 'Database already deleted');
                         that._createAllCollections();
                     }
                 );
-
-                /* Uncomment to see how to retrieve data from db */
-                // setTimeout(() => { // delay incase collection not created
-                //     that.insertTrack({
-                //         title: "Fake Title",
-                //         artist: "Some guy",
-                //         album: "That One Album",
-                //         track: 10,
-                //         year: 12,
-                //         path: "path/to/song.mp3",
-                //         id: 1
-                //     }).then(function (res) {
-                //         console.log(res.result)
-                //     }, function (err) {
-                //         console.log(err.message)
-                //     })
-                // }, 2000)
-
-
-                // that.getTrack({'title': 'Fake Title'}).then(function(res) {
-                //     console.log(res)
-                // })
-
-                // that.getLibrary().then(function (res) {
-                //     console.log(res)
-                // })
             });
         }
 
@@ -190,6 +159,11 @@ function dbFactory(deps) {
         // </editor-fold>
         // #endregion
 
+        // #region Private functions
+
+        /**
+         * 
+         */
         _dropTracksCollection() {
             let that = this
 
@@ -201,6 +175,9 @@ function dbFactory(deps) {
             })
         }
 
+        /**
+         * 
+         */
         _createAllCollections() {
             let that = this
 
@@ -254,10 +231,12 @@ function dbFactory(deps) {
             })
         }
 
+        /**
+         * 
+         */
         _populateDB() {
-            let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
             let that = this;
-
+            let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
 			let dirPath = path.normalize(this.config.libraryPaths[0]);
 			let count = 0;
 
@@ -274,7 +253,7 @@ function dbFactory(deps) {
 				let hidden = stat.name.substr(0, 1) === '.';
 
 				if (included && !hidden) {
-					let newTrack = new JbTrack(count, root + path.sep + stat.name);
+					let newTrack = new that.JbModel(count, root + path.sep + stat.name);
 					newTrack.loadMetaData().then(
 						(res) => {
                             // console.log(newTrack)
@@ -311,6 +290,8 @@ function dbFactory(deps) {
                 console.log(msg);
             }
         }
+
+        // #endregion
     }
 
     return JbDatabase;

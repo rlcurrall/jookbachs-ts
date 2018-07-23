@@ -47,9 +47,6 @@ function serverFactory(deps) {
             if (options) {
                 if (options.Logger)
                     this.Logger = options.Logger;
-                if (options.db) {
-                    this.testDB = options.db;
-                }
             }
             
             /* Create Express App */
@@ -132,7 +129,7 @@ function serverFactory(deps) {
          * @param {JbRouter Concrete Implementation} router 
          */
         createRoute(router) {
-            let r = new router( this.config, this.DB, { Logger: this.Logger, db: this.testDB } );
+            let r = new router( this.config, this.DB, { Logger: this.Logger } );
             // r.setLogger(this.Logger);
 
             this.jbExpress.setRoute(r);
