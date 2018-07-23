@@ -122,7 +122,8 @@ function trackModel(deps) {
 				album: this.album,
 				track: this.track.no,
 				year: this.year,
-				image: this.image,
+				// image: this.image, // image too large, causes slow download of data, may need to store in file system rather than db
+				image: {},
 				libraryId: this.libraryId
 			}
 			return res;

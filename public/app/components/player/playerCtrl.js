@@ -48,6 +48,7 @@ app.controller('playerController', [
 			playerService.getAllLibraryTracks()
 				.then(
 					function success(allTracks) {
+						console.log(allTracks);
 						var data = allTracks.map(function (track) {
 							var canvas = document.createElement('canvas');
 							canvas.width = 100;
@@ -55,7 +56,7 @@ app.controller('playerController', [
 							var ctx = canvas.getContext("2d");
 							var imgData = ctx.createImageData(100, 100);
 							img = track.image; // need to do more research on how to convert to an image
-							// console.log(img);
+							// console.log();
 							for (var i = 0; i < imgData.data.length; i += 4) {
 								imgData.data[i+0] = 0;
 								imgData.data[i+1] = 0;

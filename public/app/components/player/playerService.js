@@ -9,7 +9,7 @@ app.factory('playerService', [
                 apiService.redirect(route);
             },
             getAllLibraryTracks: function () {
-                var url = $rootScope.URL.apiUrl + '/getlibrary';
+                var url = $rootScope.URL.apiUrl + '/tracks';
                 return apiService.httpGet(url, false);
             }
         }
