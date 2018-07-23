@@ -1,21 +1,20 @@
-
-function apiFactory (deps) {
+function apiFactory(deps) {
 
     if (!deps.bodyParser) {
-		throw new Error('[ JbApi ] Missing Dependency: bodyParser is required');
-	}
+        throw new Error('[ JbApi ] Missing Dependency: bodyParser is required');
+    }
 
     const bodyParser = deps.bodyParser;
     const JbRouter = require('JbRouter');
 
     class JbApi extends JbRouter {
 
-        constructor (config, DB, options) {
+        constructor(config, DB, options) {
             super(config, DB, options);
             this.url = '/api';
 
             if (options) {
-                if (options.db){
+                if (options.db) {
                     this.testDB = options.db;
                 }
             }
@@ -25,64 +24,66 @@ function apiFactory (deps) {
             let lib = this.DB;
             let that = this;
 
-            router.use(bodyParser.urlencoded({
-                extended: true
-            }));
-            router.use(bodyParser.json());
+            // #region Track Queries
 
-            // Get all tracks
-            router.get('/track', function (req, res, next) {
-                that.testDB.getLibrary().then(
+            let getTrackById = function (req, res, next) {
+                that.testDB.getTrackById(req.params.id).then(
+                    function (track) {
+                        res.status(200).json(track)
+                    },
+                    function (err) {
+                        res.status(400).json(err)
+                    }
+                )
+            }
+
+            let getAllTracks = function (req, res, next) {
+                that.testDB.getAllTracks().then(
                     function (lib) {
                         res.status(200).json(lib);
-                        next();
                     },
                     function (err) {
                         res.status(400).json(err);
-                        next();
                     }
                 )
-                next();
-            })
+            }
 
-            // Get track by id
-            router.get('/track/:track_id', function (req, res, next) {
-                console.log(req.params.track_id)
-                let id = parseInt(req.params.track_id)
-                that.testDB.getTrack({id: id}).then(
-                    function (val) {
-                        res.status(200).json(val);
-                        next();
-                    },
-                    function (err) {
-                        res.status(400).json(err);
-                        next();
-                    }
-                )
-                next();
-            })
+            let getTracksByQuery = function (req, res, next) {
+                let query = req.query;
+                if (query.title || query.artist || query.album || query.year) {
+                    that.testDB.getTracksByQuery(query).then(
+                        function (val) {
+                            res.status(200).json(val);
+                        },
+                        function (err) {
+                            res.status(400).json(err);
+                        }
+                    )
+                } else {
+                    next();
+                }
+            }
 
-            // Get track by title
-            router.get('/track/title/:track_title', function (req, res, next) {
-                that.testDB.getTrack({title: req.params.track_title}).then(
-                    function (val) {
-                        res.status(200).json(val);
-                        next();
-                    },
-                    function (err) {
-                        res.status(400).json(err);
-                        next();
-                    }
-                )
+            // #endregion
+
+            // Route Initialization
+            router.use(bodyParser.urlencoded({extended: true}));
+            router.use(bodyParser.json());
+            router.use(function (req, res, next) {
+                that.log('JbApi', 'request', `${req.method} ${req.url}`);
                 next();
-            })
+            });
+
+            // Tracks Routes
+            router.get('/tracks', getTracksByQuery, getAllTracks)
+            router.get('/tracks/:id', getTrackById)
 
             router.get('/getlibrary', function (req, res, next) {
                 res.status(200).json(lib[0].getAllTracks());
                 next();
             })
 
-            router.post('/authTest', function(req, res, next) {
+            router.post('/authTest', function (req, res, next) {
                 if (req.body.sharedKey === config.sharedKey) {
                     res.status(202).end();
                 } else {
@@ -92,11 +93,7 @@ function apiFactory (deps) {
                 next();
             });
 
-            router.use(function (req, res, next) {
-                that.log('JbApi', 'request', `${req.method} ${req.url}`);
-            });
 
-            
             that.log('JbApi', 'info', 'Route Created');
         }
     }
