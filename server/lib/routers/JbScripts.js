@@ -13,7 +13,7 @@ function scriptsFactory (deps) {
         constructor (config, DB, options) {
             super(config, DB, options);
             this.url = '/scripts';
-            this.scriptPath = `${config.appDir}\\node_modules\\`;
+            this.scriptPath = `${config.appDir}/node_modules/`;
         }
 
         assignRoute(router) {

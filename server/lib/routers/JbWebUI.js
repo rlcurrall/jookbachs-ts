@@ -13,7 +13,7 @@ function webUIFactory (deps) {
         constructor (config, DB, options) {
             super(config, DB, options);
             this.url = '/';
-            this.publicPath = `${config.appDir}\\public\\`;
+            this.publicPath = `${config.appDir}/public/`;
         }
 
         assignRoute(router) {
