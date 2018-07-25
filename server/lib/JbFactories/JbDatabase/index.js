@@ -139,6 +139,7 @@ function dbFactory(deps) {
         getAllRecords(collection) {
             return new Promise((resolve, reject) => {
                 this.db.collection(collection).find({}).toArray(function (err, res) {
+                    res.sort((a, b) => a.id - b.id) // ensure that tracks are ordered by Id
                     if (err) reject(err)
                     else resolve(res)
                 })

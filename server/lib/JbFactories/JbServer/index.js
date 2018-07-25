@@ -54,9 +54,9 @@ function serverFactory(deps) {
             this.jbExpress = new JbExpress( { Logger: this.Logger } );
 
             // Assign routes
-            for (let r in this.Routes) {
-                this.createRoute(this.Routes[r]);
-            }
+            Routes.forEach( route => {
+                this.createRoute(route)
+            })
         }
 
         /**
