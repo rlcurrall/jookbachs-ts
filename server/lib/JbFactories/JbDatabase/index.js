@@ -1,6 +1,9 @@
+
 /**
- * 
- * @param {*} deps 
+ * Factory for the JbDatabase class that injects all necessary dependencies.
+ *
+ * @param {object} deps
+ * @returns
  */
 function dbFactory(deps) {
 
@@ -18,11 +21,21 @@ function dbFactory(deps) {
     // </editor-fold>
     // #endregion
 
+    /**
+     * Interface to the MongoDB database specified by the config file.
+     *
+     * @class JbDatabase
+     */
     class JbDatabase {
 
+        
         /**
+         * Creates an instance of JbDatabase.
          * 
-         * @param {*} config 
+         * @param {object} config
+         * @param {object} JbModel
+         * @param {object} options
+         * @memberof JbDatabase
          */
         constructor(config, JbModel, options) {
             this.config = config;
@@ -36,9 +49,13 @@ function dbFactory(deps) {
             this.dbURL = "mongodb://" + config.db.host + ":" + config.db.port + "/" + config.db.name;
         }
 
+        
         /**
-         * Create connection to database, if the necessary collections do not exist
-         * then create the collections.
+         * Create the connection to database and reinitialize the database by dropping all collections
+         * specified by the config file, then creating the collections, and finally populating the 
+         * collections.
+         *
+         * @memberof JbDatabase
          */
         connect() {
             let that = this;
@@ -79,8 +96,11 @@ function dbFactory(deps) {
             });
         }
 
+        
         /**
-         * Close connection to the database
+         * Close the connection to the database.
+         *
+         * @memberof JbDatabase
          */
         disconnect() {
             console.log('Disconnecting');
@@ -89,10 +109,14 @@ function dbFactory(deps) {
 
         // #region DB Queries
 
+        
         /**
-         * 
-         * @param {*} collection 
-         * @param {*} record 
+         * Insert a record into the specified collection.
+         *
+         * @param {string} collection
+         * @param {object} record
+         * @returns
+         * @memberof JbDatabase
          */
         insertRecord(collection, record) {
             return new Promise((resolve, reject) => {
@@ -103,6 +127,15 @@ function dbFactory(deps) {
             })
         }
 
+        /**
+         * Get a single record from the specified collection that matches the 
+         * provided query.
+         *
+         * @param {string} collection
+         * @param {object} query
+         * @returns
+         * @memberof JbDatabase
+         */
         getRecord(collection, query) {
             if (query._id) {
                 query._id = ObjectId(query._id)
@@ -114,6 +147,14 @@ function dbFactory(deps) {
             })
         }
 
+        /**
+         * Get a single record from the specified collection by the ObjectId provided.
+         *
+         * @param {string} collection
+         * @param {string} id
+         * @returns
+         * @memberof JbDatabase
+         */
         getRecordById(collection, id) {
             let query = {}
             query._id = ObjectId(id)
@@ -124,22 +165,43 @@ function dbFactory(deps) {
             })
         }
 
-        getRecordsByQuery(collection, query) {
-            if (query.year) {
+        /**
+         * Get all records from the specified collection in the database that match
+         * the query, sort by the provided sort paramaters, otherwise sort by the
+         * 'id' property.
+         *
+         * @param {string} collection
+         * @param {object} query
+         * @param {object} sort
+         * @returns
+         * @memberof JbDatabase
+         */
+        getRecordsByQuery(collection, query, sort) {
+            if (query.year)
                 query.year = parseInt(query.year)
-            }
+
+            if (typeof sort === 'undefined')
+                sort = {"id": 1}
+
             return new Promise((resolve, reject) => {
-                this.db.collection(collection).find(query).toArray(function (err, res) {
+                this.db.collection(collection).find(query).sort(sort).toArray(function (err, res) {
                     if (err) reject(err)
                     else resolve(res)
                 })
             })
         }
 
+        /**
+         * Get all documents from the specified collection in the database and 
+         * sort by the 'id' property.
+         *
+         * @param {string} collection
+         * @returns
+         * @memberof JbDatabase
+         */
         getAllRecords(collection) {
             return new Promise((resolve, reject) => {
-                this.db.collection(collection).find({}).toArray(function (err, res) {
-                    res.sort((a, b) => a.id - b.id) // ensure that tracks are ordered by Id
+                this.db.collection(collection).find({}).sort({"id": 1}).toArray(function (err, res) {
                     if (err) reject(err)
                     else resolve(res)
                 })
@@ -150,8 +212,13 @@ function dbFactory(deps) {
 
         // #region Private functions
 
+        
         /**
-         * 
+         * Drops all collections and documents of the collections defined in the config file.
+         *
+         * @private
+         * @returns
+         * @memberof JbDatabase
          */
         _dropAllCollections() {
             let that = this
@@ -181,8 +248,13 @@ function dbFactory(deps) {
             })
         }
 
+        
         /**
-         * 
+         * Creates all collections defined by the config file.
+         *
+         * @private
+         * @returns
+         * @memberof JbDatabase
          */
         _createAllCollections() {
             let that = this
@@ -202,12 +274,26 @@ function dbFactory(deps) {
             })
         }
 
+        
         /**
+         * Populates the database by traversing all file paths recursively from the config 
+         * file and retrieving the metadata for each file to store in the database.
          * 
+         * @private
+         * @memberof JbDatabase
          */
         _populateDB() {
             let that = this;
             let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
+            let Paths = this.config.libraryPaths;
+
+            // Paths.forEach( library => {
+            //     let dirPath = path.normalize(library);
+            //     let count = 0;
+
+
+            // })
+
 			let dirPath = path.normalize(this.config.libraryPaths[0]);
 			let count = 0;
 
@@ -244,11 +330,15 @@ function dbFactory(deps) {
 			});
         }
 
+        
         /**
-         * 
-         * @param {*} label 
-         * @param {*} level 
-         * @param {*} msg 
+         * Private Logger used by the JbDatabase class.
+         *
+         * @param {string} label
+         * @param {string} level
+         * @param {string} msg
+         * @private
+         * @memberof JbDatabase
          */
         _log(label, level, msg) {
             if (this.Logger) {
