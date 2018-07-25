@@ -147,9 +147,6 @@ function dbFactory(deps) {
         
         // #endregion
 
-        // </editor-fold>
-        // #endregion
-
         // #region Private functions
 
         /**
