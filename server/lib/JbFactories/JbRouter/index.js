@@ -1,13 +1,21 @@
 /**
- * Abstract class used to define the base functionality of the routers to 
+ * Abstract class use to define the base functionality of the routes to
  * be used by the JbServer.
+ * 
+ * @abstract
+ * @class JbRouter
  */
 class JbRouter {
 
+    
     /**
-     * Defines base functionality of a JbRouter
-     * @param {object} config 
-     * @param {object} DB 
+     * Creates an instance of JbRouter.
+     * @constructor
+     * 
+     * @param {object} config
+     * @param {object} DB
+     * @param {object} options
+     * @memberof JbRouter
      */
     constructor (config, DB, options) {
 
@@ -28,20 +36,25 @@ class JbRouter {
         this.DB = DB;
         this.url = '/';
     }
-
+    
     /**
-     * Returns the URL of the router
+     * Returns the url of this instance of the JbRouter
+     *
+     * @returns
+     * @memberof JbRouter
      */
     getUrl () {
         return this.url;
     }
 
+    
     /**
-     * Log message to console
-     * 
-     * @param {string} label 
-     * @param {string} level 
-     * @param {string/error object} msg 
+     * Logger used by the JbRouter Class
+     *
+     * @param {object} label
+     * @param {object} level
+     * @param {object} msg
+     * @memberof JbRouter
      */
     log (label, level, msg) {
         if (this.Logger) {
@@ -52,8 +65,12 @@ class JbRouter {
         }
     }
 
+    
     /**
-     * Requires user to define the assignRoute function
+     * Method to define all responses for the JbRouter, must be implemented by a concrete
+     * implementation of the JbRouter class.
+     *
+     * @memberof JbRouter
      */
     assignRoute () {
         throw new ReferenceError('Classes extending JbRouter must implement the assignRoute method');

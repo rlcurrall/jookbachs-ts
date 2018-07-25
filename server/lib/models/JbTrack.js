@@ -1,8 +1,8 @@
 /**
- * Factory to generate the track class, receives an object with 
- * all dependencies to generate the class.
- * 
- * @param {object} deps 
+ * Factory for the model, JbTrack, class that injects all necessary dependencies.
+ *
+ * @param {object} deps
+ * @returns
  */
 function trackModel(deps) {
 
@@ -19,24 +19,33 @@ function trackModel(deps) {
 	// </editor-fold>
 	// #endregion
 
+	
 	/**
-	 * Represents a music track
+	 * Used to load metadata for files using the media-metadata module.
+	 *
+	 * @class JbTrack
 	 */
 	class JbTrack {
 
+		
 		/**
-		 * Constructor for a track object, populates the object properties by
-		 * reading the ID3 tags of the file using node-id3.
-		 * 
-		 * @param {number} id 
-		 * @param {string} filepath 
-		 * @param {number} libraryId 
+		 * Creates an instance of JbTrack.
+		 * @param {int} id
+		 * @param {string} filepath
+		 * @memberof JbTrack
 		 */
 		constructor(id, filepath) {
 			this.filepath = filepath;
 			this.id = id;
 		}
 
+
+		/**
+		 * Uses the tag reader provided to extract the metadata for the given file.
+		 *
+		 * @returns
+		 * @memberof JbTrack
+		 */
 		loadMetaData() {
 			let that = this;
 
@@ -62,6 +71,13 @@ function trackModel(deps) {
 			});
 		}
 
+
+		/**
+		 * Retrieves all metadata for the given file and returns it as a JSON object.
+		 *
+		 * @returns
+		 * @memberof JbTrack
+		 */
 		toJson() {
 			let res = {
 				id: this.id,

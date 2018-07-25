@@ -1,9 +1,8 @@
 /**
- * @description A factory used to inject dependencies for the JbServer class
- * 
- * @param {object} deps - an object containing all the dependencies needed for the application
- * 
- * @returns {class} JbServer class is returned, an HTTP/HTTPS server interface
+ * Factory for the JbServer class that injects all necessary dependencies.
+ *
+ * @param {object} deps
+ * @returns
  */
 function serverFactory(deps) {
 
@@ -22,22 +21,21 @@ function serverFactory(deps) {
     // #endregion
 
     /**
-     * @class
-     * @author Robb Currall
-     * @description Serves as an interface for the HTTP/HTTPS servers as well as Sockets
+     * Interface for creating an HTTPS server with Socket.IO 
+     *
+     * @class JbServer
      */
     class JbServer {
+        
         /**
+         * Creates an instance of JbServer.
          * @constructor
-         * @description Constructor for the JbServer
-         * @author Robb Currall
          * 
-         * @param {object} config - Object from JSON that contains all configuration needed for the server
-         * @param {object} DB - Database instance that is used by the application
-         * @param {Array} Routes - An array of Router Factories that is used to define the routes for the express app 
-         * @param {object} options - An object containing options for the server
-         * 
-         * @returns {JbServer} - An object used to interface with the HTTP/HTTPS servers and Sockets
+         * @param {object} config
+         * @param {object} DB
+         * @param {object} Routes
+         * @param {object} options
+         * @memberof JbServer
          */
         constructor(config, DB, Routes, options) {
             this.config = config;
@@ -60,8 +58,10 @@ function serverFactory(deps) {
         }
 
         /**
-         * @description Starts the Server listening on the specified ports.
-         * @returns {void}
+         * Starts the HTTP & HTTPS Servers listening on the ports specified by 
+         * the config file.
+         *
+         * @memberof JbServer
          */
         startServer() {
             let that = this
@@ -91,8 +91,11 @@ function serverFactory(deps) {
         }
 
         /**
-         * @description Close server from receiving requests from HTTP, HTTPS, or Sockets
-         * @returns {error} null on success or an error object on a failure
+         * Closes server from receiving requests from HTTP, HTTPS, or Sockets. Returns
+         * null on a success or an error object on a failure.
+         *
+         * @returns
+         * @memberof JbServer
          */
         stopServer() {
             let that = this
@@ -127,10 +130,11 @@ function serverFactory(deps) {
         }
 
         /**
-         * Used to define a router and assign the router to the express app
-         * 
-         * @param {Express App} appFactory 
-         * @param {JbRouter Concrete Implementation} router 
+         * Used to define a router and assign the router to the express app. Receives 
+         * a concrete implementation of the JbRouter.
+         *
+         * @param {object} router
+         * @memberof JbServer
          */
         createRoute(router) {
             let r = new router( this.config, this.DB, { Logger: this.Logger } );
@@ -138,7 +142,10 @@ function serverFactory(deps) {
         }
 
         /**
-         * Returns an array of functions that can be executed to shutdown the server
+         * Returns an array of functions that can be executed to shudown the server.
+         *
+         * @returns
+         * @memberof JbServer
          */
         getShutdownFunctions() {
             let funcs = [];
@@ -193,12 +200,13 @@ function serverFactory(deps) {
         }
 
         /**
-         * The logging function of the server, designed to use the Winston logger
-         * though if no logger is present, will use the standard output to console.
-         * 
-         * @param {string} label - defines the module that is generating the message
-         * @param {string} level - defines the level of the message (info, error, etc.)
-         * @param {string/error} msg - the message to be displayed
+         * Private Logger used by the JbServer class.
+         * @private
+         *
+         * @param {object} label
+         * @param {object} level
+         * @param {object} msg
+         * @memberof JbServer
          */
         _log (label, level, msg) {
             if (this.Logger) {

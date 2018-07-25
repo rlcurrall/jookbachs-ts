@@ -1,4 +1,3 @@
-
 /**
  * Factory for the JbDatabase class that injects all necessary dependencies.
  *
@@ -17,7 +16,6 @@ function dbFactory(deps) {
     const MongoClient = deps.MongoDB.MongoClient;
     const path = deps.path;
     const walk = deps.walk;
-
     // </editor-fold>
     // #endregion
 
@@ -31,6 +29,7 @@ function dbFactory(deps) {
         
         /**
          * Creates an instance of JbDatabase.
+         * @constructor
          * 
          * @param {object} config
          * @param {object} JbModel

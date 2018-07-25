@@ -1,6 +1,16 @@
 const readline = require('readline'); // Required here as to not expose module to rest of app
 
+/**
+ *
+ *
+ * @class ShutdownManager
+ */
 class ShutdownManager {
+    
+    /**
+     * Creates an instance of ShutdownManager.
+     * @memberof ShutdownManager
+     */
     constructor () {
         this.functions = [];
         let that = this;

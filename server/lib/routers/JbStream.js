@@ -1,6 +1,12 @@
-
+/**
+ * Factory for the JbApi class that injects all necessary dependencies.
+ *
+ * @param {object} deps
+ * @returns
+ */
 function streamFactory (deps) {
 
+    // #region Dependency Setup
     if (!deps.fs || !deps.url) {
         throw new Error('[ JbStream ] Missing Dependency: fs and url are required');
     }
@@ -8,9 +14,25 @@ function streamFactory (deps) {
     const fs = deps.fs;
     const url = deps.url;
     const JbRouter = require('JbRouter');
+    // #endregion
 
+    /**
+     * Concrete implementation of the JbRouter class defining the /stream route.
+     *
+     * @class JbStream
+     * @extends {JbRouter}
+     */
     class JbStream extends JbRouter {
 
+        /**
+         * Creates an instance of JbStream.
+         * @constructor
+         * 
+         * @param {object} config
+         * @param {object} DB
+         * @param {object} options
+         * @memberof JbStream
+         */
         constructor (config, DB, options) {
             super(config, DB, options);
             this.url = '/stream';
@@ -20,6 +42,12 @@ function streamFactory (deps) {
             }
         }
 
+        /**
+         * Defines all responses for the JbStream router.
+         *
+         * @param {object} router
+         * @memberof JbStream
+         */
         assignRoute(router) {
             let that = this;
 

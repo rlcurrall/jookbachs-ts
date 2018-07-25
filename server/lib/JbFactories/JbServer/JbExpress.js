@@ -1,6 +1,8 @@
 /**
- * Factory to generate the JbExpress class
- * @param {object} deps - object with all dependencies being injected
+ * Factory for the JbExpress class that injects all necessary dependencies.
+ *
+ * @param {object} deps
+ * @returns
  */
 function expressFactory(deps) {
 
@@ -17,12 +19,18 @@ function expressFactory(deps) {
     // #endregion
 
     /**
-     * Class to implement the express application used by the JbServer
+     * Interface to Express used by the JbServer.
+     *
+     * @class JbExpress
      */
-    class JbExpress {
+    class JbExpress { 
 
         /**
-         * Express app constructor, creates an express app. 
+         * Creates an instance of JbExpress.
+         * @constructor
+         * 
+         * @param {object} options
+         * @memberof JbExpress
          */
         constructor(options) {
             if (options) {
@@ -35,9 +43,11 @@ function expressFactory(deps) {
         }
 
         /**
-         * Sets a route for the express app
-         * 
-         * @param {JbRouter Concrete Implementation} router 
+         * Sets a route for the Express app, receives a concrete implementation
+         * of the JbRouter class.
+         *
+         * @param {object} router
+         * @memberof JbExpress
          */
         setRoute(router) {
             let route = express.Router();
@@ -48,18 +58,24 @@ function expressFactory(deps) {
         }
 
         /**
-         * Used to return the app created by this class
+         * Used to retrieve the Express app created by this class
+         *
+         * @returns
+         * @memberof JbExpress
          */
         getApp() {
             return this._app;
         }
 
+        
         /**
-         * Used to log info to the console
-         * 
-         * @param {string} label 
-         * @param {string} level 
-         * @param {string/error object} msg 
+         * Private Logger used by the JbExpress class
+         * @private
+         *
+         * @param {object} label
+         * @param {object} level
+         * @param {object} msg
+         * @memberof JbExpress
          */
         _log (label, level, msg) {
             if (this.Logger) {

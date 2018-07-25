@@ -1,6 +1,8 @@
 /**
- * A Factory used to generate the JbSocket class
- * @param {*} deps - an object containing all dependencies to be injected.
+ * Factory for the JbSocket class that injects all necessary dependencies.
+ *
+ * @param {object} deps
+ * @returns
  */
 function socketFactory(deps) {
 
@@ -16,13 +18,19 @@ function socketFactory(deps) {
     // #endregion
 
     /**
-     * Class to create a socket that will listen on the given https server
+     * Interface to Socket.IO used by JbServer.
+     *
+     * @class JbSocket
      */
     class JbSocket {
+        
         /**
-         * Creates the socket
-         * @param {HTTPS server} server 
-         * @param {object} options - An object used to pass the different options for the socket
+         * Creates an instance of JbSocket.
+         * @constructor
+         * 
+         * @param {object} server
+         * @param {object} options
+         * @memberof JbSocket
          */
         constructor(server, options) {
             this.server = server;
@@ -36,7 +44,10 @@ function socketFactory(deps) {
         }
 
         /**
-         * Have socket begin listening on the server and define socket responses
+         * Create a socket listening on the server received by the constructor, and define
+         * socket responses
+         *
+         * @memberof JbSocket
          */
         startListening() {
             let that = this;
@@ -65,6 +76,13 @@ function socketFactory(deps) {
         /**
          * Begin listening on the server provided by constructor
          */
+
+
+        /**
+         * Destroy all sockets and disconnect from all existing connections
+         *
+         * @memberof JbSocket
+         */
         closeSockets () {
             let that = this;
             for (let socketId in that.sockets) {
@@ -73,12 +91,15 @@ function socketFactory(deps) {
             }
         }
 
+        
         /**
-         * Log data to the console
-         * 
-         * @param {string} label 
-         * @param {string} level 
-         * @param {string/error object} msg 
+         * Private Logger used by the JbSocket class.
+         * @private
+         *
+         * @param {*} label
+         * @param {*} level
+         * @param {*} msg
+         * @memberof JbSocket
          */
         _log (label, level, msg) {
             if (this.Logger) {

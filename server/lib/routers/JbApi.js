@@ -1,14 +1,37 @@
+/**
+ * Factory for the JbApi class that injects all necessary dependencies.
+ *
+ * @param {object} deps
+ * @returns
+ */
 function apiFactory(deps) {
 
+    // #region Dependency Setup
     if (!deps.bodyParser) {
         throw new Error('[ JbApi ] Missing Dependency: bodyParser is required');
     }
 
     const bodyParser = deps.bodyParser;
     const JbRouter = require('JbRouter');
+    // #endregion
 
+    /**
+     * Concrete Implementation of the JbRoute class defining the /api route.
+     *
+     * @class JbApi
+     * @extends {JbRouter}
+     */
     class JbApi extends JbRouter {
 
+        /**
+         * Creates an instance of JbApi.
+         * @constructor
+         * 
+         * @param {object} config
+         * @param {object} DB
+         * @param {object} options
+         * @memberof JbApi
+         */
         constructor(config, DB, options) {
             super(config, DB, options);
             this.url = '/api';
@@ -18,6 +41,12 @@ function apiFactory(deps) {
             }
         }
 
+        /**
+         * Defines all responses for the JbApi router.
+         *
+         * @param {object} router
+         * @memberof JbApi
+         */
         assignRoute(router) {
             let that = this;
 
