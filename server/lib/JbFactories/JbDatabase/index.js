@@ -53,11 +53,10 @@ function dbFactory(deps) {
                 that.client = client;
                 that.db = client.db(that.config.db.name);
 
-                that._dropTracksCollection().then(
+                that._dropAllCollections().then(
                     function (res) {
                         that._createAllCollections().then(
                             (res) => {
-                                // console.log(res)
                                 that._populateDB();
                             },
                             (err) => {
@@ -67,7 +66,14 @@ function dbFactory(deps) {
                     },
                     function (err) {
                         that._log('JbDatabase', 'warn', 'Database already deleted');
-                        that._createAllCollections();
+                        that._createAllCollections().then(
+                            (res) => {
+                                that._populateDB();
+                            },
+                            (err) => {
+                                that._log('JbDatabase', 'error', err);
+                            }
+                        );
                     }
                 );
             });
@@ -82,79 +88,64 @@ function dbFactory(deps) {
         }
 
         // #region DB Queries
-        // <editor-fold desc="DB Queries">
 
         /**
-         * Returns a promise to insert a track and on a success will return an object
-         * containing the result and number of records inserted, and on a failure will
-         * return the error object
-         * @param {*} track 
+         * 
+         * @param {*} collection 
+         * @param {*} record 
          */
-        insertTrack(track) {
+        insertRecord(collection, record) {
             return new Promise((resolve, reject) => {
-                this.db.collection('tracks').insert(track, function (err, res) {
+                this.db.collection(collection).insert(record, function (err, res) {
                     if (err) reject(err)
                     else resolve(res)
                 })
             })
         }
 
-        /**
-         * Returns a promise that on a success will return a track object that matches
-         * the query, and on a failure will return the error object
-         * @param {*} query 
-         */
-        getTrack(query) {
+        getRecord(collection, query) {
             if (query._id) {
                 query._id = ObjectId(query._id)
             }
-            return this.db.collection('tracks').findOne(query).then(function (res) {
+            return this.db.collection(collection).findOne(query).then(function (res) {
                 return res
             }, function (err) {
                 return err
             })
         }
 
-
-        getTrackById(id) {
+        getRecordById(collection, id) {
             let query = {}
             query._id = ObjectId(id)
-            return this.db.collection('tracks').findOne(query).then(function (res) {
+            return this.db.collection(collection).findOne(query).then(function (res) {
                 return res
             }, function (err) {
                 return err
             })
         }
 
-        /**
-         * Returns a promise that on a success will return an array of tracks that match
-         * the query, and on a failure will return the error object
-         * @param {*} query 
-         */
-        getTracksByQuery(query) {
+        getRecordsByQuery(collection, query) {
             if (query.year) {
                 query.year = parseInt(query.year)
             }
             return new Promise((resolve, reject) => {
-                this.db.collection('tracks').find(query).toArray(function (err, res) {
+                this.db.collection(collection).find(query).toArray(function (err, res) {
                     if (err) reject(err)
                     else resolve(res)
                 })
             })
         }
 
-        /**
-         * Returns a promise that on a success will return an array of all tracks in
-         * the database, and on a failure will return the error object
-         */
-        getAllTracks() {
+        getAllRecords(collection) {
             return new Promise((resolve, reject) => {
-                this.db.collection('tracks').find({}).toArray(function (err, res) {
+                this.db.collection(collection).find({}).toArray(function (err, res) {
                     if (err) reject(err)
                     else resolve(res)
                 })
             })
         }
+        
+        // #endregion
 
         // </editor-fold>
         // #endregion
@@ -164,14 +155,31 @@ function dbFactory(deps) {
         /**
          * 
          */
-        _dropTracksCollection() {
+        _dropAllCollections() {
             let that = this
 
-            return new Promise((resolve, reject) => {
-                that.db.collection('tracks').drop(function (err, res) {
-                    if (err) reject(err)
-                    else resolve(res)
+            return new Promise((funcRes, funcRej) => {
+                let promises = []
+
+                this.config.db.collections.forEach(c => {
+                    promises.push(
+                        new Promise((resolve, reject) => {
+                            that.db.collection(c.name).drop(function (err, res) {
+                                if (err) reject(err)
+                                else resolve(res)
+                            })
+                        })
+                    )
                 })
+
+                Promise.all(promises).then(
+                    (res) => {
+                        funcRes(res)
+                    },
+                    (err) => {
+                        funcRej(err)
+                    }
+                )
             })
         }
 
@@ -182,52 +190,17 @@ function dbFactory(deps) {
             let that = this
 
             return new Promise((resolve, reject) => {
-                that.db.createCollection('tracks', {
-                    validator: {
-                        $jsonSchema: {
-                            bsonType: "object",
-                            required: ["title", "artist", "album", "track", "year", "path"],
-                            properties: {
-                                title: {
-                                    bsonType: "string",
-                                    description: "must be a string and is required"
-                                },
-                                artist: {
-                                    bsonType: "string",
-                                    description: "must be a string and is required"
-                                },
-                                album: {
-                                    bsonType: "string",
-                                    description: "must be a string and is required"
-                                },
-                                // track: {
-                                //     bsonType: "int",
-                                //     minimum: 0,
-                                //     maximum: 3000,
-                                //     description: "must be an integer in [0, 3000] and is required"
-                                // },
-                                year: {
-                                    bsonType: "int",
-                                    minimum: 0,
-                                    maximum: 3000,
-                                    description: "must be an integer in [0, 3000] and is required"
-                                },
-                                path: {
-                                    bsonType: "string",
-                                    description: "must be a string and is required"
-                                }
-                            }
+                that.config.db.collections.forEach(a => {
+                    that.db.createCollection(a.name, { validator: { $jsonSchema: a.validator } } ).then(
+                        (res) => {
+                            resolve(res);
+                            that._log('DbService', 'info', `${a.name} collection created`);
+                        },
+                        (err) => {
+                            reject(err);
                         }
-                    }
-                }).then(
-                    (res) => {
-                        resolve(res)
-                        that._log('DbService', 'info', 'Tracks collection created');
-                    },
-                    (err) => {
-                        reject(err)
-                    }
-                );
+                    );
+                });
             })
         }
 
@@ -257,7 +230,7 @@ function dbFactory(deps) {
 					newTrack.loadMetaData().then(
 						(res) => {
                             // console.log(newTrack)
-                            that.insertTrack(newTrack.toJson())
+                            that.insertRecord("tracks", newTrack.toJson())
 							count++;
 							next();
 						},

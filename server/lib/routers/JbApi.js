@@ -25,7 +25,7 @@ function apiFactory(deps) {
             // #region Track Queries
 
             let getTrackById = function (req, res, next) {
-                that.DB.getTrackById(req.params.id).then(
+                that.DB.getRecordById("tracks", req.params.id).then(
                     function (track) {
                         res.status(200).json(track)
                     },
@@ -36,7 +36,7 @@ function apiFactory(deps) {
             }
 
             let getAllTracks = function (req, res, next) {
-                that.DB.getAllTracks().then(
+                that.DB.getAllRecords("tracks").then(
                     function (lib) {
                         res.status(200).json(lib);
                     },
@@ -49,7 +49,7 @@ function apiFactory(deps) {
             let getTracksByQuery = function (req, res, next) {
                 let query = req.query;
                 if (query.title || query.artist || query.album || query.year) {
-                    that.DB.getTracksByQuery(query).then(
+                    that.DB.getRecordsByQuery("tracks", query).then(
                         function (val) {
                             res.status(200).json(val);
                         },
@@ -75,17 +75,6 @@ function apiFactory(deps) {
             // Tracks Routes
             router.get('/tracks', getTracksByQuery, getAllTracks)
             router.get('/tracks/:id', getTrackById)
-
-            router.post('/authTest', function (req, res, next) {
-                if (req.body.sharedKey === config.sharedKey) {
-                    res.status(202).end();
-                } else {
-                    res.status(401).end();
-                }
-
-                next();
-            });
-
 
             that.log('JbApi', 'info', 'Route Created');
         }

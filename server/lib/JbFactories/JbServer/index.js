@@ -63,6 +63,7 @@ function serverFactory(deps) {
          * @returns {void}
          */
         startServer() {
+            let that = this
             // TLS options
             let tlsOptions = {
                 key: fs.readFileSync(this.config.tlsOptions.keyPath),
