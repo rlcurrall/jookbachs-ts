@@ -71,8 +71,9 @@ function serverFactory(deps) {
 
             // HTTP Server
             this.httpServer = http.createServer(function (req, res) {
+                let host = req.headers.host.split(':')
                 res.writeHead(301, {
-                    "Location": `https://${req.headers.host}${req.url}`
+                    "Location": `https://${host[0]}:${that.config.httpsPort}${req.url}`
                 });
                 res.end();
             }).listen(this.config.httpPort);
