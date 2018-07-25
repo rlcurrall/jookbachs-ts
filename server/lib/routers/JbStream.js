@@ -24,7 +24,7 @@ function streamFactory (deps) {
             let that = this;
 
                 router.use(function (req, res, next) {
-                    that.log('JbStream', 'request', `${req.method} ${req.url}`);
+                    that.log('JbStream', 'request', `${req.method} /stream${req.url}`);
 
                     // get requested file name from url
                     var q = url.parse(req.url, true);
@@ -32,7 +32,7 @@ function streamFactory (deps) {
 
                     input.id = parseInt(input.id);
 
-                    that.DB.getTrack(input).then(
+                    that.DB.getRecord("tracks", input).then(
                         (track) => {
                             fs.createReadStream(track.path).pipe(res);
                         },

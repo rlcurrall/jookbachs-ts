@@ -22,17 +22,18 @@ function serverFactory(deps) {
     // #endregion
 
     /**
-     * @class JbServer
+     * @class
      * @author Robb Currall
      * @description Serves as an interface for the HTTP/HTTPS servers as well as Sockets
      */
     class JbServer {
         /**
+         * @constructor
          * @description Constructor for the JbServer
          * @author Robb Currall
          * 
          * @param {object} config - Object from JSON that contains all configuration needed for the server
-         * @param {MongoClient} DB - Database instance that is used by the application
+         * @param {object} DB - Database instance that is used by the application
          * @param {Array} Routes - An array of Router Factories that is used to define the routes for the express app 
          * @param {object} options - An object containing options for the server
          * 
@@ -94,27 +95,28 @@ function serverFactory(deps) {
          * @returns {error} null on success or an error object on a failure
          */
         stopServer() {
+            let that = this
             try {
-                this._log('Shutdown', 'info', 'Destroying sockets');
-                socket.closeSockets();
+                this._log('JbServer', 'info', 'Destroying sockets');
+                that.socket.closeSockets();
             }
             catch (e) {
-                this._log('Shutdown', 'error', `Could not destory sockets`);
+                this._log('JbServer', 'error', `Could not destory sockets`);
                 return e;
             }
 
             try {
-                this._log('Shutdown', 'info', 'Closing HTTP server');
-                httpServer.close();
+                this._log('JbServer', 'info', 'Closing HTTP server');
+                that.httpServer.close();
             }
             catch (e) {
-                this._log('Shutdown', 'error', `Could not close HTTP server`);
+                this._log('JbServer', 'error', `Could not close HTTP server`);
                 return e;
             }
 
             try {
-                this._log('Shutdown', 'info','Closing HTTPS server');
-                tlsServer.close();
+                this._log('JbServer', 'info','Closing HTTPS server');
+                that.tlsServer.close();
             }
             catch (e) {
                 this._log('Shutdown', 'error', `Could not close HTTPS server`);
@@ -132,8 +134,6 @@ function serverFactory(deps) {
          */
         createRoute(router) {
             let r = new router( this.config, this.DB, { Logger: this.Logger } );
-            // r.setLogger(this.Logger);
-
             this.jbExpress.setRoute(r);
         }
 
@@ -142,16 +142,13 @@ function serverFactory(deps) {
          */
         getShutdownFunctions() {
             let funcs = [];
-            let httpServer = this.httpServer;
-            let tlsServer = this.tlsServer;
-            let socket = this.socket;
             let that = this;
 
             // Attempts to destory all active sockets
             let shutdownSockets = function () {
                 try {
                     that._log('Shutdown', 'info', 'Destroying sockets');
-                    socket.closeSockets();
+                    that.socket.closeSockets();
                     return null;
                 }
                 catch (e) {
@@ -166,7 +163,7 @@ function serverFactory(deps) {
             let shutdownHttp = function () {
                 try {
                     that._log('Shutdown', 'info', 'Closing HTTP server');
-                    httpServer.close();
+                    that.httpServer.close();
                     return null;
                 }
                 catch (e) {
@@ -179,7 +176,15 @@ function serverFactory(deps) {
 
             // Attempts to shutdown HTTPS server
             let shutdownHttps = function () {
-                
+                try {
+                    that._log('Shutdown', 'info', 'Closing HTTP server');
+                    that.tlsServer.close();
+                    return null;
+                }
+                catch (e) {
+                    that._log('Shutdown', 'error', `Could not close HTTP server`);
+                    return e;
+                }
             };
 
             funcs.push(shutdownHttps);

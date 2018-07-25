@@ -7,7 +7,7 @@ class JbRouter {
     /**
      * Defines base functionality of a JbRouter
      * @param {object} config 
-     * @param {MongoClient object} DB 
+     * @param {object} DB 
      */
     constructor (config, DB, options) {
 
@@ -16,7 +16,7 @@ class JbRouter {
         }
 
         if (this.assignRoute === undefined) {
-            throw new TypeError('Classes extening JbRouter must implement the assignRoute method');
+            throw new TypeError('Classes extending JbRouter must implement the assignRoute method');
         }
 
         if (options) {
@@ -26,6 +26,7 @@ class JbRouter {
 
         this.config = config;
         this.DB = DB;
+        this.url = '/';
     }
 
     /**
@@ -55,7 +56,7 @@ class JbRouter {
      * Requires user to define the assignRoute function
      */
     assignRoute () {
-        throw new ReferenceError('Classes extening JbRouter must implement the assignRoute method');
+        throw new ReferenceError('Classes extending JbRouter must implement the assignRoute method');
     }
 }
 

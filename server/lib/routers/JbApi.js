@@ -19,7 +19,6 @@ function apiFactory(deps) {
         }
 
         assignRoute(router) {
-            let lib = this.DB;
             let that = this;
 
             // #region Track Queries
@@ -68,7 +67,7 @@ function apiFactory(deps) {
             router.use(bodyParser.urlencoded({extended: true}));
             router.use(bodyParser.json());
             router.use(function (req, res, next) {
-                that.log('JbApi', 'request', `${req.method} ${req.url}`);
+                that.log('JbApi', 'request', `${req.method} /api${req.url}`);
                 next();
             });
 

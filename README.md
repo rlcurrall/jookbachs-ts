@@ -26,21 +26,40 @@ Each of these logs are stored in the */server/logs* folder which is not created 
     ```json
 	{
 		"serverName": "someNameHere",
+		"appDir": "Populated by the app",
 		"httpsPort": 8443,
 		"httpPort": 8080,
 		"tlsOptions": {
 			"crtPath": "path/to/certificateFile.crt",
 			"keyPath": "path/to/keyFile.key"
 		},
-		"db": {
-			"host": "localhost",
-			"port": 27017,
-			"name": "jsjookbachs"
-		},
 		"libraryPaths": [
 			"/music"
 		],
-		"appDir": "Populated by the app"
+		"db": {
+			"host": "localhost",
+			"port": 27017,
+			"name": "jsjookbachs",
+			"collections": [
+				{
+					"name": "nameOfCollection",
+					"validator": {
+						"bsonType": "usually set to 'object'",
+						"required": [
+							"array",
+							"of required",
+							"properties"
+						],
+						"properties": {
+							"array": {
+								"bsonType": "int/string/bool/etc",
+								"description": "what is this property"
+							}
+						}
+					}
+				}
+			]
+		}
 	}
     ```
 
