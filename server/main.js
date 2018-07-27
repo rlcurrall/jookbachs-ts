@@ -103,10 +103,8 @@ jbServer.startServer();
 // NOTE: Leaving commented out for now as many terminals are not suported, may need to look into an
 // alternate option or drop the feature as it is not necessary
 
-// // Use .push() to add any extra functions
-// let shutdownFunctions = jbServer.getShutdownFunctions();
+// Use .push() to add any extra functions
+let shutdownFunctions = jbServer.getShutdownFunctions();
 
-// // Create Shutdown Manager (Currently only works on a few terminals... looking into other options. Though this feature is not necessary)
-// const SDM = new ShutdownManager();
-// SDM.setLogger(Logger);
-// SDM.setShutdownFunctions(shutdownFunctions);
+// Create Shutdown Manager (Currently only works on a few terminals... looking into other options. Though this feature is not necessary)
+const SDM = new ShutdownManager(shutdownFunctions, { Logger: Logger });

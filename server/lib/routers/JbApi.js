@@ -96,7 +96,7 @@ function apiFactory(deps) {
             router.use(bodyParser.urlencoded({extended: true}));
             router.use(bodyParser.json());
             router.use(function (req, res, next) {
-                that.log('JbApi', 'request', `${req.method} /api${req.url}`);
+                that.log( `${req.method} /api${req.url}`, 'request', 'JbApi' );
                 next();
             });
 
@@ -104,7 +104,7 @@ function apiFactory(deps) {
             router.get('/tracks', getTracksByQuery, getAllTracks)
             router.get('/tracks/:id', getTrackById)
 
-            that.log('JbApi', 'info', 'Route Created');
+            that.log( 'Route Created', 'info', 'JbApi' );
         }
     }
 

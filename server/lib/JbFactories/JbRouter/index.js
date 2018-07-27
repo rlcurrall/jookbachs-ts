@@ -1,6 +1,7 @@
 /**
- * Abstract class use to define the base functionality of the routes to
- * be used by the JbServer.
+ * Abstract class use to define the base functionality of the routes to be used by the JbServer.
+ * 
+ * @module jbrouter
  * 
  * @abstract
  * @class JbRouter
@@ -10,11 +11,11 @@ class JbRouter {
     
     /**
      * Creates an instance of JbRouter.
-     * @constructor
+     * @constructs
      * 
      * @param {object} config
      * @param {object} DB
-     * @param {object} options
+     * @param {object} [options]
      * @memberof JbRouter
      */
     constructor (config, DB, options) {
@@ -40,24 +41,25 @@ class JbRouter {
     /**
      * Returns the url of this instance of the JbRouter
      *
-     * @returns
+     * @returns {string}
      * @memberof JbRouter
      */
     getUrl () {
         return this.url;
     }
 
-    
     /**
-     * Logger used by the JbRouter Class
      *
-     * @param {object} label
-     * @param {object} level
-     * @param {object} msg
+     *
+     * @param {string} msg
+     * @param {string} [level]
+     * @param {string} [label]
      * @memberof JbRouter
      */
-    log (label, level, msg) {
+    log (msg, level, label) {
         if (this.Logger) {
+            if (label === undefined)
+                label = 'JbRouter';
             this.Logger.log({label: label, level: level, message: msg});
         }
         else {
@@ -67,8 +69,7 @@ class JbRouter {
 
     
     /**
-     * Method to define all responses for the JbRouter, must be implemented by a concrete
-     * implementation of the JbRouter class.
+     * Method to define all responses for the JbRouter, must be implemented by a concrete implementation of the JbRouter class.
      *
      * @memberof JbRouter
      */

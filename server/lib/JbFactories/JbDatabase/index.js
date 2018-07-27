@@ -1,4 +1,8 @@
 /**
+ * @module JbDatabase
+ */
+
+/**
  * Factory for the JbDatabase class that injects all necessary dependencies.
  *
  * @param {object} deps
@@ -29,7 +33,6 @@ function dbFactory(deps) {
         
         /**
          * Creates an instance of JbDatabase.
-         * @constructor
          * 
          * @param {object} config
          * @param {object} JbModel
@@ -61,10 +64,10 @@ function dbFactory(deps) {
 
             MongoClient.connect(this.dbURL, function (err, client) {
                 if (err) {
-                    that._log('DbService', 'error', `Unable to connect to database - ${that.dbURL}\n${err}`);
+                    that._log(`Unable to connect to database - ${that.dbURL}\n${err}`, 'error');
                 }
 
-                that._log('DbService', 'info', 'Database connected');
+                that._log('Database connected', 'info');
 
                 that.client = client;
                 that.db = client.db(that.config.db.name);
@@ -76,18 +79,18 @@ function dbFactory(deps) {
                                 that._populateDB();
                             },
                             (err) => {
-                                that._log('JbDatabase', 'error', err);
+                                that._log(err, 'error');
                             }
                         );
                     },
                     function (err) {
-                        that._log('JbDatabase', 'warn', 'Database already deleted');
+                        that._log('Database already deleted', 'warn');
                         that._createAllCollections().then(
                             (res) => {
                                 that._populateDB();
                             },
                             (err) => {
-                                that._log('JbDatabase', 'error', err);
+                                that._log(err, 'error');
                             }
                         );
                     }
@@ -114,7 +117,7 @@ function dbFactory(deps) {
          *
          * @param {string} collection
          * @param {object} record
-         * @returns
+         * @returns {Promise}
          * @memberof JbDatabase
          */
         insertRecord(collection, record) {
@@ -131,8 +134,8 @@ function dbFactory(deps) {
          * provided query.
          *
          * @param {string} collection
-         * @param {object} query
-         * @returns
+         * @param {Object} query
+         * @returns {Object}
          * @memberof JbDatabase
          */
         getRecord(collection, query) {
@@ -151,7 +154,7 @@ function dbFactory(deps) {
          *
          * @param {string} collection
          * @param {string} id
-         * @returns
+         * @returns {Object}
          * @memberof JbDatabase
          */
         getRecordById(collection, id) {
@@ -170,9 +173,9 @@ function dbFactory(deps) {
          * 'id' property.
          *
          * @param {string} collection
-         * @param {object} query
-         * @param {object} sort
-         * @returns
+         * @param {Object} query
+         * @param {Object} sort
+         * @returns {Promise}
          * @memberof JbDatabase
          */
         getRecordsByQuery(collection, query, sort) {
@@ -195,7 +198,7 @@ function dbFactory(deps) {
          * sort by the 'id' property.
          *
          * @param {string} collection
-         * @returns
+         * @returns {Promise}
          * @memberof JbDatabase
          */
         getAllRecords(collection) {
@@ -216,7 +219,7 @@ function dbFactory(deps) {
          * Drops all collections and documents of the collections defined in the config file.
          *
          * @private
-         * @returns
+         * @returns {Promise}
          * @memberof JbDatabase
          */
         _dropAllCollections() {
@@ -252,7 +255,7 @@ function dbFactory(deps) {
          * Creates all collections defined by the config file.
          *
          * @private
-         * @returns
+         * @returns {Promise}
          * @memberof JbDatabase
          */
         _createAllCollections() {
@@ -263,7 +266,7 @@ function dbFactory(deps) {
                     that.db.createCollection(a.name, { validator: { $jsonSchema: a.validator } } ).then(
                         (res) => {
                             resolve(res);
-                            that._log('DbService', 'info', `${a.name} collection created`);
+                            that._log(`${a.name} collection created`, 'info');
                         },
                         (err) => {
                             reject(err);
@@ -286,60 +289,58 @@ function dbFactory(deps) {
             let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
             let Paths = this.config.libraryPaths;
 
-            // Paths.forEach( library => {
-            //     let dirPath = path.normalize(library);
-            //     let count = 0;
+            Paths.forEach( (library, index) => {
+                let count = (1000000*index); // supports a max of 1,000,000 songs per library
+                let dirPath = path.normalize(library);
 
+                // setup walker for music library directory
+                var walker = walk.walk(dirPath, {
+                    followLinks: false
+                });
 
-            // })
+                walker.on('file', function (root, stat, next) {
 
-			let dirPath = path.normalize(this.config.libraryPaths[0]);
-			let count = 0;
+                    let included = fileTypeInclusions.find(function (element) {
+                        return element === path.extname(stat.name);
+                    });
+                    let hidden = stat.name.substr(0, 1) === '.';
 
-			// setup walker for music library directory
-			var walker = walk.walk(dirPath, {
-				followLinks: false
-			});
+                    if (included && !hidden) {
+                        let newTrack = new that.JbModel(count, root + path.sep + stat.name);
+                        newTrack.loadMetaData().then(
+                            (res) => {
+                                that.insertRecord("tracks", newTrack.toJson());
+                                count++;
+                                next();
+                            },
+                            (err) => {
+                                console.log("error " + err);
+                            }
+                        )
+                    }
+                    else {
+                        next();
+                    }
 
-			walker.on('file', function (root, stat, next) {
+                });
+            })
 
-				let included = fileTypeInclusions.find(function (element) {
-					return element === path.extname(stat.name);
-				});
-				let hidden = stat.name.substr(0, 1) === '.';
-
-				if (included && !hidden) {
-					let newTrack = new that.JbModel(count, root + path.sep + stat.name);
-					newTrack.loadMetaData().then(
-						(res) => {
-                            // console.log(newTrack)
-                            that.insertRecord("tracks", newTrack.toJson())
-							count++;
-							next();
-						},
-						(err) => {
-							console.log("error " + err)
-						}
-					)
-				}
-				else {
-					next();
-				}
-
-			});
+			
         }
 
         
+        
         /**
-         * Private Logger used by the JbDatabase class.
+         * Private Logger used by the JbDatabase class
          *
-         * @param {string} label
-         * @param {string} level
          * @param {string} msg
-         * @private
+         * @param {string} [level]
+         * @param {string} [label]
          * @memberof JbDatabase
          */
-        _log(label, level, msg) {
+        _log(msg, level, label) {
+            if (label === undefined)
+                label = 'JbDatabase';
             if (this.Logger) {
                 this.Logger.log({
                     label: label,

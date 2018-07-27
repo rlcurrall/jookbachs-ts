@@ -27,9 +27,9 @@ function webUIFactory (deps) {
          * Creates an instance of JbWebUI.
          * @constructor
          * 
-         * @param {*} config
-         * @param {*} DB
-         * @param {*} options
+         * @param {Object} config
+         * @param {JbDatabase} DB
+         * @param {Object} [options]
          * @memberof JbWebUI
          */
         constructor (config, DB, options) {
@@ -41,12 +41,12 @@ function webUIFactory (deps) {
         /**
          * Defines all responses for the JbWebUI router.
          *
-         * @param {*} router
+         * @param {Object} router
          * @memberof JbWebUI
          */
         assignRoute(router) {
             router.use(express.static(this.publicPath));
-            this.log('JbWebUI', 'info', 'Route Created');
+            this.log('Route Created', 'info', 'JbWebUI');
         }
     }
 

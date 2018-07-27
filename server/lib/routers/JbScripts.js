@@ -47,7 +47,7 @@ function scriptsFactory (deps) {
          */
         assignRoute(router) {
             router.use(express.static(this.scriptPath));
-            this.log('JbScripts', 'info', 'Route Created');
+            this.log( 'Route Created', 'info', 'JbScripts' );
         }
     }
 

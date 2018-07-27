@@ -52,7 +52,7 @@ function streamFactory (deps) {
             let that = this;
 
                 router.use(function (req, res, next) {
-                    that.log('JbStream', 'request', `${req.method} /stream${req.url}`);
+                    that.log( `${req.method} /stream${req.url}`, 'request', 'JbStream' );
 
                     // get requested file name from url
                     var q = url.parse(req.url, true);
@@ -72,14 +72,14 @@ function streamFactory (deps) {
             
                             // display error
                             var error = 'Cannot access library index: ' + input.id;
-                            that.log('JbStream', 'info', error );
+                            that.log( error, 'warn', 'JbStream' );
                             return res.end(error);
                         }
                     )
         
                 });
                 
-                that.log('JbStream', 'info', 'Route Created');
+                that.log('Route Created', 'info', 'JbStream');
         }
     }
 
