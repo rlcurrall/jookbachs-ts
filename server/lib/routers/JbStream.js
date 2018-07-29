@@ -13,7 +13,7 @@ function streamFactory (deps) {
 
     const fs = deps.fs;
     const url = deps.url;
-    const JbRouter = require('JbRouter');
+    const JbRouter = deps.JbRouter;
     // #endregion
 
     /**
@@ -33,8 +33,8 @@ function streamFactory (deps) {
          * @param {object} options
          * @memberof JbStream
          */
-        constructor (config, DB, options) {
-            super(config, DB, options);
+        constructor (DB, options) {
+            super(DB, options);
             this.url = '/stream';
 
             if (options) {

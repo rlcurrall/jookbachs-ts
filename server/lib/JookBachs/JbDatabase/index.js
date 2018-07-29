@@ -35,17 +35,19 @@ function dbFactory(deps) {
          * Creates an instance of JbDatabase.
          * 
          * @param {object} config
-         * @param {object} JbModel
          * @param {object} options
          * @memberof JbDatabase
          */
-        constructor(config, JbModel, options) {
+        constructor(config, options) {
             this.config = config;
-            this.JbModel = JbModel;
+            this.collections = config.dbcollections;
+            this.dbName = config.db.name;
 
             if (options) {
                 if (options.Logger)
                     this.Logger = options.Logger;
+                if (options.JbModel)
+                    this.JbModel = options.JbModel; // moved into options because may create a db populator later
             }
 
             this.dbURL = "mongodb://" + config.db.host + ":" + config.db.port + "/" + config.db.name;
@@ -67,10 +69,11 @@ function dbFactory(deps) {
                     that._log(`Unable to connect to database - ${that.dbURL}\n${err}`, 'error');
                 }
 
-                that._log('Database connected', 'info');
+                that._log('Database connected');
 
                 that.client = client;
-                that.db = client.db(that.config.db.name);
+
+                that.db = client.db(that.dbName);
 
                 that._dropAllCollections().then(
                     function (res) {
@@ -84,7 +87,6 @@ function dbFactory(deps) {
                         );
                     },
                     function (err) {
-                        that._log('Database already deleted', 'warn');
                         that._createAllCollections().then(
                             (res) => {
                                 that._populateDB();
@@ -129,6 +131,10 @@ function dbFactory(deps) {
             })
         }
 
+        findOrCreate(collection, record) {
+            console.log(record);
+        }
+
         /**
          * Get a single record from the specified collection that matches the 
          * provided query.
@@ -138,10 +144,11 @@ function dbFactory(deps) {
          * @returns {Object}
          * @memberof JbDatabase
          */
-        getRecord(collection, query) {
-            if (query._id) {
-                query._id = ObjectId(query._id)
-            }
+        getRecord(collection, query, projection) {
+            if (query._id)
+                query._id = ObjectId(query._id);
+            if (projection === undefined)
+                projection = {};
             return this.db.collection(collection).findOne(query).then(function (res) {
                 return res
             }, function (err) {
@@ -158,13 +165,14 @@ function dbFactory(deps) {
          * @memberof JbDatabase
          */
         getRecordById(collection, id) {
-            let query = {}
-            query._id = ObjectId(id)
-            return this.db.collection(collection).findOne(query).then(function (res) {
-                return res
-            }, function (err) {
-                return err
-            })
+            // may convert to use cursor and toArray and return res[0]
+            return this.db.collection(collection)
+                .findOne({"_id" : ObjectId(id)})
+                .then(function (res) {
+                    return res
+                }, function (err) {
+                    return err
+                })
         }
 
         /**
@@ -178,18 +186,29 @@ function dbFactory(deps) {
          * @returns {Promise}
          * @memberof JbDatabase
          */
-        getRecordsByQuery(collection, query, sort) {
-            if (query.year)
-                query.year = parseInt(query.year)
+        getRecordsByQuery(collection, query, options) {
+            let sort = {};
+            let projection = {};
 
-            if (typeof sort === 'undefined')
-                sort = {"id": 1}
+            if (options) {
+                if (options.sort)
+                    sort = options.sort;
+                if (options.projection)
+                    projection = options.projection;
+            }
 
             return new Promise((resolve, reject) => {
-                this.db.collection(collection).find(query).sort(sort).toArray(function (err, res) {
-                    if (err) reject(err)
-                    else resolve(res)
-                })
+                this.db.collection(collection)
+                    .find(query)
+                    .sort(sort)
+                    .project(projection)
+                    .toArray(function (err, res) {
+                        console.log(res.length);
+                        if (err) 
+                            reject(err);
+                        else
+                            resolve(res);
+                    })
             })
         }
 
@@ -201,9 +220,21 @@ function dbFactory(deps) {
          * @returns {Promise}
          * @memberof JbDatabase
          */
-        getAllRecords(collection) {
+        getAllRecords(collection, options) {
+            let sort = {};
+            let projection = {};
+            if (options) {
+                if (options.sort)
+                    sort = options.sort;
+                if (options.projection)
+                    projection = options.projection;
+            }
             return new Promise((resolve, reject) => {
-                this.db.collection(collection).find({}).sort({"id": 1}).toArray(function (err, res) {
+                this.db.collection(collection)
+                .find({})
+                .sort(sort)
+                .project(projection)
+                .toArray(function (err, res) {
                     if (err) reject(err)
                     else resolve(res)
                 })
@@ -218,7 +249,6 @@ function dbFactory(deps) {
         /**
          * Drops all collections and documents of the collections defined in the config file.
          *
-         * @private
          * @returns {Promise}
          * @memberof JbDatabase
          */
@@ -228,11 +258,18 @@ function dbFactory(deps) {
             return new Promise((funcRes, funcRej) => {
                 let promises = []
 
-                this.config.db.collections.forEach(c => {
+                this.collections.forEach(c => {
                     promises.push(
                         new Promise((resolve, reject) => {
                             that.db.collection(c.name).drop(function (err, res) {
-                                if (err) reject(err)
+                                if (err) {
+                                    if (err.code === 26) {
+                                        that._log(`${c.name.toUpperCase()} collection already deleted`, 'warn');
+                                        reject(err);
+                                    }
+                                    else
+                                        throw err;
+                                }
                                 else resolve(res)
                             })
                         })
@@ -254,7 +291,6 @@ function dbFactory(deps) {
         /**
          * Creates all collections defined by the config file.
          *
-         * @private
          * @returns {Promise}
          * @memberof JbDatabase
          */
@@ -262,11 +298,11 @@ function dbFactory(deps) {
             let that = this
 
             return new Promise((resolve, reject) => {
-                that.config.db.collections.forEach(a => {
-                    that.db.createCollection(a.name, { validator: { $jsonSchema: a.validator } } ).then(
+                that.collections.forEach(a => {
+                    that.db.createCollection(a.name, { validator: { $jsonSchema: a.$jsonSchema } } ).then(
                         (res) => {
                             resolve(res);
-                            that._log(`${a.name} collection created`, 'info');
+                            that._log(`${a.name.toUpperCase()} collection created`);
                         },
                         (err) => {
                             reject(err);
@@ -310,6 +346,7 @@ function dbFactory(deps) {
                         newTrack.loadMetaData().then(
                             (res) => {
                                 that.insertRecord("tracks", newTrack.toJson());
+                                that.findOrCreate("tracks", newTrack.toJson());
                                 count++;
                                 next();
                             },
@@ -327,28 +364,28 @@ function dbFactory(deps) {
 
 			
         }
-
-        
         
         /**
          * Private Logger used by the JbDatabase class
          *
-         * @param {string} msg
+         * @param {string} message
          * @param {string} [level]
          * @param {string} [label]
          * @memberof JbDatabase
          */
-        _log(msg, level, label) {
+        _log(message, level, label) {
             if (label === undefined)
                 label = 'JbDatabase';
+            if (level === undefined)
+                level = 'info';
             if (this.Logger) {
                 this.Logger.log({
-                    label: label,
-                    level: level,
-                    message: msg
+                    label,
+                    level,
+                    message
                 });
             } else {
-                console.log(msg);
+                console.log(message);
             }
         }
 

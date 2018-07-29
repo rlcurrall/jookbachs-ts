@@ -39,7 +39,7 @@ function expressFactory(deps) {
             }
 
             this._app = express();
-            this._log('JbExpress', 'info', 'Express App Created');
+            this._log('Express App Created');
         }
 
         /**
@@ -72,17 +72,21 @@ function expressFactory(deps) {
          * Private Logger used by the JbExpress class
          * @private
          *
-         * @param {object} label
-         * @param {object} level
-         * @param {object} msg
+         * @param {object} message
+         * @param {object} [level]
+         * @param {object} [label]
          * @memberof JbExpress
          */
-        _log (label, level, msg) {
+        _log (message, level, label) {
             if (this.Logger) {
-                this.Logger.log({label: label, level: level, message: msg});
+                if (label === undefined)
+                    label = 'JbExpress';
+                if (level === undefined)
+                    level = 'info';
+                this.Logger.log({label, level, message});
             }
             else {
-                console.log(msg);
+                console.log(message);
             }
         }
     }

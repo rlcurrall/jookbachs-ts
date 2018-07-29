@@ -12,7 +12,7 @@ function scriptsFactory (deps) {
 	}
 
 	const express = deps.express;
-    const JbRouter = require('JbRouter');
+    const JbRouter = deps.JbRouter;
     // #endregion
 
     /**
@@ -32,10 +32,10 @@ function scriptsFactory (deps) {
          * @param {object} options
          * @memberof JbScripts
          */
-        constructor (config, DB, options) {
-            super(config, DB, options);
+        constructor (DB, options) {
+            super(DB, options);
             this.url = '/scripts';
-            this.scriptPath = `${config.appDir}/node_modules/`;
+            this.scriptPath = `${this.config.appDir}/node_modules/`;
         }
 
 

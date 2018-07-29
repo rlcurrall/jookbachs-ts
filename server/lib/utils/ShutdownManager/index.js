@@ -33,7 +33,7 @@ class ShutdownManager {
             }
     
             process.on("SIGINT", function () {
-                that.log('Starting shutdown process', "info");
+                that.log('Starting shutdown process');
     
                 Promise.all(that.functions).then(function (result) {
                     let success = true;
@@ -48,19 +48,19 @@ class ShutdownManager {
                         }
                     }
                     if (success) {
-                        that.log('Shutdown complete', "info");
+                        that.log('Shutdown complete');
                         process.exit();
                     }
                     else 
                     {
                         that.log(error, "error");
-                        that.log(`Exiting now`, "info");
+                        that.log(`Exiting now`);
                         process.exit();
                     }
                 });
             });
 
-            that.log("Shutdown Manager created", "info");
+            that.log("Shutdown Manager created");
         } else {
             that.log("Terminal not supported by ShutdownManager, must be TTY", "warn");
         }
@@ -87,16 +87,21 @@ class ShutdownManager {
     /**
      *
      *
-     * @param {*} msg
-     * @param {*} level
+     * @param {string} message
+     * @param {string} [level]
+     * @param {string} [label]
      * @memberof ShutdownManager
      */
-    log(msg, level) {
+    log(message, level, label) {
         if (this.Logger) {
-            this.Logger.log({label: 'Shutdown', level: level, message: msg});
+            if (label === undefined)
+                label = 'Shutdown';
+            if (level === undefined)
+                level = 'info';
+            this.Logger.log({label, level, message});
         }
         else {
-            console.log(msg);
+            console.log(message);
         }
         
     }

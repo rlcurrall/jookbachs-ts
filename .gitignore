@@ -10,3 +10,4 @@ server/config
 server/logs/error.log
 server/logs/sysInfo.log
 server/logs/traffic.log
+jb-server.code-workspace

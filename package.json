@@ -42,10 +42,11 @@
 	},
 	"scripts": {
 		"start": "npm run -s s-echo && npm run -s s-sep && npm run -s s-script",
-		"watch": "cross-env NODE_PATH=./server/lib:./server/lib/JbFactories:./server/lib/utils:./server/lib/routers JSON_CONFIG=\"./server/config/server.json\" nodemon .",
+		"watch": "cross-env NODE_PATH=./server/lib:./server/lib/utils:./server/lib/routers:./server/lib/JookBachs APP_CONFIG=\"./server/app.json\" USER_CONFIG=\"./server/config/server.json\" nodemon .",
 		"s-echo": "echo Starting JookBachs",
 		"s-sep": "echo -----------------------------------------------------------------------------------",
-		"s-script": "cross-env NODE_PATH=./server/lib:./server/lib/JbFactories:./server/lib/utils:./server/lib/routers JSON_CONFIG=\"./server/config/server.json\" node ."
+		"s-script": "cross-env NODE_PATH=./server/lib:./server/lib/utils:./server/lib/routers:./server/lib/JookBachs APP_CONFIG=\"./server/app.json\" USER_CONFIG=\"./server/config/server.json\" node .",
+		"debug": "cross-env NODE_PATH=./server/lib:./server/lib/utils:./server/lib/routers:./server/lib/JookBachs APP_CONFIG=\"./server/app.json\" USER_CONFIG=\"./server/config/server.json\" node --nolazy --inspect-brk=9229 ."
 	},
 	"devDependencies": {
 		"electron": "^2.0.4",

@@ -12,7 +12,7 @@ function apiFactory(deps) {
     }
 
     const bodyParser = deps.bodyParser;
-    const JbRouter = require('JbRouter');
+    const JbRouter = deps.JbRouter;
     // #endregion
 
     /**
@@ -32,8 +32,8 @@ function apiFactory(deps) {
          * @param {object} options
          * @memberof JbApi
          */
-        constructor(config, DB, options) {
-            super(config, DB, options);
+        constructor(DB, options) {
+            super(DB, options);
             this.url = '/api';
 
             if (options) {
@@ -64,7 +64,7 @@ function apiFactory(deps) {
             }
 
             let getAllTracks = function (req, res, next) {
-                that.DB.getAllRecords("tracks").then(
+                that.DB.getAllRecords("tracks", {sort: {'id': 1}}).then(
                     function (lib) {
                         res.status(200).json(lib);
                     },
@@ -76,8 +76,10 @@ function apiFactory(deps) {
 
             let getTracksByQuery = function (req, res, next) {
                 let query = req.query;
+                if (query.year)
+                    query.year = parseInt(query.year);
                 if (query.title || query.artist || query.album || query.year) {
-                    that.DB.getRecordsByQuery("tracks", query).then(
+                    that.DB.getRecordsByQuery("tracks", query, {sort: {'id': 1}}).then(
                         function (val) {
                             res.status(200).json(val);
                         },

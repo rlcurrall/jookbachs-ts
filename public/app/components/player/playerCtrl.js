@@ -48,7 +48,6 @@ app.controller('playerController', [
 			playerService.getAllLibraryTracks()
 				.then(
 					function success(allTracks) {
-						console.log(allTracks);
 						var data = allTracks.map(function (track) {
 							var canvas = document.createElement('canvas');
 							canvas.width = 100;

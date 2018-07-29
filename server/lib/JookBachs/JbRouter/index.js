@@ -18,7 +18,7 @@ class JbRouter {
      * @param {object} [options]
      * @memberof JbRouter
      */
-    constructor (config, DB, options) {
+    constructor (DB, options) {
 
         if (this.constructor === JbRouter) {
             throw new TypeError('Abstract class "JbRouter" cannot be instantiated directly.');
@@ -31,9 +31,10 @@ class JbRouter {
         if (options) {
             if (options.Logger)
                 this.Logger = options.Logger;
+            if (options.config)
+                this.config = options.config;
         }
 
-        this.config = config;
         this.DB = DB;
         this.url = '/';
     }
@@ -49,21 +50,23 @@ class JbRouter {
     }
 
     /**
+     * Logger used by the concrete implemenation of the JbRouter class.
      *
-     *
-     * @param {string} msg
+     * @param {string} message
      * @param {string} [level]
      * @param {string} [label]
      * @memberof JbRouter
      */
-    log (msg, level, label) {
+    log (message, level, label) {
         if (this.Logger) {
             if (label === undefined)
                 label = 'JbRouter';
-            this.Logger.log({label: label, level: level, message: msg});
+            if (level === undefined)
+                level = 'info';
+            this.Logger.log({label, level, message});
         }
         else {
-            console.log(msg);
+            console.log(message);
         }
     }
 

@@ -12,7 +12,7 @@ function webUIFactory (deps) {
 	}
 
 	const express = deps.express;
-    const JbRouter = require('JbRouter');
+    const JbRouter = deps.JbRouter;
     // #endregion
 
     /**
@@ -32,10 +32,10 @@ function webUIFactory (deps) {
          * @param {Object} [options]
          * @memberof JbWebUI
          */
-        constructor (config, DB, options) {
-            super(config, DB, options);
+        constructor (DB, options) {
+            super(DB, options);
             this.url = '/';
-            this.publicPath = `${config.appDir}/public/`;
+            this.publicPath = `${this.config.appDir}/public/`;
         }
 
         /**
