@@ -1,5 +1,6 @@
 /**
  * @module JbDatabase
+ * @author Robb Currall {rlcurrall}
  */
 
 /**
@@ -18,8 +19,6 @@ function dbFactory(deps) {
 
     const ObjectId = deps.MongoDB.ObjectId;
     const MongoClient = deps.MongoDB.MongoClient;
-    const path = deps.path;
-    const walk = deps.walk;
     // </editor-fold>
     // #endregion
 
@@ -48,6 +47,12 @@ function dbFactory(deps) {
                     this.Logger = options.Logger;
                 if (options.JbModel)
                     this.JbModel = options.JbModel; // moved into options because may create a db populator later
+
+                // Warn for unsupported options
+                let unSup = Object.getOwnPropertyNames(options).diff(['Logger', 'JbModel']);
+                unSup.forEach( (opt) => {
+                    that._log(`The [${opt}] option is not supported`, 'warn');
+                });
             }
 
             this.dbURL = "mongodb://" + config.db.host + ":" + config.db.port + "/" + config.db.name;
@@ -67,6 +72,7 @@ function dbFactory(deps) {
             MongoClient.connect(this.dbURL, { useNewUrlParser: true}, function (err, client) {
                 if (err) {
                     that._log(`Unable to connect to database - ${that.dbURL}\n${err}`, 'error');
+                    throw err;
                 }
 
                 that._log('Database connected');
@@ -74,29 +80,6 @@ function dbFactory(deps) {
                 that.client = client;
 
                 that.db = client.db(that.dbName);
-
-                that._dropAllCollections().then(
-                    function (res) {
-                        that._createAllCollections().then(
-                            (res) => {
-                                that._populateDB();
-                            },
-                            (err) => {
-                                that._log(err, 'error');
-                            }
-                        );
-                    },
-                    function (err) {
-                        that._createAllCollections().then(
-                            (res) => {
-                                that._populateDB();
-                            },
-                            (err) => {
-                                that._log(err, 'error');
-                            }
-                        );
-                    }
-                );
             });
         }
 
@@ -252,7 +235,7 @@ function dbFactory(deps) {
          * @returns {Promise}
          * @memberof JbDatabase
          */
-        _dropAllCollections() {
+        dropAllCollections() {
             let that = this
 
             return new Promise((funcRes, funcRej) => {
@@ -294,7 +277,7 @@ function dbFactory(deps) {
          * @returns {Promise}
          * @memberof JbDatabase
          */
-        _createAllCollections() {
+        createAllCollections() {
             let that = this
 
             return new Promise((resolve, reject) => {
@@ -310,59 +293,6 @@ function dbFactory(deps) {
                     );
                 });
             })
-        }
-
-        
-        /**
-         * Populates the database by traversing all file paths recursively from the config 
-         * file and retrieving the metadata for each file to store in the database.
-         * 
-         * @private
-         * @memberof JbDatabase
-         */
-        _populateDB() {
-            let that = this;
-            let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
-            let Paths = this.config.libraryPaths;
-
-            Paths.forEach( (library, index) => {
-                let count = (1000000*index); // supports a max of 1,000,000 songs per library
-                let dirPath = path.normalize(library);
-
-                // setup walker for music library directory
-                var walker = walk.walk(dirPath, {
-                    followLinks: false
-                });
-
-                walker.on('file', function (root, stat, next) {
-
-                    let included = fileTypeInclusions.find(function (element) {
-                        return element === path.extname(stat.name);
-                    });
-                    let hidden = stat.name.substr(0, 1) === '.';
-
-                    if (included && !hidden) {
-                        let newTrack = new that.JbModel(count, root + path.sep + stat.name);
-                        newTrack.loadMetaData().then(
-                            (res) => {
-                                that.insertRecord("tracks", newTrack.toJson());
-                                that.findOrCreate("tracks", newTrack.toJson());
-                                count++;
-                                next();
-                            },
-                            (err) => {
-                                console.log("error " + err);
-                            }
-                        )
-                    }
-                    else {
-                        next();
-                    }
-
-                });
-            })
-
-			
         }
         
         /**
@@ -394,5 +324,11 @@ function dbFactory(deps) {
 
     return JbDatabase;
 }
+
+Array.prototype.diff = function (a) {
+    return this.filter(function (i) {
+        return a.indexOf(i) === -1;
+    });
+};
 
 module.exports = dbFactory;

@@ -1,4 +1,9 @@
 /**
+ * @module JbTrack
+ * @author Robb Currall {rlcurrall}
+ */
+
+/**
  * Factory for the model, JbTrack, class that injects all necessary dependencies.
  *
  * @param {object} deps

@@ -1,4 +1,9 @@
 /**
+ * @module JbExpress
+ * @author Robb Currall {rlcurrall}
+ */
+
+/**
  * Factory for the JbExpress class that injects all necessary dependencies.
  *
  * @param {object} deps
@@ -93,5 +98,11 @@ function expressFactory(deps) {
 
     return JbExpress;
 }
+
+Array.prototype.diff = function (a) {
+    return this.filter(function (i) {
+        return a.indexOf(i) === -1;
+    });
+};
 
 module.exports = expressFactory;

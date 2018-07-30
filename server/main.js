@@ -17,7 +17,6 @@ const MongoDB = require('mongodb');
 const mm = require('music-metadata');
 const socketIO = require('socket.io');
 const bodyParser = require('body-parser');
-const ShutdownManager = require('ShutdownManager');
 
 // Load config info
 const user_config = JSON.parse(fs.readFileSync(process.env.USER_CONFIG, 'utf8')); // for user
@@ -35,15 +34,20 @@ config.appDir = path.join(__dirname, '..'); // update config to have root dir of
 // #region DI
 // <editor-fold defaultstate="collapsed" desc="DI">
 
+// #region JookBachs Dev Tools
 const JbServer = require('JookBachs').JbServer({
 	fs,
 	http,
 	https,
 	express
 });
-
+const JbDatabse = require('JookBachs').JbDatabase({
+	MongoDB
+});
 const JbRouter = require('JookBachs').JbRouter;
 const JbSocket = require('JookBachs').JbSocket;
+const JbAppManager = require('JookBachs').JbAppManager;
+// #endregion
 
 // #region JbRouters
 // <editor-fold desc="JbRouters">
@@ -80,16 +84,15 @@ const Socket = require('sockets/Socket')({
 // #region DB
 // <editor-fold desc="DB">
 
-const JbDatabse = require('JookBachs').JbDatabase({
-	MongoDB,
-	path,
-	walk
-});
-
 const JbTrack = require('models/JbTrack')({
 	path,
 	tagReader: mm
 });
+
+const DbManager = require('DbManager')({
+	path,
+	walk
+})
 
 // </editor-fold>
 // #endregion
@@ -103,7 +106,9 @@ const JbTrack = require('models/JbTrack')({
 
 Logger.log({ label: 'Main', level: 'info', message: 'Initializing Application' });
 
+// ----------------------------
 // Initialize DB Connection
+// ----------------------------
 const jbDatabase = new JbDatabse( 
 	config, 		// configurations
 	{ 				//options
@@ -113,7 +118,22 @@ const jbDatabase = new JbDatabse(
 );
 jbDatabase.connect();
 
+// ----------------------------
+// Create DbManager
+// ----------------------------
+
+// NOTE: this section may later be removed to be fed into a JbRouter
+// 		 that will allow admins to drop DB, reload music, add in tracks,
+//		 etc.
+let dbManager = new DbManager(jbDatabase, JbTrack, config, {Logger});
+
+setTimeout(() => { // wait for 5 seconds to ensure the DB is initialized fully
+	dbManager.dropAndReloadDB();
+}, 5000);
+
+// ----------------------------
 // Create Server
+// ----------------------------
 const jbServer = new JbServer( 
 	jbDatabase, 			// Database
 	[ 						// Routers
@@ -138,4 +158,12 @@ jbServer.startServer();
 let shutdownFunctions = jbServer.getShutdownFunctions();
 
 // Create Shutdown Manager (Currently only works on a few terminals... looking into other options. Though this feature is not necessary)
-const SDM = new ShutdownManager(shutdownFunctions, { Logger });
+const SDM = new JbAppManager(shutdownFunctions, { Logger });
+
+// Array.prototype.diff = function (a) {
+//     return this.filter(function (i) {
+//         return a.indexOf(i) === -1;
+//     });
+// };
+
+// console.log(Object.getOwnPropertyNames(config).diff(['appDir', 'db']))

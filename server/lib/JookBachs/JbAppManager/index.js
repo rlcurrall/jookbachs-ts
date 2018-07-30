@@ -1,15 +1,20 @@
+/**
+ * @module JbAppManager
+ * @author Robb Currall {rlcurrall}
+ */
+
 const readline = require('readline'); // Required here as to not expose module to rest of app
 
 /**
+ * Manages the application shutdown (may look into observer/child processes in nodejs to expand on this module)
  *
- *
- * @class ShutdownManager
+ * @class JbAppManager
  */
-class ShutdownManager {
+class JbAppManager {
     
     /**
-     * Creates an instance of ShutdownManager.
-     * @memberof ShutdownManager
+     * Creates an instance of JbAppManager.
+     * @memberof JbAppManager
      */
     constructor (functions, options) {
         this.functions = functions;
@@ -18,6 +23,12 @@ class ShutdownManager {
         if (options) {
             if (options.Logger)
                 this.Logger = options.Logger;
+            
+            // Warn for unsupported options
+            let unSup = Object.getOwnPropertyNames(options).diff(['Logger']);
+            unSup.forEach( (opt) => {
+                that.log(`The [${opt}] option is not supported`, 'warn');
+            });
         }
 
         if (process.stdin.isTTY) {
@@ -62,7 +73,7 @@ class ShutdownManager {
 
             that.log("Shutdown Manager created");
         } else {
-            that.log("Terminal not supported by ShutdownManager, must be TTY", "warn");
+            that.log("Terminal not supported by JbAppManager, must be TTY", "warn");
         }
     }
 	
@@ -85,17 +96,17 @@ class ShutdownManager {
 
     
     /**
-     *
+     * Logger used by JbAppManageer
      *
      * @param {string} message
      * @param {string} [level]
      * @param {string} [label]
-     * @memberof ShutdownManager
+     * @memberof JbAppManager
      */
     log(message, level, label) {
         if (this.Logger) {
             if (label === undefined)
-                label = 'Shutdown';
+                label = 'JbAppManager';
             if (level === undefined)
                 level = 'info';
             this.Logger.log({label, level, message});
@@ -107,4 +118,10 @@ class ShutdownManager {
     }
 }
 
-module.exports = ShutdownManager;
+Array.prototype.diff = function (a) {
+    return this.filter(function (i) {
+        return a.indexOf(i) === -1;
+    });
+};
+
+module.exports = JbAppManager;

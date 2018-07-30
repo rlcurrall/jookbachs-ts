@@ -1,4 +1,9 @@
 /**
+ * @module JbServer
+ * @author Robb Currall {rlcurrall}
+ */
+
+/**
  * Factory for the JbServer class that injects all necessary dependencies.
  *
  * @param {Object} deps
@@ -40,6 +45,7 @@ function serverFactory(deps) {
             this.Routes = Routes;
 
             // Default values
+            let that = this;
             this.httpPort = 8080;
             this.isHttps = false;
             this.isSocket = false;
@@ -64,6 +70,12 @@ function serverFactory(deps) {
                     this.isSocket = true;
                     this.JbSocket = options.JbSocket;
                 }
+
+                // Warn for unsupported options
+                let unSup = Object.getOwnPropertyNames(options).diff(['Logger', 'config', 'JbSocket']);
+                unSup.forEach( (opt) => {
+                    that._log(`The [${opt}] option is not supported`, 'warn');
+                });
             }
             
             /* Create Express App */
@@ -253,5 +265,11 @@ function serverFactory(deps) {
 
     return JbServer;
 }
+
+Array.prototype.diff = function (a) {
+    return this.filter(function (i) {
+        return a.indexOf(i) === -1;
+    });
+};
 
 module.exports = serverFactory;

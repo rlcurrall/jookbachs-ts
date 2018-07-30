@@ -1,13 +1,15 @@
 /**
+ * @module JbRouter
+ * @author Robb Currall {rlcurrall}
+ */
+
+/**
  * Abstract class use to define the base functionality of the routes to be used by the JbServer.
- * 
- * @module jbrouter
- * 
+ *  
  * @abstract
  * @class JbRouter
  */
 class JbRouter {
-
     
     /**
      * Creates an instance of JbRouter.
@@ -33,6 +35,12 @@ class JbRouter {
                 this.Logger = options.Logger;
             if (options.config)
                 this.config = options.config;
+
+            // Warn for unsupported options
+            let unSup = Object.getOwnPropertyNames(options).diff(['Logger', 'config']);
+            unSup.forEach( (opt) => {
+                that.log(`The [${opt}] option is not supported`, 'warn');
+            });
         }
 
         this.DB = DB;
@@ -80,5 +88,11 @@ class JbRouter {
         throw new ReferenceError('Classes extending JbRouter must implement the assignRoute method');
     }
 }
+
+Array.prototype.diff = function (a) {
+    return this.filter(function (i) {
+        return a.indexOf(i) === -1;
+    });
+};
 
 module.exports = JbRouter;
