@@ -64,7 +64,7 @@ function dbFactory(deps) {
         connect() {
             let that = this;
 
-            MongoClient.connect(this.dbURL, function (err, client) {
+            MongoClient.connect(this.dbURL, { useNewUrlParser: true}, function (err, client) {
                 if (err) {
                     that._log(`Unable to connect to database - ${that.dbURL}\n${err}`, 'error');
                 }
@@ -132,7 +132,7 @@ function dbFactory(deps) {
         }
 
         findOrCreate(collection, record) {
-            console.log(record);
+            // console.log(record);
         }
 
         /**
