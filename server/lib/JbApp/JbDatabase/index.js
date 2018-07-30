@@ -49,10 +49,10 @@ function dbFactory(deps) {
                     this.JbModel = options.JbModel; // moved into options because may create a db populator later
 
                 // Warn for unsupported options
-                let unSup = Object.getOwnPropertyNames(options).diff(['Logger', 'JbModel']);
-                unSup.forEach( (opt) => {
-                    that._log(`The [${opt}] option is not supported`, 'warn');
-                });
+                // let unSup = Object.getOwnPropertyNames(options).diff(['Logger', 'JbModel']);
+                // unSup.forEach( (opt) => {
+                //     that._log(`The [${opt}] option is not supported`, 'warn');
+                // });
             }
 
             this.dbURL = "mongodb://" + config.db.host + ":" + config.db.port + "/" + config.db.name;
@@ -324,11 +324,5 @@ function dbFactory(deps) {
 
     return JbDatabase;
 }
-
-Array.prototype.diff = function (a) {
-    return this.filter(function (i) {
-        return a.indexOf(i) === -1;
-    });
-};
 
 module.exports = dbFactory;

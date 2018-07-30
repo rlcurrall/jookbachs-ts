@@ -42,7 +42,7 @@
 	},
 	"scripts": {
 		"start": "npm run -s s-echo && npm run -s s-sep && npm run -s s-script",
-		"watch": "cross-env NODE_PATH=./server/lib:./server/lib/utils:./server/lib/routers:./server/lib/JookBachs APP_CONFIG=\"./server/app.json\" USER_CONFIG=\"./server/config/server.json\" nodemon .",
+		"watch": "cross-env NODE_PATH=./server/lib:./server/lib/utils:./server/lib/routers APP_CONFIG=\"./server/app.json\" USER_CONFIG=\"./server/config/server.json\" nodemon .",
 		"s-echo": "echo Starting JookBachs",
 		"s-sep": "echo -----------------------------------------------------------------------------------",
 		"s-script": "cross-env NODE_PATH=./server/lib:./server/lib/utils:./server/lib/routers:./server/lib/JookBachs APP_CONFIG=\"./server/app.json\" USER_CONFIG=\"./server/config/server.json\" node .",

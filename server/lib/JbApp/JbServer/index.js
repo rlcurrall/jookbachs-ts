@@ -72,10 +72,10 @@ function serverFactory(deps) {
                 }
 
                 // Warn for unsupported options
-                let unSup = Object.getOwnPropertyNames(options).diff(['Logger', 'config', 'JbSocket']);
-                unSup.forEach( (opt) => {
-                    that._log(`The [${opt}] option is not supported`, 'warn');
-                });
+                // let unSup = Object.getOwnPropertyNames(options).diff(['Logger', 'config', 'JbSocket']);
+                // unSup.forEach( (opt) => {
+                //     that._log(`The [${opt}] option is not supported`, 'warn');
+                // });
             }
             
             /* Create Express App */
@@ -265,11 +265,5 @@ function serverFactory(deps) {
 
     return JbServer;
 }
-
-Array.prototype.diff = function (a) {
-    return this.filter(function (i) {
-        return a.indexOf(i) === -1;
-    });
-};
 
 module.exports = serverFactory;

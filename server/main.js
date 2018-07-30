@@ -34,19 +34,19 @@ config.appDir = path.join(__dirname, '..'); // update config to have root dir of
 // #region DI
 // <editor-fold defaultstate="collapsed" desc="DI">
 
-// #region JookBachs Dev Tools
-const JbServer = require('JookBachs').JbServer({
+// #region JbApp Dev Tools
+const JbServer = require('JbApp').JbServer({
 	fs,
 	http,
 	https,
 	express
 });
-const JbDatabse = require('JookBachs').JbDatabase({
+const JbDatabse = require('JbApp').JbDatabase({
 	MongoDB
 });
-const JbRouter = require('JookBachs').JbRouter;
-const JbSocket = require('JookBachs').JbSocket;
-const JbAppManager = require('JookBachs').JbAppManager;
+const JbRouter = require('JbApp').JbRouter;
+const JbSocket = require('JbApp').JbSocket;
+const JbAppManager = require('JbApp').JbAppManager;
 // #endregion
 
 // #region JbRouters

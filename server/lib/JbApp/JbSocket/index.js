@@ -33,12 +33,6 @@ class JbSocket {
         if (options) {
             if (options.Logger)
                 this.Logger = options.Logger;
-
-            // Warn for unsupported options
-            let unSup = Object.getOwnPropertyNames(options).diff(['Logger']);
-            unSup.forEach( (opt) => {
-                that._log(`The [${opt}] option is not supported`, 'warn');
-            });
         }
     }
 
@@ -87,11 +81,5 @@ class JbSocket {
         }
     }
 }
-
-Array.prototype.diff = function (a) {
-    return this.filter(function (i) {
-        return a.indexOf(i) === -1;
-    });
-};
 
 module.exports = JbSocket;
