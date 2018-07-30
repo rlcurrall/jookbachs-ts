@@ -13,7 +13,7 @@ function dbFactory(deps) {
     // #region Dependency Setup
     // <editor-fold desc="Dependency Setup">
     if (!deps.MongoDB) {
-        throw new Error(`Missing Dependency: Logger, MongoClient, and config are required!`);
+        throw new Error(`Missing Dependency: MongoDB is required!`);
     }
 
     const ObjectId = deps.MongoDB.ObjectId;
