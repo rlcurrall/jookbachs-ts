@@ -24,6 +24,10 @@ function serverFactory(deps) {
 
     // #endregion
 
+    // Private functions
+    const _log = Symbol('log');
+    const _diff = Symbol('diff');
+
     /**
      * Interface for creating an HTTPS server with Socket.IO 
      *
@@ -65,17 +69,17 @@ function serverFactory(deps) {
                 if (options.config.tlsOptions && options.config.httpsPort && https)
                     this.isHttps = true;
                 else
-                    this._log('It is recommended to use HTTPS whenever possible.', 'warn', 'JookBachs');
+                    this[_log]('It is recommended to use HTTPS whenever possible.', 'warn', 'JookBachs');
                 if (options.JbSocket) {
                     this.isSocket = true;
                     this.JbSocket = options.JbSocket;
                 }
 
                 // Warn for unsupported options
-                // let unSup = Object.getOwnPropertyNames(options).diff(['Logger', 'config', 'JbSocket']);
-                // unSup.forEach( (opt) => {
-                //     that._log(`The [${opt}] option is not supported`, 'warn');
-                // });
+                let unSup = that[_diff](Object.getOwnPropertyNames(options), ['Logger', 'config', 'JbSocket']);
+                unSup.forEach( (opt) => {
+                    that[_log](`The [${opt}] option is not supported`, 'warn');
+                });
             }
             
             /* Create Express App */
@@ -129,7 +133,7 @@ function serverFactory(deps) {
                 }
             }
 
-            this._log('Server Started');
+            this[_log]('Server Started');
         }
 
         /**
@@ -142,29 +146,29 @@ function serverFactory(deps) {
         stopServer() {
             let that = this
             try {
-                this._log('Destroying sockets', 'info', 'Shutdown');
+                this[_log]('Destroying sockets', 'info', 'Shutdown');
                 that.socket.closeSockets();
             }
             catch (e) {
-                this._log(`Could not destory sockets`, 'error', 'Shutdown');
+                this[_log](`Could not destory sockets`, 'error', 'Shutdown');
                 return e;
             }
 
             try {
-                this._log('Closing HTTP server', 'info', 'Shutdown');
+                this[_log]('Closing HTTP server', 'info', 'Shutdown');
                 that.httpServer.close();
             }
             catch (e) {
-                this._log(`Could not close HTTP server`, 'error', 'Shutdown');
+                this[_log](`Could not close HTTP server`, 'error', 'Shutdown');
                 return e;
             }
 
             try {
-                this._log('Closing HTTPS server', 'info', 'Shutdown');
+                this[_log]('Closing HTTPS server', 'info', 'Shutdown');
                 that.tlsServer.close();
             }
             catch (e) {
-                this._log(`Could not close HTTPS server`, 'error', 'Shutdown');
+                this[_log](`Could not close HTTPS server`, 'error', 'Shutdown');
                 return e;
             }
 
@@ -196,12 +200,12 @@ function serverFactory(deps) {
             // Attempts to destory all active sockets
             let shutdownSockets = function () {
                 try {
-                    that._log('Destroying sockets', 'info', 'Shutdown');
+                    that[_log]('Destroying sockets', 'info', 'Shutdown');
                     that.socket.closeSockets();
                     return null;
                 }
                 catch (e) {
-                    that._log(`Could not destory sockets`, 'error', 'Shutdown');
+                    that[_log](`Could not destory sockets`, 'error', 'Shutdown');
                     return e;
                 }
             };
@@ -211,12 +215,12 @@ function serverFactory(deps) {
             // Attempts to shutdown HTTP server
             let shutdownHttp = function () {
                 try {
-                    that._log('Closing HTTP server', 'info', 'Shutdown');
+                    that[_log]('Closing HTTP server', 'info', 'Shutdown');
                     that.httpServer.close();
                     return null;
                 }
                 catch (e) {
-                    that._log(`Could not close HTTP server`, 'error', 'Shutdown');
+                    thatl[_log](`Could not close HTTP server`, 'error', 'Shutdown');
                     return e;
                 }
             };
@@ -226,12 +230,12 @@ function serverFactory(deps) {
             // Attempts to shutdown HTTPS server
             let shutdownHttps = function () {
                 try {
-                    that._log('Closing HTTPS server', 'info', 'Shutdown');
+                    that[_log]('Closing HTTPS server', 'info', 'Shutdown');
                     that.tlsServer.close();
                     return null;
                 }
                 catch (e) {
-                    that._log(`Could not close HTTPS server`, 'error', 'Shutdown');
+                    that[_log](`Could not close HTTPS server`, 'error', 'Shutdown');
                     return e;
                 }
             };
@@ -239,6 +243,12 @@ function serverFactory(deps) {
             funcs.push(shutdownHttps);
 
             return funcs;
+        }
+
+        [_diff](a, b) {
+            return a.filter(function (i) {
+                return b.indexOf(i) === -1;
+            });
         }
 
         /**
@@ -249,7 +259,7 @@ function serverFactory(deps) {
          * @param {string} [label]
          * @memberof JbServer
          */
-        _log (message, level, label) {
+        [_log] (message, level, label) {
             if (this.Logger) {
                 if (label === undefined)
                     label = 'JbServer';

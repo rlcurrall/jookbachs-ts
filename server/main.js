@@ -122,7 +122,7 @@ jbDatabase.connect();
 // Create DbManager
 // ----------------------------
 
-// NOTE: this section may later be removed to be fed into a JbRouter
+// NOTE: this section may be removed later to be fed into a JbRouter
 // 		 that will allow admins to drop DB, reload music, add in tracks,
 //		 etc.
 let dbManager = new DbManager(jbDatabase, JbTrack, config, {Logger});
@@ -159,11 +159,3 @@ let shutdownFunctions = jbServer.getShutdownFunctions();
 
 // Create Shutdown Manager (Currently only works on a few terminals... looking into other options. Though this feature is not necessary)
 const SDM = new JbAppManager(shutdownFunctions, { Logger });
-
-// Array.prototype.diff = function (a) {
-//     return this.filter(function (i) {
-//         return a.indexOf(i) === -1;
-//     });
-// };
-
-// console.log(Object.getOwnPropertyNames(config).diff(['appDir', 'db']))

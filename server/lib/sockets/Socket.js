@@ -56,19 +56,19 @@ function socketFactory(deps) {
                 let socketId = that.nextSocketId++;
                 that.sockets[socketId] = socket; // should we store these in the database for any reason?
     
-                that._log(`Connected - ID: ${socket.id}`);
+                that.log(`Connected - ID: ${socket.id}`);
     
                 socket.on('message', function (msg) {
-                    that._log(`${msg} - ID: ${socket.id}`);
+                    that.log(`${msg} - ID: ${socket.id}`);
                 });
     
                 socket.on('disconnect', function () {
-                    that._log(`Disconnected - ID: ${socket.id}`);
+                    that.log(`Disconnected - ID: ${socket.id}`);
                 });
     
             });
             
-            that._log( 'Sockets Initialized', 'info' );
+            that.log( 'Sockets Initialized', 'info' );
         }
     }
 

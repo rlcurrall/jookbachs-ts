@@ -5,6 +5,10 @@
 
 const readline = require('readline'); // Required here as to not expose module to rest of app
 
+// Private functions
+const _log = Symbol('log');
+const _diff = Symbol('diff');
+
 /**
  * Manages the application shutdown (may look into observer/child processes in nodejs to expand on this module)
  *
@@ -25,10 +29,10 @@ class JbAppManager {
                 this.Logger = options.Logger;
             
             // Warn for unsupported options
-            // let unSup = Object.getOwnPropertyNames(options).diff(['Logger']);
-            // unSup.forEach( (opt) => {
-            //     that.log(`The [${opt}] option is not supported`, 'warn');
-            // });
+            let unSup = that[_diff](Object.getOwnPropertyNames(options), ['Logger']);
+            unSup.forEach( (opt) => {
+                that[_log](`The [${opt}] option is not supported`, 'warn');
+            });
         }
 
         if (process.stdin.isTTY) {
@@ -44,7 +48,7 @@ class JbAppManager {
             }
     
             process.on("SIGINT", function () {
-                that.log('Starting shutdown process');
+                that[_log]('Starting shutdown process');
     
                 Promise.all(that.functions).then(function (result) {
                     let success = true;
@@ -59,21 +63,21 @@ class JbAppManager {
                         }
                     }
                     if (success) {
-                        that.log('Shutdown complete');
+                        that[_log]('Shutdown complete');
                         process.exit();
                     }
                     else 
                     {
-                        that.log(error, "error");
-                        that.log(`Exiting now`);
+                        that[_log](error, "error");
+                        that[_log](`Exiting now`);
                         process.exit();
                     }
                 });
             });
 
-            that.log("Shutdown Manager created");
+            that[_log]("Shutdown Manager created");
         } else {
-            that.log("Terminal not supported by JbAppManager, must be TTY", "warn");
+            that[_log]("Terminal not supported by JbAppManager, must be TTY", "warn");
         }
     }
 	
@@ -94,6 +98,11 @@ class JbAppManager {
         this.functions.push(func);
     }
 
+    [_diff](a, b) {
+        return a.filter(function (i) {
+            return b.indexOf(i) === -1;
+        });
+    }
     
     /**
      * Logger used by JbAppManageer
@@ -103,7 +112,7 @@ class JbAppManager {
      * @param {string} [label]
      * @memberof JbAppManager
      */
-    log(message, level, label) {
+    [_log](message, level, label) {
         if (this.Logger) {
             if (label === undefined)
                 label = 'JbAppManager';

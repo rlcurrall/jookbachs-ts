@@ -23,6 +23,7 @@ function expressFactory(deps) {
 
     // #endregion
 
+    const _log = Symbol('_log');
     /**
      * Interface to Express used by the JbServer.
      *
@@ -44,7 +45,7 @@ function expressFactory(deps) {
             }
 
             this._app = express();
-            this._log('Express App Created');
+            this[_log]('Express App Created');
         }
 
         /**
@@ -82,7 +83,7 @@ function expressFactory(deps) {
          * @param {object} [label]
          * @memberof JbExpress
          */
-        _log (message, level, label) {
+        [_log] (message, level, label) {
             if (this.Logger) {
                 if (label === undefined)
                     label = 'JbExpress';

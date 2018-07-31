@@ -68,7 +68,7 @@ class JbSocket {
      * @param {string} [label]
      * @memberof JbSocket
      */
-    _log (message, level, label) {
+    log (message, level, label) {
         if (this.Logger) {
             if (label === undefined)
                 label = 'JbSocket';

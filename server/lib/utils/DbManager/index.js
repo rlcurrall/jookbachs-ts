@@ -5,6 +5,9 @@ function dbManagerFactory (deps) {
     const walk = deps.walk;
     const path = deps.path;
 
+    // Private functions
+    const log = Symbol('log');
+
     class DbManager {
 
         constructor (db, model, config, options) {
@@ -30,7 +33,7 @@ function dbManagerFactory (deps) {
                             that.loadAllLibraries();
                         },
                         (err) => {
-                            that._log(err, 'error');
+                            that[log](err, 'error');
                             throw err;
                         }
                     )
@@ -41,7 +44,7 @@ function dbManagerFactory (deps) {
                             that.loadAllLibraries();
                         },
                         (err) => {
-                            that._log(err, 'error');
+                            that[log](err, 'error');
                             throw err;
                         }
                     )
@@ -93,7 +96,7 @@ function dbManagerFactory (deps) {
             })
         }
 
-        _log(message, level, label) {
+        [log](message, level, label) {
             if (this.Logger) {
                 if (label === undefined)
                     label = 'DbManager';

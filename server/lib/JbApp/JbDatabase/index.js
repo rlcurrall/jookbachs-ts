@@ -22,6 +22,10 @@ function dbFactory(deps) {
     // </editor-fold>
     // #endregion
 
+    //Private functions
+    const _log = Symbol('log');
+    const _diff = Symbol('diff');
+
     /**
      * Interface to the MongoDB database specified by the config file.
      *
@@ -41,6 +45,7 @@ function dbFactory(deps) {
             this.config = config;
             this.collections = config.dbcollections;
             this.dbName = config.db.name;
+            let that = this;
 
             if (options) {
                 if (options.Logger)
@@ -49,10 +54,10 @@ function dbFactory(deps) {
                     this.JbModel = options.JbModel; // moved into options because may create a db populator later
 
                 // Warn for unsupported options
-                // let unSup = Object.getOwnPropertyNames(options).diff(['Logger', 'JbModel']);
-                // unSup.forEach( (opt) => {
-                //     that._log(`The [${opt}] option is not supported`, 'warn');
-                // });
+                let unSup = that[_diff](Object.getOwnPropertyNames(options), ['Logger', 'JbModel']);
+                unSup.forEach( (opt) => {
+                    that[_log](`The [${opt}] option is not supported`, 'warn');
+                });
             }
 
             this.dbURL = "mongodb://" + config.db.host + ":" + config.db.port + "/" + config.db.name;
@@ -71,11 +76,11 @@ function dbFactory(deps) {
 
             MongoClient.connect(this.dbURL, { useNewUrlParser: true}, function (err, client) {
                 if (err) {
-                    that._log(`Unable to connect to database - ${that.dbURL}\n${err}`, 'error');
+                    that[_log](`Unable to connect to database - ${that.dbURL}\n${err}`, 'error');
                     throw err;
                 }
 
-                that._log('Database connected');
+                that[_log]('Database connected');
 
                 that.client = client;
 
@@ -90,7 +95,7 @@ function dbFactory(deps) {
          * @memberof JbDatabase
          */
         disconnect() {
-            console.log('Disconnecting');
+            [_log]('Disconnecting');
             this.client.close();
         }
 
@@ -186,7 +191,6 @@ function dbFactory(deps) {
                     .sort(sort)
                     .project(projection)
                     .toArray(function (err, res) {
-                        console.log(res.length);
                         if (err) 
                             reject(err);
                         else
@@ -226,9 +230,6 @@ function dbFactory(deps) {
         
         // #endregion
 
-        // #region Private functions
-
-        
         /**
          * Drops all collections and documents of the collections defined in the config file.
          *
@@ -247,7 +248,7 @@ function dbFactory(deps) {
                             that.db.collection(c.name).drop(function (err, res) {
                                 if (err) {
                                     if (err.code === 26) {
-                                        that._log(`${c.name.toUpperCase()} collection already deleted`, 'warn');
+                                        that[_log](`${c.name.toUpperCase()} collection already deleted`, 'warn');
                                         reject(err);
                                     }
                                     else
@@ -285,7 +286,7 @@ function dbFactory(deps) {
                     that.db.createCollection(a.name, { validator: { $jsonSchema: a.$jsonSchema } } ).then(
                         (res) => {
                             resolve(res);
-                            that._log(`${a.name.toUpperCase()} collection created`);
+                            that[_log](`${a.name.toUpperCase()} collection created`);
                         },
                         (err) => {
                             reject(err);
@@ -293,6 +294,21 @@ function dbFactory(deps) {
                     );
                 });
             })
+        }
+
+        // #region Private functions
+
+        /**
+         * Private function used to find the difference between two arrays
+         * 
+         * @param {array} a
+         * @param {array} b
+         * @memberof JbDatabase
+         */
+        [_diff](a, b) {
+            return a.filter(function (i) {
+                return b.indexOf(i) === -1;
+            });
         }
         
         /**
@@ -303,7 +319,7 @@ function dbFactory(deps) {
          * @param {string} [label]
          * @memberof JbDatabase
          */
-        _log(message, level, label) {
+        [_log](message, level, label) {
             if (label === undefined)
                 label = 'JbDatabase';
             if (level === undefined)
