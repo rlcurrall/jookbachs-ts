@@ -10,7 +10,7 @@ const _log = Symbol('log');
 const _diff = Symbol('diff');
 
 /**
- * Manages the application shutdown (may look into observer/child processes in nodejs to expand on this module)
+ * Manages the application shutdown
  *
  * @class JbAppManager
  */
@@ -18,6 +18,9 @@ class JbAppManager {
     
     /**
      * Creates an instance of JbAppManager.
+     * 
+     * @param {array} functions
+     * @param {object} options
      * @memberof JbAppManager
      */
     constructor (functions, options) {
@@ -83,21 +86,33 @@ class JbAppManager {
 	
 
     /**
+     * Set the list of function to be executed on shutdown
      * 
-     * @param {*} funcArray 
+     * @param {array} funcArray 
+     * @memberof JbAppManager
      */
     setShutdownFunctions (funcArray) {
         this.functions = funcArray;
     }
 
     /**
+     * Append a function to the list of functions to be executed on shutdown
      * 
-     * @param {*} func 
+     * @param {function} func 
+     * @memberof JbAppManager
      */
     addShutdownFunc (func) {
         this.functions.push(func);
     }
 
+    /**
+     * Private function to find the difference between two arrays.
+     * @private
+     * 
+     * @param {array} a 
+     * @param {array} b 
+     * @memberof JbAppManager
+     */
     [_diff](a, b) {
         return a.filter(function (i) {
             return b.indexOf(i) === -1;
@@ -106,6 +121,7 @@ class JbAppManager {
     
     /**
      * Logger used by JbAppManageer
+     * @private
      *
      * @param {string} message
      * @param {string} [level]

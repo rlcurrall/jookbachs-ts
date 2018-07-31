@@ -61,7 +61,7 @@ class JbSocket {
 
     
     /**
-     * Private Logger used by the JbSocket class.
+     * Logger used by the JbSocket class.
      *
      * @param {string} message
      * @param {string} [level]

@@ -16,7 +16,6 @@ function socketFactory(deps) {
 
     // #endregion
 
-    
     /**
      * Interface to Socket.IO used by JbServer.
      *
