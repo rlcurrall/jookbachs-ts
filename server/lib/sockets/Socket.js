@@ -38,6 +38,8 @@ function socketFactory(deps) {
             if (options) {
                 // load in options
             }
+
+            this.startListening();
         }
 
         /**

@@ -28,18 +28,19 @@ function streamFactory (deps) {
          * Creates an instance of JbStream.
          * @constructor
          * 
-         * @param {object} config
-         * @param {object} DB
+         * @param {object} expressRouter
          * @param {object} options
          * @memberof JbStream
          */
-        constructor (DB, options) {
-            super(DB, options);
+        constructor (JbExpress, options) {
+            super(JbExpress, options);
             this.url = '/stream';
 
             if (options) {
                 // load options in
             }
+
+            this.assignRoute();
         }
 
         /**
@@ -48,36 +49,68 @@ function streamFactory (deps) {
          * @param {object} router
          * @memberof JbStream
          */
-        assignRoute(router) {
+        assignRoute() {
             let that = this;
 
-                router.use(function (req, res, next) {
-                    that.log( `${req.method} /stream${req.url}`, 'request', 'JbStream' );
+            let routerFunc = function (req, res, next) {
+                that.log( `${req.method} /stream${req.url}`, 'request', 'JbStream' );
 
-                    // get requested file name from url
-                    var q = url.parse(req.url, true);
-                    var input = q.query;
+                // get requested file name from url
+                var q = url.parse(req.url, true);
+                var input = q.query;
 
-                    input.id = parseInt(input.id);
+                input.id = parseInt(input.id);
 
-                    that.DB.getRecord("tracks", input).then(
-                        (track) => {
-                            fs.createReadStream(track.path).pipe(res);
-                        },
-                        (err) => {
-                            // send 404 code to indicate track not found
-                            res.writeHead(404, {
-                                'Content-Type': 'text/html'
-                            });
-            
-                            // display error
-                            var error = 'Cannot access library index: ' + input.id;
-                            that.log( error, 'warn', 'JbStream' );
-                            return res.end(error);
-                        }
-                    )
+                that.DB.getRecord("tracks", input).then(
+                    (track) => {
+                        fs.createReadStream(track.path).pipe(res);
+                    },
+                    (err) => {
+                        // send 404 code to indicate track not found
+                        res.writeHead(404, {
+                            'Content-Type': 'text/html'
+                        });
         
-                });
+                        // display error
+                        var error = 'Cannot access library index: ' + input.id;
+                        that.log( error, 'warn', 'JbStream' );
+                        return res.end(error);
+                    }
+                )
+    
+            };
+
+            this.JbExpress.setSingleRoute(that.url, routerFunc);
+
+            // let router = this.expressRouter;
+
+                // router.use(function (req, res, next) {
+                //     that.log( `${req.method} /stream${req.url}`, 'request', 'JbStream' );
+
+                //     // get requested file name from url
+                //     var q = url.parse(req.url, true);
+                //     var input = q.query;
+
+                //     input.id = parseInt(input.id);
+
+                //     that.DB.getRecord("tracks", input).then(
+                //         (track) => {
+                //             fs.createReadStream(track.path).pipe(res);
+                //         },
+                //         (err) => {
+                //             // send 404 code to indicate track not found
+                //             res.writeHead(404, {
+                //                 'Content-Type': 'text/html'
+                //             });
+            
+                //             // display error
+                //             var error = 'Cannot access library index: ' + input.id;
+                //             that.log( error, 'warn', 'JbStream' );
+                //             return res.end(error);
+                //         }
+                //     )
+        
+                // });
                 
                 that.log('Route Created', 'info', 'JbStream');
         }

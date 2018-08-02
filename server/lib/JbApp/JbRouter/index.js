@@ -15,40 +15,29 @@ class JbRouter {
      * Creates an instance of JbRouter.
      * @constructs
      * 
-     * @param {object} config
-     * @param {object} DB
+     * @param {object} router
      * @param {object} [options]
      * @memberof JbRouter
      */
-    constructor (DB, options) {
+    constructor (JbExpress, options) {
 
         if (this.constructor === JbRouter) {
             throw new TypeError('Abstract class "JbRouter" cannot be instantiated directly.');
         }
 
-        if (this.assignRoute === undefined) {
-            throw new TypeError('Classes extending JbRouter must implement the assignRoute method');
-        }
+        this.JbExpress = JbExpress;
+        this.url = '/';
 
         if (options) {
             if (options.Logger)
                 this.Logger = options.Logger;
+            if (options.url)
+                this.url = options.url;
+            if (options.DB)
+                this.DB = options.DB;
             if (options.config)
                 this.config = options.config;
         }
-
-        this.DB = DB;
-        this.url = '/';
-    }
-    
-    /**
-     * Returns the url of this instance of the JbRouter
-     *
-     * @returns {string}
-     * @memberof JbRouter
-     */
-    getUrl () {
-        return this.url;
     }
 
     /**

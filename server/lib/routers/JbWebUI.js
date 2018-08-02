@@ -27,15 +27,15 @@ function webUIFactory (deps) {
          * Creates an instance of JbWebUI.
          * @constructor
          * 
-         * @param {Object} config
-         * @param {JbDatabase} DB
+         * @param {Object} expressRouter
          * @param {Object} [options]
          * @memberof JbWebUI
          */
-        constructor (DB, options) {
-            super(DB, options);
-            this.url = '/';
+        constructor (JbExpress, options) {
+            super(JbExpress, options);
             this.publicPath = `${this.config.appDir}/public/`;
+
+            this.assignRoute();
         }
 
         /**
@@ -44,8 +44,13 @@ function webUIFactory (deps) {
          * @param {Object} router
          * @memberof JbWebUI
          */
-        assignRoute(router) {
-            router.use(express.static(this.publicPath));
+        assignRoute() {
+            let that = this;
+            this.JbExpress.setStatic(that.url, that.publicPath);
+
+            // let router = this.expressRouter;
+
+            // router.use(express.static(this.publicPath));
             this.log('Route Created', 'info', 'JbWebUI');
         }
     }

@@ -13,14 +13,13 @@ function serverFactory(deps) {
 
     // #region Dependency setup
     
-    if (!deps.fs || !deps.http || !deps.express) {
+    if (!deps.fs || !deps.http) {
         throw new Error('[JbServer] Missing Dependencies: fs and express are required!');
     }
 
     const fs = deps.fs;
     const http = deps.http;
     const https = deps.https;
-    const JbExpress = require('./JbExpress')({express: deps.express});
 
     // #endregion
 
@@ -44,9 +43,8 @@ function serverFactory(deps) {
          * @param {Object} options
          * @memberof JbServer
          */
-        constructor(DB, Routes, options) {
+        constructor(DB, options) {
             this.DB = DB;
-            this.Routes = Routes;
 
             // Default values
             let that = this;
@@ -70,25 +68,27 @@ function serverFactory(deps) {
                     this.isHttps = true;
                 else
                     this[_log]('It is recommended to use HTTPS whenever possible.', 'warn', 'JookBachs');
-                if (options.JbSocket) {
-                    this.isSocket = true;
-                    this.JbSocket = options.JbSocket;
-                }
 
                 // Warn for unsupported options
                 let unSup = that[_diff](Object.getOwnPropertyNames(options), ['Logger', 'config', 'JbSocket']);
                 unSup.forEach( (opt) => {
                     that[_log](`The [${opt}] option is not supported`, 'warn');
                 });
-            }
-            
-            /* Create Express App */
-            this.jbExpress = new JbExpress( { Logger: this.Logger } );
+                this.serverStarted = false;
 
-            // Assign routes
-            Routes.forEach( route => {
-                this.createRoute(route)
-            })
+                this.DB.connect();
+            }
+        }
+
+        getServer() {
+            if (this.isHttps)
+                return this.tlsServer;
+            else
+                return this.httpServer;
+        }
+
+        getAllRecords(collection, options) {
+            return this.DB.getAllRecords(collection, options);
         }
 
         /**
@@ -97,9 +97,9 @@ function serverFactory(deps) {
          *
          * @memberof JbServer
          */
-        startServer() {
+        startServer(ExpressApp) {
             let that = this
-            let JbSocket = this.JbSocket;
+            // let JbSocket = this.JbSocket;
 
             if (this.isHttps) {
                 // TLS options
@@ -118,19 +118,10 @@ function serverFactory(deps) {
                 }).listen(this.httpPort);
         
                 // HTTPS Server
-                this.tlsServer = https.createServer(tlsOptions, this.jbExpress.getApp()).listen(this.httpsPort);
-        
-                // Socket on HTTPS Server
-                if (this.isSocket) {
-                    this.socket = new JbSocket( this.tlsServer, { Logger: this.Logger } );
-                    this.socket.startListening();
-                }
+                this.tlsServer = https.createServer(tlsOptions, ExpressApp).listen(this.httpsPort);
+                this.serverStarted = true;
             } else {
-                this.httpServer = http.createServer(this.jbExpress.getApp()).listen(this.httpPort);
-                if (this.isSocket) {
-                    this.socket = new JbSocket(this.httpServer, { Logger: this.Logger });
-                    this.socket.startListening();
-                }
+                this.httpServer = http.createServer(ExpressApp).listen(this.httpPort);
             }
 
             this[_log]('Server Started');
@@ -173,18 +164,6 @@ function serverFactory(deps) {
             }
 
             return null;
-        }
-
-        /**
-         * Used to define a router and assign the router to the express app. Receives 
-         * a concrete implementation of the JbRouter.
-         *
-         * @param {Object} router
-         * @memberof JbServer
-         */
-        createRoute(router) {
-            let r = new router(this.DB, { Logger: this.Logger, config: this.config } );
-            this.jbExpress.setRoute(r);
         }
 
         /**
@@ -273,7 +252,7 @@ function serverFactory(deps) {
         }
     }
 
-    return JbServer;
+    return Object.freeze(JbServer);
 }
 
 module.exports = serverFactory;

@@ -27,18 +27,19 @@ function apiFactory(deps) {
          * Creates an instance of JbApi.
          * @constructor
          * 
-         * @param {object} config
-         * @param {object} DB
+         * @param {object} JbExpress
          * @param {object} options
          * @memberof JbApi
          */
-        constructor(DB, options) {
-            super(DB, options);
+        constructor(JbExpress, options) {
+            super(JbExpress, options);
             this.url = '/api';
 
             if (options) {
                 // load in options
             }
+
+            this.assignRoute();
         }
 
         /**
@@ -47,13 +48,14 @@ function apiFactory(deps) {
          * @param {object} router
          * @memberof JbApi
          */
-        assignRoute(router) {
+        assignRoute() {
             let that = this;
+            let router = this.JbExpress.Router(true);
 
             // #region Track Queries
 
             let getTrackById = function (req, res, next) {
-                that.DB.getRecordById("tracks", req.params.id).then(
+                that.JbExpress.getRecordById("tracks", req.params.id).then(
                     function (track) {
                         res.status(200).json(track)
                     },
@@ -64,7 +66,7 @@ function apiFactory(deps) {
             }
 
             let getAllTracks = function (req, res, next) {
-                that.DB.getAllRecords("tracks", {sort: {'id': 1}}).then(
+                that.JbExpress.getAllRecords("tracks", {sort: {'id': 1}}).then(
                     function (lib) {
                         res.status(200).json(lib);
                     },
@@ -79,7 +81,7 @@ function apiFactory(deps) {
                 if (query.year)
                     query.year = parseInt(query.year);
                 if (query.title || query.artist || query.album || query.year) {
-                    that.DB.getRecordsByQuery("tracks", query, {sort: {'id': 1}}).then(
+                    that.JbExpress.getRecordsByQuery("tracks", query, {sort: {'id': 1}}).then(
                         function (val) {
                             res.status(200).json(val);
                         },
@@ -95,8 +97,6 @@ function apiFactory(deps) {
             // #endregion
 
             // Route Initialization
-            router.use(bodyParser.urlencoded({extended: true}));
-            router.use(bodyParser.json());
             router.use(function (req, res, next) {
                 that.log( `${req.method} /api${req.url}`, 'request', 'JbApi' );
                 next();
@@ -105,6 +105,8 @@ function apiFactory(deps) {
             // Tracks Routes
             router.get('/tracks', getTracksByQuery, getAllTracks)
             router.get('/tracks/:id', getTrackById)
+
+            this.JbExpress.setCustomRoute(this.url, router);
 
             that.log( 'Route Created', 'info', 'JbApi' );
         }

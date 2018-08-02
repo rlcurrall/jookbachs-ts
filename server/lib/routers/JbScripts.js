@@ -27,15 +27,16 @@ function scriptsFactory (deps) {
          * Creates an instance of JbScripts.
          * @constructor
          * 
-         * @param {object} config
-         * @param {object} DB
+         * @param {object} expressRouter
          * @param {object} options
          * @memberof JbScripts
          */
-        constructor (DB, options) {
-            super(DB, options);
+        constructor (JbExpress, options) {
+            super(JbExpress, options);
             this.url = '/scripts';
             this.scriptPath = `${this.config.appDir}/node_modules/`;
+
+            this.assignRoute();
         }
 
 
@@ -45,8 +46,12 @@ function scriptsFactory (deps) {
          * @param {*} router
          * @memberof JbScripts
          */
-        assignRoute(router) {
-            router.use(express.static(this.scriptPath));
+        assignRoute() {
+            let that = this;
+            this.JbExpress.setStatic(that.url, that.scriptPath);
+            // let router = this.expressRouter;
+
+            // router.use(express.static(this.scriptPath));
             this.log( 'Route Created', 'info', 'JbScripts' );
         }
     }

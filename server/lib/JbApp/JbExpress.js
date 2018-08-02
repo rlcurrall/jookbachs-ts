@@ -12,18 +12,18 @@
 function expressFactory(deps) {
 
     // #region Dependency setup
-
-    let express;
-
     if (!deps.express) {
         throw new Error('[JbExpress] Missing Dependency: express is required!');
     }
 
     express = deps.express;
+    bodyParser = deps.bodyParser;
 
     // #endregion
 
     const _log = Symbol('_log');
+    const _app = Symbol('app');
+    const _server = Symbol('server');
     /**
      * Interface to Express used by the JbServer.
      *
@@ -38,41 +38,47 @@ function expressFactory(deps) {
          * @param {object} options
          * @memberof JbExpress
          */
-        constructor(options) {
+        constructor(JbServer, options) {
             if (options) {
                 if (options.Logger)
                     this.Logger = options.Logger;
             }
 
-            this._app = express();
+            this[_app] = express();
             this[_log]('Express App Created');
+            this[_server] = JbServer;
+
+            JbServer.startServer(this[_app]);
         }
 
-        /**
-         * Sets a route for the Express app, receives a concrete implementation
-         * of the JbRouter class.
-         *
-         * @param {object} router
-         * @memberof JbExpress
-         */
-        setRoute(router) {
-            let route = express.Router();
-
-            this._app.use(router.getUrl(), route);
-
-            router.assignRoute(route);
+        getAllRecords(collection, options) {
+            return this[_server].getAllRecords(collection, options);
         }
 
-        /**
-         * Used to retrieve the Express app created by this class
-         *
-         * @returns
-         * @memberof JbExpress
-         */
-        getApp() {
-            return this._app;
+        setStatic(url, path) {
+            let router = express.Router();
+            router.use(express.static(path));
+            this[_app].use(url, router);
         }
 
+        setSingleRoute(url, func) {
+            let router = express.Router();
+            router.use(func);
+            this[_app].use(url, router);
+        }
+
+        setCustomRoute(url, router) {
+            this[_app].use(url, router);
+        }
+
+        Router(useBodyParser) {
+            let router = express.Router();
+            if (useBodyParser) {
+                router.use(bodyParser.urlencoded({extended: true}));
+                router.use(bodyParser.json());
+            }
+            return router;
+        }
         
         /**
          * Private Logger used by the JbExpress class
@@ -97,7 +103,7 @@ function expressFactory(deps) {
         }
     }
 
-    return JbExpress;
+    return Object.freeze(JbExpress);
 }
 
 module.exports = expressFactory;

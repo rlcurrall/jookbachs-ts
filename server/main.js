@@ -35,18 +35,29 @@ config.appDir = path.join(__dirname, '..'); // update config to have root dir of
 // <editor-fold defaultstate="collapsed" desc="DI">
 
 // #region JbApp Dev Tools
-const JbServer = require('JbApp').JbServer({
+// const JbServer = require('JbApp').JbServer({
+// 	fs,
+// 	http,
+// 	https,
+// 	express,
+// 	bodyParser
+// });
+// const JbDatabse = require('JbApp').JbDatabase({
+// 	MongoDB
+// });
+// const JbRouter = require('JbApp').JbRouter;
+// const JbSocket = require('JbApp').JbSocket;
+// const JbAppManager = require('JbApp').JbAppManager;
+const { JbApp, JbRouter, JbSocket, JbAppManager} = require('JbApp')({
 	fs,
 	http,
 	https,
-	express
+	express,
+	MongoDB,
+	bodyParser
 });
-const JbDatabse = require('JbApp').JbDatabase({
-	MongoDB
-});
-const JbRouter = require('JbApp').JbRouter;
-const JbSocket = require('JbApp').JbSocket;
-const JbAppManager = require('JbApp').JbAppManager;
+// const JbRouter = JookBachs.JbRouter;
+// const
 // #endregion
 
 // #region JbRouters
@@ -109,14 +120,14 @@ Logger.log({ label: 'Main', level: 'info', message: 'Initializing Application' }
 // ----------------------------
 // Initialize DB Connection
 // ----------------------------
-const jbDatabase = new JbDatabse( 
-	config, 		// configurations
-	{ 				//options
-		Logger,
-		JbModel: JbTrack
-	}
-);
-jbDatabase.connect();
+// const jbDatabase = new JbDatabse( 
+// 	config, 		// configurations
+// 	{ 				//options
+// 		Logger,
+// 		JbModel: JbTrack
+// 	}
+// );
+// jbDatabase.connect();
 
 // ----------------------------
 // Create DbManager
@@ -125,37 +136,25 @@ jbDatabase.connect();
 // NOTE: this section may be removed later to be fed into a JbRouter
 // 		 that will allow admins to drop DB, reload music, add in tracks,
 //		 etc.
-let dbManager = new DbManager(jbDatabase, JbTrack, config, {Logger});
+// let dbManager = new DbManager(jbDatabase, JbTrack, config, {Logger});
 
-setTimeout(() => { // wait for 5 seconds to ensure the DB is initialized fully
-	dbManager.dropAndReloadDB();
-}, 5000);
+// setTimeout(() => { // wait for 5 seconds to ensure the DB is initialized fully
+// 	dbManager.dropAndReloadDB();
+// }, 5000);
+
+let jbApp = new JbApp([JbWebUI, JbScripts, JbStream, JbApi], { Logger, Socket, config, JbModel: JbTrack })
 
 // ----------------------------
 // Create Server
 // ----------------------------
-const jbServer = new JbServer( 
-	jbDatabase, 			// Database
-	[ 						// Routers
-		JbWebUI, 
-		JbScripts, 
-		JbApi, 
-		JbStream 
-	], 
-	{ 						// Options
-		Logger,
-		config,
-		JbSocket: Socket
-	} 
-);
-jbServer.startServer();
+
 
 // ================================================================================================
 // SHUTDOWN
 // ================================================================================================
 
 // Use .push() to add any extra functions
-let shutdownFunctions = jbServer.getShutdownFunctions();
+// let shutdownFunctions = jbServer.getShutdownFunctions();
 
 // Create Shutdown Manager (Currently only works on a few terminals... looking into other options. Though this feature is not necessary)
-const SDM = new JbAppManager(shutdownFunctions, { Logger });
+// const SDM = new JbAppManager(shutdownFunctions, { Logger });

@@ -26,7 +26,7 @@ class JbSocket {
         if (this.constructor === JbSocket)
             throw new TypeError('Abstract class "JbSocket" cannot be instantiated directly.');
 
-        this.server = server;
+        this.server = server.getServer();
         this.sockets = [];
         this.nextSocketId = 0;
 
