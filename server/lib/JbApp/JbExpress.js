@@ -42,6 +42,8 @@ function expressFactory(deps) {
             if (options) {
                 if (options.Logger)
                     this.Logger = options.Logger;
+                if (options.config)
+                    this.config = options.config;
             }
 
             this[_app] = express();
@@ -51,10 +53,31 @@ function expressFactory(deps) {
             JbServer.startServer(this[_app]);
         }
 
-        getAllRecords(collection, options) {
-            return this[_server].getAllRecords(collection, options);
-        }
+        // #region DB Interface
+        /************************ SELECT ************************/
+            getAllRecords(from, options) {
+                return this[_server].getAllRecords(from, options);
+            }
 
+            getRecordsByQuery(from, where, options) {
+                return this[_server].getRecordsByQuery(from, where, options);
+            }
+
+            getRecordById(from, id) {
+                return this[_server].getRecordById(from, id);
+            }
+
+            getOneRecord(from, where, select) {
+                return this[_server].getOneRecord(from, where, select);
+            }
+
+        /************************ INSERT ************************/
+            insertRecord(into, record) {
+                return this[_server].insertRecord(into, record);
+            }
+        // #endregion
+
+        // #region Express Interface
         setStatic(url, path) {
             let router = express.Router();
             router.use(express.static(path));
@@ -79,6 +102,7 @@ function expressFactory(deps) {
             }
             return router;
         }
+        // #endregion
         
         /**
          * Private Logger used by the JbExpress class

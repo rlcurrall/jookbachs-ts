@@ -1,48 +1,55 @@
 {
-    "appDir": "",
-    "dbcollections": [
-        {
-            "name": "tracks",
-            "$jsonSchema": {
-                "bsonType": "object",
-                "required": [
-                    "title",
-                    "artist",
-                    "album",
-                    "track",
-                    "year",
+    "router": {
+        "appDir": ""
+    },
+    "db": {
+        "collections": [
+            {
+                "name": "tracks",
+                "uniqueFields": [
                     "path"
                 ],
-                "properties": {
-                    "title": {
-                        "bsonType": "string",
-                        "description": "must be a string and is required"
-                    },
-                    "artist": {
-                        "bsonType": "string",
-                        "description": "must be a string and is required"
-                    },
-                    "album": {
-                        "bsonType": "string",
-                        "description": "must be a string and is required"
-                    },
-                    "year": {
-                        "bsonType": "int",
-                        "minimum": 0,
-                        "maximum": 3000,
-                        "description": "must be an integer in [0, 3000] and is required"
-                    },
-                    "path": {
-                        "bsonType": "string",
-                        "description": "must be a string and is required"
+                "$jsonSchema": {
+                    "bsonType": "object",
+                    "required": [
+                        "title",
+                        "artist",
+                        "album",
+                        "track",
+                        "year",
+                        "path"
+                    ],
+                    "properties": {
+                        "title": {
+                            "bsonType": "string",
+                            "description": "must be a string and is required"
+                        },
+                        "artist": {
+                            "bsonType": "string",
+                            "description": "must be a string and is required"
+                        },
+                        "album": {
+                            "bsonType": "string",
+                            "description": "must be a string and is required"
+                        },
+                        "year": {
+                            "bsonType": "int",
+                            "minimum": 0,
+                            "maximum": 3000,
+                            "description": "must be an integer in [0, 3000] and is required"
+                        },
+                        "path": {
+                            "bsonType": "string",
+                            "description": "must be a string and is required"
+                        }
                     }
                 }
+                
+            },
+            {
+                "name": "playlists",
+                "$jsonSchema": {}
             }
-            
-        },
-        {
-            "name": "playlists",
-            "$jsonSchema": {}
-        }
-    ]
+        ]
+    }
 }

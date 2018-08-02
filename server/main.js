@@ -21,8 +21,13 @@ const bodyParser = require('body-parser');
 // Load config info
 const user_config = JSON.parse(fs.readFileSync(process.env.USER_CONFIG, 'utf8')); // for user
 const app_config = JSON.parse(fs.readFileSync(process.env.APP_CONFIG, 'utf-8')); // for dev
-const config = Object.assign(user_config, app_config); // combine into one object
-config.appDir = path.join(__dirname, '..'); // update config to have root dir of app
+user_config.db = Object.assign(user_config.db, app_config.db);
+const config = Object.assign(user_config, {router: app_config.router}); // combine into one object
+config.router.appDir = path.join(__dirname, '..'); // update config to have root dir of app
+
+// cleanup
+delete user_config;
+delete app_config;
 
 // </editor-fold>
 // #endregion
@@ -35,19 +40,6 @@ config.appDir = path.join(__dirname, '..'); // update config to have root dir of
 // <editor-fold defaultstate="collapsed" desc="DI">
 
 // #region JbApp Dev Tools
-// const JbServer = require('JbApp').JbServer({
-// 	fs,
-// 	http,
-// 	https,
-// 	express,
-// 	bodyParser
-// });
-// const JbDatabse = require('JbApp').JbDatabase({
-// 	MongoDB
-// });
-// const JbRouter = require('JbApp').JbRouter;
-// const JbSocket = require('JbApp').JbSocket;
-// const JbAppManager = require('JbApp').JbAppManager;
 const { JbApp, JbRouter, JbSocket, JbAppManager} = require('JbApp')({
 	fs,
 	http,
@@ -56,16 +48,13 @@ const { JbApp, JbRouter, JbSocket, JbAppManager} = require('JbApp')({
 	MongoDB,
 	bodyParser
 });
-// const JbRouter = JookBachs.JbRouter;
-// const
 // #endregion
 
 // #region JbRouters
 // <editor-fold desc="JbRouters">
 
 const JbApi = require('JbApi')({
-	JbRouter,
-	bodyParser
+	JbRouter
 });
 
 const JbStream = require('JbStream')({
@@ -75,13 +64,11 @@ const JbStream = require('JbStream')({
 });
 
 const JbWebUI = require('JbWebUI')({
-	JbRouter,
-	express
+	JbRouter
 });
 
 const JbScripts = require('JbScripts')({
-	JbRouter,
-	express
+	JbRouter
 });
 
 // </editor-fold>
@@ -118,18 +105,6 @@ const DbManager = require('DbManager')({
 Logger.log({ label: 'Main', level: 'info', message: 'Initializing Application' });
 
 // ----------------------------
-// Initialize DB Connection
-// ----------------------------
-// const jbDatabase = new JbDatabse( 
-// 	config, 		// configurations
-// 	{ 				//options
-// 		Logger,
-// 		JbModel: JbTrack
-// 	}
-// );
-// jbDatabase.connect();
-
-// ----------------------------
 // Create DbManager
 // ----------------------------
 
@@ -142,11 +117,15 @@ Logger.log({ label: 'Main', level: 'info', message: 'Initializing Application' }
 // 	dbManager.dropAndReloadDB();
 // }, 5000);
 
-let jbApp = new JbApp([JbWebUI, JbScripts, JbStream, JbApi], { Logger, Socket, config, JbModel: JbTrack })
-
-// ----------------------------
-// Create Server
-// ----------------------------
+let jbApp = new JbApp(
+	[JbWebUI, JbScripts, JbStream, JbApi], 		// Array of JbRouters
+	{ 
+		Logger, 			// custom logger for app
+		Socket, 			// JbScoket that 
+		config, 			// config
+		JbModel: JbTrack 
+	}
+);
 
 
 // ================================================================================================

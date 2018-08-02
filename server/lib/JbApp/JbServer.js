@@ -80,16 +80,37 @@ function serverFactory(deps) {
             }
         }
 
-        getServer() {
+        getServerInstance() {
             if (this.isHttps)
                 return this.tlsServer;
             else
                 return this.httpServer;
         }
 
-        getAllRecords(collection, options) {
-            return this.DB.getAllRecords(collection, options);
-        }
+        // #region DB Interface
+
+        /************************ SELECT ************************/
+            getAllRecords(from, options) {
+                return this.DB.getAllRecords(from, options);
+            }
+
+            getRecordsByQuery(from, where, options) {
+                return this.DB.getRecordsByQuery(from, where, options);
+            }
+
+            getRecordById(from, id) {
+                return this.DB.getRecordById(from, id);
+            }
+
+            getOneRecord(from, where, select) {
+                return this.DB.getOneRecord(from, where,   );
+            }
+
+        /************************ INSERT ************************/
+            insertRecord(into, record) {
+                return this.DB.insertRecord(into, record);
+            }
+        // #endregion
 
         /**
          * Starts the HTTP & HTTPS Servers listening on the ports specified by 
@@ -164,64 +185,6 @@ function serverFactory(deps) {
             }
 
             return null;
-        }
-
-        /**
-         * Returns an array of functions that can be executed to shudown the server.
-         *
-         * @returns
-         * @memberof JbServer
-         */
-        getShutdownFunctions() {
-            let funcs = [];
-            let that = this;
-
-            // Attempts to destory all active sockets
-            let shutdownSockets = function () {
-                try {
-                    that[_log]('Destroying sockets', 'info', 'Shutdown');
-                    that.socket.closeSockets();
-                    return null;
-                }
-                catch (e) {
-                    that[_log](`Could not destory sockets`, 'error', 'Shutdown');
-                    return e;
-                }
-            };
-
-            funcs.push(shutdownSockets);
-
-            // Attempts to shutdown HTTP server
-            let shutdownHttp = function () {
-                try {
-                    that[_log]('Closing HTTP server', 'info', 'Shutdown');
-                    that.httpServer.close();
-                    return null;
-                }
-                catch (e) {
-                    thatl[_log](`Could not close HTTP server`, 'error', 'Shutdown');
-                    return e;
-                }
-            };
-
-            funcs.push(shutdownHttp);
-
-            // Attempts to shutdown HTTPS server
-            let shutdownHttps = function () {
-                try {
-                    that[_log]('Closing HTTPS server', 'info', 'Shutdown');
-                    that.tlsServer.close();
-                    return null;
-                }
-                catch (e) {
-                    that[_log](`Could not close HTTPS server`, 'error', 'Shutdown');
-                    return e;
-                }
-            };
-
-            funcs.push(shutdownHttps);
-
-            return funcs;
         }
 
         [_diff](a, b) {

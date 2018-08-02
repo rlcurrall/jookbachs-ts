@@ -5,6 +5,13 @@
 
 function appFactory (deps) {
 
+    // #region Dependency Setup
+
+    if (!deps.fs || !deps.http || !deps.express || !deps.bodyParser) {
+
+    }
+
+    // Declare Dependencies
     const fs = deps.fs;
     const http = deps.http;
     const https = deps.https;
@@ -12,6 +19,7 @@ function appFactory (deps) {
     const MongoDB = deps.MongoDB;
     const bodyParser = deps.bodyParser;
 
+    // Inject Dependencies
     const JbServer = require('./JbServer')({
         fs,
         http,
@@ -24,10 +32,15 @@ function appFactory (deps) {
     const JbDatabase = require('./JbDatabase')({
         MongoDB
     });
+
+    // #endregion
+
+    // Import Modules to be passed to main
     const JbRouter = require('./JbRouter');
     const JbSocket = require('./JbSocket');
     const JbAppManager = require('./JbAppManager');
 
+    // Declare private objects
     const _db = Symbol('db');
     const _server = Symbol('server');
     const _express = Symbol('express');
@@ -45,34 +58,39 @@ function appFactory (deps) {
                     this.config = options.config;
                 if (options.Socket)
                     this.Socket = options.Socket;
-                if (options.DbConfig)
-                    this.DbConfig = options.DbConfig;
+                if (options.config.db)
+                    this.DbConfig = options.config.db;
+                if (options.config.server)
+                    this.ServerConfig = options.config.server;
+                if (options.config.router)
+                    this.RouterConfig = options.config.router;
                 if (options.DataManager)
                     this.DataManager = options.DataManager;
                 if (options.JbModel)
                     this.JbModel = options.JbModel;
             }
 
-            this[_db] = new JbDatabase(this.config, { Logger: this.Logger, JbModel: this.JbModel, config: this.config });
+            if (this.DbConfig)
+                this[_db] = new JbDatabase(this.DbConfig, { Logger: this.Logger, JbModel: this.JbModel });
             
-            this[_server] = new JbServer(this[_db], { Logger: this.Logger, config: this.config });
+            this[_server] = new JbServer(this[_db], { Logger: this.Logger, config: this.ServerConfig });
 
-            this[_express] = new JbExpress(this[_server], { Logger: this.Logger, config: this.config });
+            this[_express] = new JbExpress(this[_server], { Logger: this.Logger });
 
-            this[_socket] = new this.Socket(this[_server], { Logger: this.Logger, config: this.config });
+            this[_socket] = new this.Socket(this[_server], { Logger: this.Logger });
 
             Routes.forEach( Route => {
-                new Route(this[_express], { Logger: this.Logger, DB: this[_db], config: this.config});
+                new Route(this[_express], { Logger: this.Logger, DB: this[_db], config: this.RouterConfig});
             })
         }
     }
 
-    return {
+    return Object.freeze({
         JbRouter,
         JbSocket,
         JbAppManager,
         JbApp
-    }
+    });
 }
 
 module.exports = appFactory;

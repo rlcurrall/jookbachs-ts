@@ -7,11 +7,10 @@
 function scriptsFactory (deps) {
 
     // #region Dependency Setup
-    if (!deps.express) {
+    if (!deps.JbRouter) {
 		throw new Error('[ scriptsCtrl ] Missing Dependency: path, express, and config are required');
 	}
 
-	const express = deps.express;
     const JbRouter = deps.JbRouter;
     // #endregion
 

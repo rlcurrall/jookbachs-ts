@@ -42,25 +42,30 @@ function dbFactory(deps) {
          * @memberof JbDatabase
          */
         constructor(config, options) {
-            this.config = config;
-            this.collections = config.dbcollections;
-            this.dbName = config.db.name;
             let that = this;
+            
+            // Load configurations
+            if (!config || !config.name || !config.host || !config.port) {
+                throw new Error('config is required');
+            } else {
+                this.config = config;
+                this.dbName = config.name;
+                this.dbURL = "mongodb://" + config.host + ":" + config.port + "/" + config.name;
+                if (config.collections)
+                    this.collections = config.collections;
+            }
 
+            // Load options
             if (options) {
                 if (options.Logger)
                     this.Logger = options.Logger;
-                if (options.JbModel)
-                    this.JbModel = options.JbModel; // moved into options because may create a db populator later
 
                 // Warn for unsupported options
-                let unSup = that[_diff](Object.getOwnPropertyNames(options), ['Logger', 'JbModel']);
+                let unSup = this[_diff](Object.getOwnPropertyNames(options), ['Logger']);
                 unSup.forEach( (opt) => {
                     that[_log](`The [${opt}] option is not supported`, 'warn');
                 });
             }
-
-            this.dbURL = "mongodb://" + config.db.host + ":" + config.db.port + "/" + config.db.name;
         }
 
         
@@ -100,7 +105,6 @@ function dbFactory(deps) {
         }
 
         // #region DB Queries
-
         
         /**
          * Insert a record into the specified collection.
@@ -132,16 +136,26 @@ function dbFactory(deps) {
          * @returns {Object}
          * @memberof JbDatabase
          */
-        getRecord(collection, query, projection) {
+        getOneRecord(collection, query, projection) {
             if (query._id)
                 query._id = ObjectId(query._id);
             if (projection === undefined)
                 projection = {};
-            return this.db.collection(collection).findOne(query).then(function (res) {
-                return res
-            }, function (err) {
-                return err
+
+            return new Promise( (resolve, reject) => {
+                this.db.collection(collection).findOne(query).then(
+                    function (res) {
+                        resolve(res);
+                    }, function (err) {
+                        reject(err);
+                    }
+                );
             })
+            // return this.db.collection(collection).findOne(query).then(function (res) {
+            //     return res
+            // }, function (err) {
+            //     return err
+            // })
         }
 
         /**

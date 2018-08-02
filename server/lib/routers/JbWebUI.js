@@ -7,11 +7,10 @@
 function webUIFactory (deps) {
 
     // #region Dependency Setup
-    if (!deps.express) {
+    if (!deps.JbRouter) {
 		throw new Error('[ JbWebUI ] Missing Dependency: express is config are required');
 	}
 
-	const express = deps.express;
     const JbRouter = deps.JbRouter;
     // #endregion
 

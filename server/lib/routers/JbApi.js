@@ -7,11 +7,10 @@
 function apiFactory(deps) {
 
     // #region Dependency Setup
-    if (!deps.bodyParser) {
+    if (!deps.JbRouter) {
         throw new Error('[ JbApi ] Missing Dependency: bodyParser is required');
     }
 
-    const bodyParser = deps.bodyParser;
     const JbRouter = deps.JbRouter;
     // #endregion
 
@@ -81,14 +80,26 @@ function apiFactory(deps) {
                 if (query.year)
                     query.year = parseInt(query.year);
                 if (query.title || query.artist || query.album || query.year) {
-                    that.JbExpress.getRecordsByQuery("tracks", query, {sort: {'id': 1}}).then(
-                        function (val) {
-                            res.status(200).json(val);
-                        },
-                        function (err) {
-                            res.status(400).json(err);
-                        }
-                    )
+                    if (query.single) {
+                        delete query.single;
+                        that.JbExpress.getOneRecord('tracks', query).then(
+                            function (val) {
+                                res.status(200).json(val);
+                            },
+                            function (err) {
+                                res.status(400).json(err);
+                            }
+                        )
+                    } else {
+                        that.JbExpress.getRecordsByQuery("tracks", query, {sort: {'id': 1}}).then(
+                            function (val) {
+                                res.status(200).json(val);
+                            },
+                            function (err) {
+                                res.status(400).json(err);
+                            }
+                        )
+                    }
                 } else {
                     next();
                 }
