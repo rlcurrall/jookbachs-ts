@@ -89,7 +89,7 @@ function appFactory (deps) {
             if (this.DbManager)
                 this[_dbmanager] = new this.DbManager(this[_db], { Logger: this[_logger], model: this[_model], config: this.AppConfig});
             
-            this[_server] = new JbServer(this[_db], { Logger: this[_logger], config: this.ServerConfig });
+            this[_server] = new JbServer(this[_db], { Logger: this[_logger], config: this.ServerConfig, dbManager: this[_dbmanager] });
 
             this[_express] = new JbExpress(this[_server], { Logger: this[_logger] });
 

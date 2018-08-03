@@ -28,6 +28,7 @@ function serverFactory(deps) {
     const _diff = Symbol('diff');
     const _db = Symbol('db');
     const _logger = Symbol('Logger');
+    const _dbmanager = Symbol('Database Manager');
 
     /**
      * Interface for creating an HTTPS server with Socket.IO 
@@ -57,6 +58,8 @@ function serverFactory(deps) {
             if (options) {
                 if (options.Logger)
                     this[_logger] = options.Logger;
+                if (options.dbManager)
+                    this[_dbmanager] = options.dbManager;
                 if (options.config)
                     this.config = options.config;
                 if (options.config.tlsOptions)
@@ -71,7 +74,7 @@ function serverFactory(deps) {
                     this[_log]('It is recommended to use HTTPS whenever possible.', 'warn', 'JookBachs');
 
                 // Warn for unsupported options
-                let unSup = that[_diff](Object.getOwnPropertyNames(options), ['Logger', 'config', 'JbSocket']);
+                let unSup = that[_diff](Object.getOwnPropertyNames(options), ['Logger', 'config', 'JbSocket', 'dbManager']);
                 unSup.forEach( (opt) => {
                     that[_log](`The [${opt}] option is not supported`, 'warn');
                 });
@@ -109,6 +112,11 @@ function serverFactory(deps) {
         /************************ INSERT ************************/
             insertRecord(into, record) {
                 return this[_db].insertRecord(into, record);
+            }
+
+        /********************* DB Interface *********************/
+            dbInterface(func, args) {
+                return this[_dbmanager][func](args);
             }
         // #endregion
 

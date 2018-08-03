@@ -76,6 +76,12 @@ function expressFactory(deps) {
             insertRecord(into, record) {
                 return this[_server].insertRecord(into, record);
             }
+
+        /************************ DB Interface ************************/
+            dbInterface(func, args) {
+                return this[_server].dbInterface(func, args);
+            }
+
         // #endregion
 
         // #region Express Interface
