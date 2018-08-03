@@ -41,19 +41,24 @@ function appFactory (deps) {
     const JbAppManager = require('./JbAppManager');
 
     // Declare private objects
+    const _logger = Symbol('Logger');
     const _db = Symbol('db');
     const _server = Symbol('server');
     const _express = Symbol('express');
     const _socket = Symbol('socket');
+    const _routers = Symbol('routers');
+
+    // Declare private methods
+    const _diff = Symbol('diff');
 
     class JbApp {
 
         constructor(Routes, options) {
-            this.Routes = Routes;
+            this[_routers] = Routes;
             
             if (options) {
                 if (options.Logger)
-                    this.Logger = options.Logger;
+                    this[_logger] = options.Logger;
                 if (options.config)
                     this.config = options.config;
                 if (options.Socket)
@@ -71,20 +76,29 @@ function appFactory (deps) {
             }
 
             if (this.DbConfig)
-                this[_db] = new JbDatabase(this.DbConfig, { Logger: this.Logger, JbModel: this.JbModel });
+                this[_db] = new JbDatabase(this.DbConfig, { Logger: this[_logger] });
             
-            this[_server] = new JbServer(this[_db], { Logger: this.Logger, config: this.ServerConfig });
+            this[_server] = new JbServer(this[_db], { Logger: this[_logger], config: this.ServerConfig });
 
-            this[_express] = new JbExpress(this[_server], { Logger: this.Logger });
+            this[_express] = new JbExpress(this[_server], { Logger: this[_logger] });
 
-            this[_socket] = new this.Socket(this[_server], { Logger: this.Logger });
+            this[_socket] = new this.Socket(this[_server], { Logger: this[_logger] });
 
-            Routes.forEach( Route => {
-                new Route(this[_express], { Logger: this.Logger, DB: this[_db], config: this.RouterConfig});
+            this[_routers].forEach( Route => {
+                new Route(this[_express], { Logger: this[_logger], DB: this[_db], config: this.RouterConfig});
             })
+        }
+
+        startApp() {
+
+        }
+
+        stopApp() {
+
         }
     }
 
+    // Return and make object Immutable
     return Object.freeze({
         JbRouter,
         JbSocket,

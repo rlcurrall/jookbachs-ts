@@ -77,12 +77,24 @@ function apiFactory(deps) {
 
             let getTracksByQuery = function (req, res, next) {
                 let query = req.query;
+                let select = {};
                 if (query.year)
                     query.year = parseInt(query.year);
+                if (query.fields) {
+                    if (typeof query.fields === 'object') {
+                        query.fields.forEach( field => {
+                            select[field] = 1;
+                        });
+                    } else {
+                        select[query.fields] = 1;
+                    }
+                }
+
                 if (query.title || query.artist || query.album || query.year) {
                     if (query.single) {
                         delete query.single;
-                        that.JbExpress.getOneRecord('tracks', query).then(
+                        delete query.fields;
+                        that.JbExpress.getOneRecord('tracks', query, select).then(
                             function (val) {
                                 res.status(200).json(val);
                             },
@@ -91,7 +103,8 @@ function apiFactory(deps) {
                             }
                         )
                     } else {
-                        that.JbExpress.getRecordsByQuery("tracks", query, {sort: {'id': 1}}).then(
+                        delete query.fields;
+                        that.JbExpress.getRecordsByQuery("tracks", query, {sort: {'id': 1}, projection: select}).then(
                             function (val) {
                                 res.status(200).json(val);
                             },

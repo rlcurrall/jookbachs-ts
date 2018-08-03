@@ -22,9 +22,10 @@ function dbFactory(deps) {
     // </editor-fold>
     // #endregion
 
-    //Private functions
+    //Private functions/variables
     const _log = Symbol('log');
     const _diff = Symbol('diff');
+    const _logger = Symbol('Logger');
 
     /**
      * Interface to the MongoDB database specified by the config file.
@@ -58,7 +59,7 @@ function dbFactory(deps) {
             // Load options
             if (options) {
                 if (options.Logger)
-                    this.Logger = options.Logger;
+                    this[_logger] = options.Logger;
 
                 // Warn for unsupported options
                 let unSup = this[_diff](Object.getOwnPropertyNames(options), ['Logger']);
@@ -141,9 +142,9 @@ function dbFactory(deps) {
                 query._id = ObjectId(query._id);
             if (projection === undefined)
                 projection = {};
-
+                
             return new Promise( (resolve, reject) => {
-                this.db.collection(collection).findOne(query).then(
+                this.db.collection(collection).findOne(query, {fields: projection}).then(
                     function (res) {
                         resolve(res);
                     }, function (err) {
@@ -151,11 +152,6 @@ function dbFactory(deps) {
                     }
                 );
             })
-            // return this.db.collection(collection).findOne(query).then(function (res) {
-            //     return res
-            // }, function (err) {
-            //     return err
-            // })
         }
 
         /**
@@ -338,8 +334,8 @@ function dbFactory(deps) {
                 label = 'JbDatabase';
             if (level === undefined)
                 level = 'info';
-            if (this.Logger) {
-                this.Logger.log({
+            if (this[_logger]) {
+                this[_logger].log({
                     label,
                     level,
                     message

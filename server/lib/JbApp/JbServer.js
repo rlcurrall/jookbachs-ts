@@ -23,9 +23,11 @@ function serverFactory(deps) {
 
     // #endregion
 
-    // Private functions
+    // Private functions/variables
     const _log = Symbol('log');
     const _diff = Symbol('diff');
+    const _db = Symbol('db');
+    const _logger = Symbol('Logger');
 
     /**
      * Interface for creating an HTTPS server with Socket.IO 
@@ -44,18 +46,17 @@ function serverFactory(deps) {
          * @memberof JbServer
          */
         constructor(DB, options) {
-            this.DB = DB;
+            this[_db] = DB;
 
             // Default values
             let that = this;
             this.httpPort = 8080;
             this.isHttps = false;
-            this.isSocket = false;
 
             // Read in options
             if (options) {
                 if (options.Logger)
-                    this.Logger = options.Logger;
+                    this[_logger] = options.Logger;
                 if (options.config)
                     this.config = options.config;
                 if (options.config.tlsOptions)
@@ -74,9 +75,8 @@ function serverFactory(deps) {
                 unSup.forEach( (opt) => {
                     that[_log](`The [${opt}] option is not supported`, 'warn');
                 });
-                this.serverStarted = false;
 
-                this.DB.connect();
+                this[_db].connect();
             }
         }
 
@@ -91,24 +91,24 @@ function serverFactory(deps) {
 
         /************************ SELECT ************************/
             getAllRecords(from, options) {
-                return this.DB.getAllRecords(from, options);
+                return this[_db].getAllRecords(from, options);
             }
 
             getRecordsByQuery(from, where, options) {
-                return this.DB.getRecordsByQuery(from, where, options);
+                return this[_db].getRecordsByQuery(from, where, options);
             }
 
             getRecordById(from, id) {
-                return this.DB.getRecordById(from, id);
+                return this[_db].getRecordById(from, id);
             }
 
             getOneRecord(from, where, select) {
-                return this.DB.getOneRecord(from, where,   );
+                return this[_db].getOneRecord(from, where, select);
             }
 
         /************************ INSERT ************************/
             insertRecord(into, record) {
-                return this.DB.insertRecord(into, record);
+                return this[_db].insertRecord(into, record);
             }
         // #endregion
 
@@ -140,7 +140,6 @@ function serverFactory(deps) {
         
                 // HTTPS Server
                 this.tlsServer = https.createServer(tlsOptions, ExpressApp).listen(this.httpsPort);
-                this.serverStarted = true;
             } else {
                 this.httpServer = http.createServer(ExpressApp).listen(this.httpPort);
             }
@@ -202,12 +201,12 @@ function serverFactory(deps) {
          * @memberof JbServer
          */
         [_log] (message, level, label) {
-            if (this.Logger) {
+            if (this[_logger]) {
                 if (label === undefined)
                     label = 'JbServer';
                 if (level === undefined)
                     level = 'info';
-                this.Logger.log({label, level, message});
+                this[_logger].log({label, level, message});
             }
             else {
                 console.log(message);

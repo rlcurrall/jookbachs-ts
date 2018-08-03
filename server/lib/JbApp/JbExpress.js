@@ -24,6 +24,7 @@ function expressFactory(deps) {
     const _log = Symbol('_log');
     const _app = Symbol('app');
     const _server = Symbol('server');
+    const _logger = Symbol('Logger');
     /**
      * Interface to Express used by the JbServer.
      *
@@ -41,7 +42,7 @@ function expressFactory(deps) {
         constructor(JbServer, options) {
             if (options) {
                 if (options.Logger)
-                    this.Logger = options.Logger;
+                    this[_logger] = options.Logger;
                 if (options.config)
                     this.config = options.config;
             }
@@ -114,12 +115,12 @@ function expressFactory(deps) {
          * @memberof JbExpress
          */
         [_log] (message, level, label) {
-            if (this.Logger) {
+            if (this[_logger]) {
                 if (label === undefined)
                     label = 'JbExpress';
                 if (level === undefined)
                     level = 'info';
-                this.Logger.log({label, level, message});
+                this[_logger].log({label, level, message});
             }
             else {
                 console.log(message);

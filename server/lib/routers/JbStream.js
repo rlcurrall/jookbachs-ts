@@ -61,7 +61,7 @@ function streamFactory (deps) {
 
                 input.id = parseInt(input.id);
 
-                that.DB.getRecord("tracks", input).then(
+                that.JbExpress.getOneRecord("tracks", input, {"path": 1}).then(
                     (track) => {
                         fs.createReadStream(track.path).pipe(res);
                     },
