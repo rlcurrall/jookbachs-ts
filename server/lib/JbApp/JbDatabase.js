@@ -162,10 +162,10 @@ function dbFactory(deps) {
          * @returns {Object}
          * @memberof JbDatabase
          */
-        getRecordById(collection, id) {
+        getRecordById(collection, id, projection) {
             // may convert to use cursor and toArray and return res[0]
             return this.db.collection(collection)
-                .findOne({"_id" : ObjectId(id)})
+                .findOne({"_id" : ObjectId(id)}, {fields: projection})
                 .then(function (res) {
                     return res
                 }, function (err) {

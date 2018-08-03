@@ -32,7 +32,7 @@ function webUIFactory (deps) {
          */
         constructor (JbExpress, options) {
             super(JbExpress, options);
-            this.publicPath = `${this.config.appDir}/public/`;
+            this.publicPath = `${this.config.rootDir}/public/`;
 
             this.assignRoute();
         }

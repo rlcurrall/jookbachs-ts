@@ -64,8 +64,8 @@ function expressFactory(deps) {
                 return this[_server].getRecordsByQuery(from, where, options);
             }
 
-            getRecordById(from, id) {
-                return this[_server].getRecordById(from, id);
+            getRecordById(from, id, select) {
+                return this[_server].getRecordById(from, id, select);
             }
 
             getOneRecord(from, where, select) {

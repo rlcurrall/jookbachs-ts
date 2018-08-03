@@ -6,25 +6,41 @@ function dbManagerFactory (deps) {
     const path = deps.path;
 
     // Private functions
-    const log = Symbol('log');
+    const _log = Symbol('log');
+    const _diff = Symbol('diff');
+    
+    // Private Objects
+    const _db = Symbol('DB');
+    const _model = Symbol('Model');
+    const _logger = Symbol('Logger');
 
     class DbManager {
 
-        constructor (db, model, config, options) {
-            this.DB = db;
-            this.model = model;
-            this.config = config;
+        constructor (db, options) {
+            let that = this;
+            this[_db] = db;
 
             if (options) {
                 if (options.Logger)
-                    this.Logger = options.Logger;
-                
+                    this[_logger] = options.Logger;
+                if (options.model)
+                    this[_model] = options.model;
+                if (options.config)
+                    this.config = options.config;
+                    
+                // Warn for unsupported options
+                let unSup = that[_diff](Object.getOwnPropertyNames(options), ['Logger', 'model', 'config']);
+                unSup.forEach( (opt) => {
+                    that[_log](`The [${opt}] option is not supported`, 'warn');
+                });
             }
+
+            this[_log]('Database manager created');
         }
 
         dropAndReloadDB () {
             let that = this;
-            let DB = this.DB;
+            let DB = this[_db];
 
             DB.dropAllCollections().then(
                 (res) => {
@@ -33,7 +49,7 @@ function dbManagerFactory (deps) {
                             that.loadAllLibraries();
                         },
                         (err) => {
-                            that[log](err, 'error');
+                            that[_log](err, 'error');
                             throw err;
                         }
                     )
@@ -44,7 +60,7 @@ function dbManagerFactory (deps) {
                             that.loadAllLibraries();
                         },
                         (err) => {
-                            that[log](err, 'error');
+                            that[_log](err, 'error');
                             throw err;
                         }
                     )
@@ -53,8 +69,8 @@ function dbManagerFactory (deps) {
         }
 
         loadAllLibraries () {
-            let JbModel = this.model;
-            let DB = this.DB;
+            let JbModel = this[_model];
+            let DB = this[_db];
             let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];
             let Paths = this.config.libraryPaths;
 
@@ -84,7 +100,7 @@ function dbManagerFactory (deps) {
                                 next();
                             },
                             (err) => {
-                                console.log("error " + err);
+                                that[_log](err, 'error');
                             }
                         )
                     }
@@ -96,13 +112,19 @@ function dbManagerFactory (deps) {
             })
         }
 
-        [log](message, level, label) {
-            if (this.Logger) {
+        [_diff](a, b) {
+            return a.filter(function (i) {
+                return b.indexOf(i) === -1;
+            });
+        }
+
+        [_log](message, level, label) {
+            if (this[_logger]) {
                 if (label === undefined)
                     label = 'DbManager';
                 if (level === undefined)
                     level = 'info';
-                this.Logger.log({label, level, message});
+                this[_logger].log({label, level, message});
             } else {
                 console.log(message);
             }

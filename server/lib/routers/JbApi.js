@@ -54,7 +54,20 @@ function apiFactory(deps) {
             // #region Track Queries
 
             let getTrackById = function (req, res, next) {
-                that.JbExpress.getRecordById("tracks", req.params.id).then(
+                let query = req.query;
+                let select = {};
+                if (query.fields) {
+                    if (typeof query.fields === 'object') {
+                        query.fields.forEach( field => {
+                            select[field] = 1;
+                        });
+                    } else {
+                        select[query.fields] = 1;
+                    }
+                    delete query.fields;
+                }
+
+                that.JbExpress.getRecordById("tracks", req.params.id, select).then(
                     function (track) {
                         res.status(200).json(track)
                     },
@@ -65,7 +78,20 @@ function apiFactory(deps) {
             }
 
             let getAllTracks = function (req, res, next) {
-                that.JbExpress.getAllRecords("tracks", {sort: {'id': 1}}).then(
+                let query = req.query;
+                let select = {};
+                if (query.fields) {
+                    if (typeof query.fields === 'object') {
+                        query.fields.forEach( field => {
+                            select[field] = 1;
+                        });
+                    } else {
+                        select[query.fields] = 1;
+                    }
+                    delete query.fields;
+                }
+
+                that.JbExpress.getAllRecords("tracks", {sort: {'id': 1}, projection: select}).then(
                     function (lib) {
                         res.status(200).json(lib);
                     },
@@ -91,9 +117,9 @@ function apiFactory(deps) {
                 }
 
                 if (query.title || query.artist || query.album || query.year) {
+                    delete query.fields;
                     if (query.single) {
                         delete query.single;
-                        delete query.fields;
                         that.JbExpress.getOneRecord('tracks', query, select).then(
                             function (val) {
                                 res.status(200).json(val);
@@ -103,7 +129,6 @@ function apiFactory(deps) {
                             }
                         )
                     } else {
-                        delete query.fields;
                         that.JbExpress.getRecordsByQuery("tracks", query, {sort: {'id': 1}, projection: select}).then(
                             function (val) {
                                 res.status(200).json(val);

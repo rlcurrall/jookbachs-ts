@@ -33,7 +33,7 @@ function scriptsFactory (deps) {
         constructor (JbExpress, options) {
             super(JbExpress, options);
             this.url = '/scripts';
-            this.scriptPath = `${this.config.appDir}/node_modules/`;
+            this.scriptPath = `${this.config.rootDir}/node_modules/`;
 
             this.assignRoute();
         }

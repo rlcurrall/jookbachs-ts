@@ -61,26 +61,29 @@ const Logger = createLogger({
     transports: [
         new transports.Console({
             level: 'request',
-            format: combine(colorize(), timestamp(), jbFormat)
+            format: combine(colorize(), timestamp(), jbFormat),
+            stderrLevels: [
+                'error'
+            ],
+            consoleWarnLevels: [
+                'warn'
+            ]
         }),
         new transports.File({
-            filename: `server/logs/sysInfo.log`
+            filename: `server/logs/sysInfo.log`,
+            maxsize: 10000000
         }),
         new transports.File({
             filename: `server/logs/error.log`,
-            level: 'error'
+            level: 'error',
+            maxsize: 10000000
         }),
         new transports.File({
             filename: `server/logs/traffic.log`,
-            level: 'request'
+            level: 'request',
+            maxsize: 10000000
         })
     ],
-    // exceptionHandlers: [
-    //     new transports.Console(),
-    //     new transports.File({
-    //         filename: 'server/logs/exceptions.log'
-    //     })
-    // ],
     exitOnError: true
 })
 

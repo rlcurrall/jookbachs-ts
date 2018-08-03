@@ -75,9 +75,9 @@ function serverFactory(deps) {
                 unSup.forEach( (opt) => {
                     that[_log](`The [${opt}] option is not supported`, 'warn');
                 });
-
-                this[_db].connect();
             }
+            
+            this[_db].connect();
         }
 
         getServerInstance() {
@@ -98,8 +98,8 @@ function serverFactory(deps) {
                 return this[_db].getRecordsByQuery(from, where, options);
             }
 
-            getRecordById(from, id) {
-                return this[_db].getRecordById(from, id);
+            getRecordById(from, id, select) {
+                return this[_db].getRecordById(from, id, select);
             }
 
             getOneRecord(from, where, select) {
