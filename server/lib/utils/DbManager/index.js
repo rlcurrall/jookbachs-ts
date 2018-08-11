@@ -8,6 +8,7 @@ function dbManagerFactory (deps) {
     // Private functions
     const _log = Symbol('log');
     const _diff = Symbol('diff');
+    const _loadAllLibraries = Symbol('Load all libraries');
     
     // Private Objects
     const _db = Symbol('DB');
@@ -46,7 +47,7 @@ function dbManagerFactory (deps) {
                 (res) => {
                     DB.createAllCollections().then(
                         (res) => {
-                            that.loadAllLibraries();
+                            that[_loadAllLibraries]();
                         },
                         (err) => {
                             that[_log](err, 'error');
@@ -57,7 +58,7 @@ function dbManagerFactory (deps) {
                 (err) => {
                     DB.createAllCollections().then(
                         (res) => {
-                            that.loadAllLibraries();
+                            that[_loadAllLibraries]();
                         },
                         (err) => {
                             that[_log](err, 'error');
@@ -68,7 +69,7 @@ function dbManagerFactory (deps) {
             )
         }
 
-        loadAllLibraries () {
+        [_loadAllLibraries] () {
             let JbModel = this[_model];
             let DB = this[_db];
             let fileTypeInclusions = ['.flac', '.m4a', '.mp3'];

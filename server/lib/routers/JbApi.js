@@ -143,6 +143,11 @@ function apiFactory(deps) {
                 }
             }
 
+            let reloadLibrary = function (req, res, next) {
+                that.JbExpress.dbInterface('dropAndReloadDB');
+                res.status(200).json({});
+            }
+
             // #endregion
 
             // Route Initialization
@@ -152,8 +157,11 @@ function apiFactory(deps) {
             });
 
             // Tracks Routes
-            router.get('/tracks', getTracksByQuery, getAllTracks)
-            router.get('/tracks/:id', getTrackById)
+            router.get('/tracks', getTracksByQuery, getAllTracks);
+            router.get('/tracks/:id', getTrackById);
+
+            // DB Routes
+            router.get('/db/reload/', reloadLibrary);
 
             this.JbExpress.setCustomRoute(this.url, router);
 
