@@ -3,7 +3,6 @@
 // ================================================================================================
 
 // #region Imports
-// <editor-fold defaultstate="collapsed" desc="Imports">
 
 const url = require('url');
 const walk = require('walk');
@@ -29,7 +28,6 @@ config.app.rootDir = path.join(__dirname, '..'); // update config to have root d
 delete user_config;
 delete app_config;
 
-// </editor-fold>
 // #endregion
 
 // ================================================================================================
@@ -37,7 +35,6 @@ delete app_config;
 // ================================================================================================
 
 // #region DI
-// <editor-fold defaultstate="collapsed" desc="DI">
 
 // #region JbApp Dev Tools
 const { JbApp, JbRouter, JbSocket, JbAppManager} = require('JbApp')({
@@ -51,7 +48,6 @@ const { JbApp, JbRouter, JbSocket, JbAppManager} = require('JbApp')({
 // #endregion
 
 // #region JbRouters
-// <editor-fold desc="JbRouters">
 
 const JbApi = require('JbApi')({
 	JbRouter
@@ -71,7 +67,6 @@ const JbScripts = require('JbScripts')({
 	JbRouter
 });
 
-// </editor-fold>
 // #endregion
 
 const Socket = require('sockets/Socket')({
@@ -80,7 +75,6 @@ const Socket = require('sockets/Socket')({
 })
 
 // #region DB
-// <editor-fold desc="DB">
 
 const JbTrack = require('models/JbTrack')({
 	path,
@@ -92,10 +86,8 @@ const DbManager = require('DbManager')({
 	walk
 })
 
-// </editor-fold>
 // #endregion
 
-// </editor-fold>
 // #endregion
 
 // ================================================================================================
@@ -108,9 +100,9 @@ const DbManager = require('DbManager')({
 
 let jbApp = new JbApp(
 	[JbWebUI, JbScripts, JbStream, JbApi], 		// Array of JbRouters
-	{ 
+	{
 		Logger, 			// custom logger for app
-		Socket, 			// JbScoket that 
+		Socket, 			// JbScoket that
 		config, 			// config
 		model: JbTrack, 	// Model
 		DbManager

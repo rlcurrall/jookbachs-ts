@@ -12,7 +12,6 @@
 function trackModel(deps) {
 
 	// #region Dependency Setup
-	// <editor-fold desc="Dependency Setup">
 
 	if (!deps.path || !deps.tagReader) {
 		throw new Error("Missing Dependency: path and node-id3 are required")
@@ -21,10 +20,9 @@ function trackModel(deps) {
 	const path = deps.path;
 	const tagReader = deps.tagReader;
 
-	// </editor-fold>
 	// #endregion
 
-	
+
 	/**
 	 * Used to load metadata for files using the media-metadata module.
 	 *
@@ -32,7 +30,7 @@ function trackModel(deps) {
 	 */
 	class JbTrack {
 
-		
+
 		/**
 		 * Creates an instance of JbTrack.
 		 * @param {int} id

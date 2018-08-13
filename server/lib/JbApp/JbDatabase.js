@@ -12,14 +12,12 @@
 function dbFactory(deps) {
 
     // #region Dependency Setup
-    // <editor-fold desc="Dependency Setup">
     if (!deps.MongoDB) {
         throw new Error(`Missing Dependency: MongoDB is required!`);
     }
 
     const ObjectId = deps.MongoDB.ObjectId;
     const MongoClient = deps.MongoDB.MongoClient;
-    // </editor-fold>
     // #endregion
 
     //Private functions/variables
@@ -34,17 +32,17 @@ function dbFactory(deps) {
      */
     class JbDatabase {
 
-        
+
         /**
          * Creates an instance of JbDatabase.
-         * 
+         *
          * @param {object} config
          * @param {object} options
          * @memberof JbDatabase
          */
         constructor(config, options) {
             let that = this;
-            
+
             // Load configurations
             if (!config || !config.name || !config.host || !config.port) {
                 throw new Error('config is required');
@@ -69,10 +67,10 @@ function dbFactory(deps) {
             }
         }
 
-        
+
         /**
          * Create the connection to database and reinitialize the database by dropping all collections
-         * specified by the config file, then creating the collections, and finally populating the 
+         * specified by the config file, then creating the collections, and finally populating the
          * collections.
          *
          * @memberof JbDatabase
@@ -94,7 +92,7 @@ function dbFactory(deps) {
             });
         }
 
-        
+
         /**
          * Close the connection to the database.
          *
@@ -106,7 +104,7 @@ function dbFactory(deps) {
         }
 
         // #region DB Queries
-        
+
         /**
          * Insert a record into the specified collection.
          *
@@ -129,7 +127,7 @@ function dbFactory(deps) {
         }
 
         /**
-         * Get a single record from the specified collection that matches the 
+         * Get a single record from the specified collection that matches the
          * provided query.
          *
          * @param {string} collection
@@ -142,7 +140,7 @@ function dbFactory(deps) {
                 query._id = ObjectId(query._id);
             if (projection === undefined)
                 projection = {};
-                
+
             return new Promise( (resolve, reject) => {
                 this.db.collection(collection).findOne(query, {fields: projection}).then(
                     function (res) {
@@ -201,7 +199,7 @@ function dbFactory(deps) {
                     .sort(sort)
                     .project(projection)
                     .toArray(function (err, res) {
-                        if (err) 
+                        if (err)
                             reject(err);
                         else
                             resolve(res);
@@ -210,7 +208,7 @@ function dbFactory(deps) {
         }
 
         /**
-         * Get all documents from the specified collection in the database and 
+         * Get all documents from the specified collection in the database and
          * sort by the 'id' property.
          *
          * @param {string} collection
@@ -237,7 +235,7 @@ function dbFactory(deps) {
                 })
             })
         }
-        
+
         // #endregion
 
         /**
@@ -281,7 +279,7 @@ function dbFactory(deps) {
             })
         }
 
-        
+
         /**
          * Creates all collections defined by the config file.
          *
@@ -310,7 +308,7 @@ function dbFactory(deps) {
 
         /**
          * Private function used to find the difference between two arrays
-         * 
+         *
          * @param {array} a
          * @param {array} b
          * @memberof JbDatabase
@@ -320,7 +318,7 @@ function dbFactory(deps) {
                 return b.indexOf(i) === -1;
             });
         }
-        
+
         /**
          * Private Logger used by the JbDatabase class
          *
