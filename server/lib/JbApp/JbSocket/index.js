@@ -28,8 +28,7 @@ class JbSocket {
 
         this.server = server.getServerInstance();
         this.JbServer = server;
-        this.sockets = [];
-        this.nextSocketId = 0;
+        this.sockets = {};
 
         if (options) {
             if (options.Logger)

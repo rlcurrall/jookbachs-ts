@@ -53,9 +53,8 @@ function socketFactory(deps) {
             let io = socketIO.listen(this.server);
 
             io.on('connect', function (socket) {
-            
-                let socketId = that.nextSocketId++;
-                that.sockets[socketId] = socket; // should we store these in the database for any reason?
+                
+                that.sockets[socket.id] = socket; // should we store these in the database for any reason?
     
                 that.log(`<${socket.id}> Connected`);
     
@@ -64,9 +63,9 @@ function socketFactory(deps) {
                 });
     
                 socket.on('disconnect', function () {
+                    delete that.sockets[socket.id];
                     that.log(`<${socket.id}> Disconnected`);
                 });
-    
             });
             
             that.log( 'Sockets Initialized', 'info' );

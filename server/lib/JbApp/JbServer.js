@@ -148,11 +148,12 @@ function serverFactory(deps) {
         
                 // HTTPS Server
                 this.tlsServer = https.createServer(tlsOptions, ExpressApp).listen(this.httpsPort);
+                this[_log](`Server Started - listening on ${this.httpsPort}`);
             } else {
                 this.httpServer = http.createServer(ExpressApp).listen(this.httpPort);
+                this[_log](`Server Started - listening on ${this.httpPort}`);
             }
 
-            this[_log]('Server Started');
         }
 
         /**
