@@ -67,6 +67,10 @@ const JbScripts = require('JbScripts')({
 	JbRouter
 });
 
+const JbAdmin = require('JbAdmin')({
+	JbRouter
+});
+
 // #endregion
 
 const Socket = require('sockets/Socket')({
@@ -99,7 +103,7 @@ const DbManager = require('DbManager')({
 // ----------------------------
 
 let jbApp = new JbApp(
-	[JbWebUI, JbScripts, JbStream, JbApi], 		// Array of JbRouters
+	[JbWebUI, JbScripts, JbStream, JbApi, JbAdmin], 		// Array of JbRouters
 	{
 		Logger, 			// custom logger for app
 		Socket, 			// JbScoket that

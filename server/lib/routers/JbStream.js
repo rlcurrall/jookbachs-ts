@@ -1,5 +1,5 @@
 /**
- * Factory for the JbApi class that injects all necessary dependencies.
+ * Factory for the JbStream class that injects all necessary dependencies.
  *
  * @param {object} deps
  * @returns
@@ -27,7 +27,7 @@ function streamFactory (deps) {
         /**
          * Creates an instance of JbStream.
          * @constructor
-         * 
+         *
          * @param {object} expressRouter
          * @param {object} options
          * @memberof JbStream
@@ -70,14 +70,14 @@ function streamFactory (deps) {
                         res.writeHead(404, {
                             'Content-Type': 'text/html'
                         });
-        
+
                         // display error
                         var error = 'Cannot access library index: ' + input.id;
                         that.log( error, 'warn', 'JbStream' );
                         return res.end(error);
                     }
                 )
-    
+
             };
 
             this.JbExpress.setSingleRoute(that.url, routerFunc);
@@ -102,16 +102,16 @@ function streamFactory (deps) {
                 //             res.writeHead(404, {
                 //                 'Content-Type': 'text/html'
                 //             });
-            
+
                 //             // display error
                 //             var error = 'Cannot access library index: ' + input.id;
                 //             that.log( error, 'warn', 'JbStream' );
                 //             return res.end(error);
                 //         }
                 //     )
-        
+
                 // });
-                
+
                 that.log('Route Created', 'info', 'JbStream');
         }
     }
