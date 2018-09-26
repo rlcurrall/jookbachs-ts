@@ -38,6 +38,8 @@
 		"music-metadata": "^2.4.0",
 		"q": "^1.5.1",
 		"socket.io": "^2.1.0",
+		"vue": "^2.5.17",
+		"vue-router": "^3.0.1",
 		"walk": "^2.3.13",
 		"winston": "^3.0.0"
 	},
@@ -53,6 +55,7 @@
 		"electron": "^2.0.4",
 		"expect": "^23.4.0",
 		"mocha": "^5.2.0",
-		"nodemon": "^1.18.2"
+		"nodemon": "^1.18.2",
+	    "vue-template-compiler": "^2.5.17"
 	}
 }
