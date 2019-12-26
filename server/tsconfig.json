@@ -1,0 +1,31 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "rootDirs": ["."],
+        "sourceMap": true,
+        "target": "es2018",
+        "outDir": "./bin",
+        "incremental": true,
+        "declaration": true,
+        "module": "commonjs",
+        "noImplicitAny": true,
+        "removeComments": true,
+        "esModuleInterop": true,
+        "preserveConstEnums": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "baseUrl": ".",
+        "paths": {
+            "app/*": ["./app/*"],
+            "bootstrap": ["./bootstrap/index"],
+            "bootstrap/*": ["./bootstrap/*"],
+            "config/*": ["./config/*"],
+            "lib/*": ["./lib/*"]
+        }
+    },
+    "include": [
+        "./app/**/*.ts",
+        "./bootstrap/**/*.ts",
+        "main.ts"
+    ]
+}
