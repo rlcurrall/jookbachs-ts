@@ -1,13 +1,11 @@
-nwjs/
-/lib/
-music/
-.vscode/
-ui/music/
-nbproject/
-server/logs
-server/config
-public/music/
-node_modules/
-/nbproject/private/
-windows_standalone.bat
-jb-server.code-workspace
+# Dependencies
+node_modules
+
+# Editors
+.vscode
+.idea
+nbproject
+
+# App
+.env
+jookbachs.db
