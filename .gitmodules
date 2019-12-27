@@ -1,0 +1,3 @@
+[submodule "jookbachs-vue"]
+	path = jookbachs-vue
+	url = git@github.com:rlcurrall/jookbachs-vue.git
