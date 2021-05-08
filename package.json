@@ -52,7 +52,7 @@
 		"sqlite3": "^4.1.0",
 		"tsconfig-paths": "^3.9.0",
 		"tsyringe": "^3.4.0",
-		"typeorm": "^0.2.20",
+		"typeorm": "^0.2.25",
 		"typescript": "^3.6.4",
 		"winston": "^3.2.1"
 	},
